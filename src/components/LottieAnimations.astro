@@ -1,0 +1,23 @@
+---
+interface Props {
+  src: string;
+  class?: string;
+}
+
+const { src, class: className } = Astro.props;
+---
+
+<div class:list={["w-full h-full flex items-center justify-center overflow-hidden", className]}>
+  <dotlottie-player
+    src={src}
+    background="transparent"
+    speed="1"
+    loop
+    autoplay
+    style="width: 100%; height: 100%;"
+  ></dotlottie-player>
+</div>
+
+<script>
+  import '@dotlottie/player-component';
+</script>

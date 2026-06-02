@@ -1,0 +1,218 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+/* 1. REMOVED: @import "@fontsource-variable/inter"; - No longer needed! */
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+	--background: oklch(1 0 0);
+	--foreground: oklch(0.141 0.015 240);
+	--card: oklch(1 0 0);
+	--card-foreground: oklch(0.141 0.015 240);
+	--popover: oklch(1 0 0);
+	--popover-foreground: oklch(0.141 0.015 240);
+	--primary: oklch(0.627 0.194 149.3);
+	--primary-foreground: oklch(0.979 0.012 145.5);
+	--secondary: oklch(0.961 0.004 240);
+	--secondary-foreground: oklch(0.19 0.017 240);
+	--muted: oklch(0.961 0.004 240);
+	--muted-foreground: oklch(0.552 0.016 240);
+	--accent: oklch(0.961 0.004 240);
+	--accent-foreground: oklch(0.19 0.017 240);
+	--destructive: oklch(0.628 0.224 25.6);
+	--destructive-foreground: oklch(0.985 0 0);
+	--border: oklch(0.922 0.004 240);
+	--input: oklch(0.922 0.004 240);
+	--ring: oklch(0.627 0.194 149.3);
+	--radius: 0.5rem;
+	--sidebar: oklch(0.985 0.002 240);
+	--sidebar-foreground: oklch(0.21 0.018 240);
+	--sidebar-primary: oklch(0.627 0.194 149.3);
+	--sidebar-primary-foreground: oklch(1 0 0);
+	--sidebar-accent: oklch(0.961 0.004 240);
+	--sidebar-accent-foreground: oklch(0.627 0.194 149.3);
+	--sidebar-border: oklch(0.922 0.004 240);
+	--sidebar-ring: oklch(0.627 0.194 149.3);
+}
+
+@theme inline {
+	--breakpoint-3xl: 1920px;
+	--font-heading: var(--font-inter), sans-serif;
+	--font-sans: var(--font-inter), sans-serif;
+
+	--color-sidebar-ring: var(--sidebar-ring);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar: var(--sidebar);
+	--color-chart-5: var(--chart-5);
+	--color-chart-4: var(--chart-4);
+	--color-chart-3: var(--chart-3);
+	--color-chart-2: var(--chart-2);
+	--color-chart-1: var(--chart-1);
+	--color-ring: var(--ring);
+	--color-input: var(--input);
+	--color-border: var(--border);
+	--color-destructive: var(--destructive);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-accent: var(--accent);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-muted: var(--muted);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-secondary: var(--secondary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-primary: var(--primary);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-popover: var(--popover);
+	--color-card-foreground: var(--card-foreground);
+	--color-card: var(--card);
+	--color-foreground: var(--foreground);
+	--color-background: var(--background);
+	--radius-sm: calc(var(--radius) * 0.6);
+	--radius-md: calc(var(--radius) * 0.8);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) * 1.4);
+	--radius-2xl: calc(var(--radius) * 1.8);
+	--radius-3xl: calc(var(--radius) * 2.2);
+	--radius-4xl: calc(var(--radius) * 2.6);
+}
+
+.dark {
+	--background: oklch(0.129 0.014 24.2);
+	--foreground: oklch(0.961 0.003 240);
+	--card: oklch(0.183 0.012 28.4);
+	--card-foreground: oklch(0.961 0.003 240);
+	--popover: oklch(0.165 0.002 240);
+	--popover-foreground: oklch(0.961 0.003 240);
+	--primary: oklch(0.697 0.196 148.5);
+	--primary-foreground: oklch(0.203 0.055 146.2);
+	--secondary: oklch(0.245 0.015 240);
+	--secondary-foreground: oklch(0.985 0 0);
+	--muted: oklch(0.22 0.002 240);
+	--muted-foreground: oklch(0.706 0.011 240);
+	--accent: oklch(0.232 0.011 20.2);
+	--accent-foreground: oklch(0.985 0 0);
+	--destructive: oklch(0.405 0.132 26.4);
+	--destructive-foreground: oklch(0.962 0.035 24.5);
+	--border: oklch(0.245 0.015 240);
+	--input: oklch(0.245 0.015 240);
+	--ring: oklch(0.482 0.134 147.2);
+	--sidebar: oklch(0.183 0.012 28.4);
+	--sidebar-foreground: oklch(0.961 0.003 240);
+	--sidebar-primary: oklch(0.697 0.196 148.5);
+	--sidebar-primary-foreground: oklch(0.203 0.055 146.2);
+	--sidebar-accent: oklch(0.245 0.015 240);
+	--sidebar-accent-foreground: oklch(0.961 0.003 240);
+	--sidebar-border: oklch(0.245 0.015 240);
+	--sidebar-ring: oklch(0.482 0.134 147.2);
+}
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	html {
+		@apply font-sans antialiased;
+		scroll-behavior: smooth;
+	}
+
+	body {
+		@apply bg-background text-foreground;
+		transition: background-color 0.5s ease;
+	}
+
+	
+
+	/* ⬇️ SHADCN UI TYPOGRAPHY CONFIGURATION ⬇️ */
+
+	h1 {
+		@apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
+	}
+
+	h2 {
+		@apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0;
+	}
+
+	h3 {
+		@apply scroll-m-20 text-2xl font-semibold tracking-tight;
+	}
+
+	h4 {
+		@apply scroll-m-20 text-xl font-semibold tracking-tight;
+	}
+
+	p {
+		@apply leading-7 [&:not(:first-child)]:mt-6;
+	}
+
+	blockquote {
+		@apply mt-6 border-l-2 pl-6 italic;
+	}
+
+	ul {
+		@apply my-6 ml-6 list-disc [&>li]:mt-2;
+	}
+
+	code {
+		@apply relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold;
+	}
+
+	/* ⬇️ PROSE TYPOGRAPHY LAYOUT ⬇️ */
+	:where(.prose) {
+		:where(h1, h2, h3, h4, p, figure, blockquote, dl, dd, ul, ol) {
+			margin-top: 1.25em;
+			margin-bottom: 0.5em;
+		}
+
+		:where(ul, ol) {
+			padding-inline-start: 1.5em;
+
+			:where(ul, ol) {
+				margin-top: 0;
+				margin-bottom: 0;
+			}
+		}
+
+		:where(ul) {
+			list-style-type: disc;
+		}
+
+		:where(ol) {
+			list-style-type: decimal;
+		}
+
+		:where(li) :where(p:first-child) {
+			margin: 0;
+		}
+
+		/* Links inside markdown posts */
+		:where(a) {
+			@apply text-primary underline underline-offset-4 font-medium transition-colors hover:text-primary/80;
+		}
+	}
+
+	/* ⬇️ PREMIUM CODE BLOCK CONFIGURATION (SHIKI) ⬇️ */
+	pre {
+		@apply relative my-6 overflow-x-auto rounded-lg border border-border bg-zinc-950 p-4 font-mono text-sm leading-relaxed text-zinc-50;
+	}
+
+	code {
+		@apply rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-xs font-semibold text-foreground;
+	}
+
+	/* Isolates code blocks from inline single backtick blocks */
+	pre > code {
+		all: unset;
+		@apply font-mono text-sm block w-full bg-transparent p-0 text-inherit font-normal;
+	}
+
+	/* Soft stylings for tokens generated by Shiki */
+	pre span {
+		@apply bg-transparent;
+	}
+}
+

@@ -1,0 +1,209 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={['fixed inset-0 -z-50 pointer-events-none overflow-hidden bg-transparent', className]}>
+  <canvas id="stars-canvas" class="absolute inset-0 h-full w-full"></canvas>
+
+  <svg id="shooting-stars-svg" class="absolute inset-0 h-full w-full" aria-hidden="true">
+    <g id="comet-group"></g>
+    <defs>
+      <linearGradient id="space-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color: #2EB9DF; stop-opacity: 0;" />
+        <stop offset="100%" style="stop-color: #9E00FF; stop-opacity: 1;" />
+      </linearGradient>
+    </defs>
+  </svg>
+</div>
+
+<script>
+  // --- TYPES & CONFIGURATION ---
+  interface Star {
+    x: number;
+    y: number;
+    radius: number;
+    baseRadius: number; // For pulsing scaling calculations
+    opacity: number;
+    twinkleSpeed: number;
+    isPulsing: boolean; // 20% of stars will dramatically grow and shrink
+    pulseSpeed: number;
+  }
+
+  interface Comet {
+    id: string;
+    x: number;
+    y: number;
+    angle: number;
+    speed: number;
+    distance: number;
+    scale: number;
+    element: SVGElement | null;
+  }
+
+  const STAR_DENSITY = 0.00018; // Increased slightly for richer depth
+  const MIN_TWINKLE = 0.4;
+  const MAX_TWINKLE = 1.2;
+  
+  // Comet Engine configurations
+  const MAX_CONCURRENT_COMETS = 4; // Allows multiple comets on screen at once
+  const COMET_SPAWN_CHANCE = 0.015; // Evaluated per frame to make spawns organic
+  const SHOOTING_MIN_SPEED = 12;
+  const SHOOTING_MAX_SPEED = 28;
+  const STAR_WIDTH = 12;
+  const STAR_HEIGHT = 1.2;
+
+  // --- SETUP NATIVE DOM REFERENCES ---
+  const canvas = document.getElementById('stars-canvas') as HTMLCanvasElement | null;
+  const cometGroup = document.getElementById('comet-group') as SVGElement | null;
+  
+  if (canvas && cometGroup) {
+    const ctx = canvas.getContext('2d')!;
+    let stars: Star[] = [];
+    let activeComets: Comet[] = [];
+
+    // --- GENERATE STARS WITH PULSING ENGINE ---
+    function generateStars(width: number, height: number) {
+      const area = width * height;
+      const numStars = Math.floor(area * STAR_DENSITY);
+      
+      stars = Array.from({ length: numStars }, () => {
+        const baseRadius = Math.random() * 0.5 + 0.4;
+        const isPulsing = Math.random() < 0.20; // 20% become pulsing variant stars
+
+        return {
+          x: Math.random() * width,
+          y: Math.random() * height,
+          baseRadius,
+          radius: baseRadius,
+          opacity: Math.random() * 0.6 + 0.4,
+          twinkleSpeed: MIN_TWINKLE + Math.random() * (MAX_TWINKLE - MIN_TWINKLE),
+          isPulsing,
+          pulseSpeed: 0.002 + Math.random() * 0.004
+        };
+      });
+    }
+
+    function resize() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      canvas!.width = width;
+      canvas!.height = height;
+      generateStars(width, height);
+    }
+
+    // --- COMET GENERATION UTILITIES ---
+    function getRandomStartPoint() {
+      const side = Math.floor(Math.random() * 4);
+      const offsetWidth = Math.random() * window.innerWidth;
+      const offsetHeight = Math.random() * window.innerHeight;
+
+      switch (side) {
+        case 0: return { x: offsetWidth, y: -20, angle: 45 + Math.random() * 15 };
+        case 1: return { x: window.innerWidth + 20, y: offsetHeight, angle: 120 + Math.random() * 15 };
+        case 2: return { x: offsetWidth, y: window.innerHeight + 20, angle: 210 + Math.random() * 15 };
+        case 3: return { x: -20, y: offsetHeight, angle: 300 + Math.random() * 15 };
+        default: return { x: 0, y: 0, angle: 45 };
+      }
+    }
+
+    function createCometDOMElement(): SVGElement {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('fill', 'url(#space-gradient)');
+      cometGroup!.appendChild(rect);
+      return rect;
+    }
+
+    function spawnComet() {
+      if (activeComets.length >= MAX_CONCURRENT_COMETS) return;
+
+      const { x, y, angle } = getRandomStartPoint();
+      const cometId = Math.random().toString(36).substring(2, 9);
+      const element = createCometDOMElement();
+
+      activeComets.push({
+        id: cometId,
+        x,
+        y,
+        angle,
+        speed: Math.random() * (SHOOTING_MAX_SPEED - SHOOTING_MIN_SPEED) + SHOOTING_MIN_SPEED,
+        distance: 0,
+        scale: 1,
+        element
+      });
+    }
+
+    // --- TICK ANIMATION LOOP ---
+    function tick() {
+      const now = Date.now();
+      ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+      
+      // 1. Process and Draw Background Stars
+      for (const star of stars) {
+        ctx.beginPath();
+        
+        // Handle standard twinkle (opacity)
+        star.opacity = 0.4 + Math.abs(Math.sin((now * 0.001) / star.twinkleSpeed) * 0.6);
+        
+        // Handle Pulse Star Effect (radii breath scaling)
+        if (star.isPulsing) {
+          const pulseFactor = 1 + Math.sin(now * star.pulseSpeed) * 0.6; 
+          star.radius = star.baseRadius * pulseFactor;
+        }
+
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+      }
+
+      // 2. Organic Multi-Comet Spawner Check
+      if (Math.random() < COMET_SPAWN_CHANCE) {
+        spawnComet();
+      }
+
+      // 3. Update and Render Active Comets
+      const buffer = 100;
+      activeComets = activeComets.filter((comet) => {
+        const rad = (comet.angle * Math.PI) / 180;
+        comet.x += comet.speed * Math.cos(rad);
+        comet.y += comet.speed * Math.sin(rad);
+        comet.distance += comet.speed;
+        comet.scale = 1 + comet.distance / 120;
+
+        // Boundary Cleanups
+        if (
+          comet.x < -buffer || 
+          comet.x > window.innerWidth + buffer || 
+          comet.y < -buffer || 
+          comet.y > window.innerHeight + buffer
+        ) {
+          comet.element?.remove(); // Strip out dead nodes from DOM cleanly
+          return false;
+        }
+
+        if (comet.element) {
+          const calculatedWidth = STAR_WIDTH * comet.scale;
+          comet.element.setAttribute('x', comet.x.toString());
+          comet.element.setAttribute('y', comet.y.toString());
+          comet.element.setAttribute('width', calculatedWidth.toString());
+          comet.element.setAttribute('height', STAR_HEIGHT.toString());
+          comet.element.setAttribute(
+            'transform', 
+            `rotate(${comet.angle}, ${comet.x + calculatedWidth / 2}, ${comet.y + STAR_HEIGHT / 2})`
+          );
+        }
+        return true;
+      });
+
+      requestAnimationFrame(tick);
+    }
+
+    // --- INITIALIZE SYSTEM ---
+    window.addEventListener('resize', resize);
+    resize();
+    requestAnimationFrame(tick);
+  }
+</script>

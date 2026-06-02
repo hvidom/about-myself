@@ -1,0 +1,127 @@
+---
+// src/components/SpaceBackground.astro
+---
+<div id="space-container">
+    <canvas id="space-canvas"></canvas>
+  </div>
+  
+  <script>
+    import * as THREE from 'three';
+  
+    // State variables for engine tuning
+    let animationFrameId: number;
+    let isVisible = true;
+  
+    // 1. Core WebGL Setup
+    const container = document.getElementById('space-container');
+    const canvas = document.getElementById('space-canvas') as HTMLCanvasElement;
+    
+    if (container && canvas) {
+      const scene = new THREE.Scene();
+      
+      const camera = new THREE.PerspectiveCamera(
+        60, 
+        window.innerWidth / window.innerHeight, 
+        0.1, 
+        1000
+      );
+      camera.position.z = 4;
+  
+      // antialias: false improves performance heavily on mobile and older GPUs
+      const renderer = new THREE.WebGLRenderer({ 
+        canvas: canvas, 
+        antialias: false, 
+        alpha: false 
+      });
+      
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      // Performance optimization: Cap pixel ratio at 2 to handle high-DPI/Retina screens smoothly
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  
+      // 2. Optimized Starfield (Using InstancedMesh for Single Draw Call)
+      const starCount = 2000;
+      const starGeometry = new THREE.SphereGeometry(0.015, 4, 4);
+      const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      
+      const instancedStars = new THREE.InstancedMesh(starGeometry, starMaterial, starCount);
+      const dummy = new THREE.Object3D();
+  
+      for (let i = 0; i < starCount; i++) {
+        // Randomize positions in a 3D sphere/box area
+        dummy.position.set(
+          (Math.random() - 0.5) * 10,
+          (Math.random() - 0.5) * 10,
+          (Math.random() - 0.5) * 10
+        );
+        dummy.updateMatrix();
+        instancedStars.setMatrixAt(i, dummy.matrix);
+      }
+      scene.add(instancedStars);
+  
+      // 3. System Tracking
+      const clock = new THREE.Clock();
+  
+      // 4. Render Loop
+      function animate() {
+        // Performance guard: Don't consume GPU/CPU cycles if off-screen
+        if (!isVisible) return;
+  
+        animationFrameId = requestAnimationFrame(animate);
+  
+        const delta = clock.getDelta();
+        const elapsedTime = clock.getElapsedTime();
+  
+        // Soft, infinite space drift rotation
+        instancedStars.rotation.y = elapsedTime * 0.02;
+        instancedStars.rotation.x = elapsedTime * 0.01;
+  
+        renderer.render(scene, camera);
+      }
+  
+      // 5. Performance Safeguard: Intersection Observer
+      // Stops execution completely when user has scrolled away from the landing viewport
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          isVisible = entry.isIntersecting;
+          if (isVisible) {
+            animate();
+          } else {
+            cancelAnimationFrame(animationFrameId);
+          }
+        });
+      }, { threshold: 0.05 });
+  
+      observer.observe(container);
+  
+      // 6. Efficient Debounced Window Resizing
+      let resizeTimeout: string | number | NodeJS.Timeout | undefined;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        }, 150); // Fires 150ms after the user finishes scaling the window
+      });
+    }
+  </script>
+  
+  <style>
+    #space-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1; /* Layer behind all HTML content text/buttons */
+      overflow: hidden;
+      background: #020205; /* Instant dark aesthetic fallback while canvas initializes */
+      pointer-events: none; /* Crucial: clicks and scrolls pass through straight to your page elements */
+    }
+  
+    #space-canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+  </style>

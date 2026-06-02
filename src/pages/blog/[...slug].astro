@@ -1,0 +1,21 @@
+---
+// src/pages/blog/[...slug].astro
+import { getCollection, render } from "astro:content"; // ⬇️ IMPORT 'render' HERE
+import BlogPost from "../../layouts/BlogPost.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: post,
+  }));
+}
+
+const post = Astro.props;
+// ⬇️ FIX: Pass 'post' as an argument to the standalone 'render' function
+const { Content, remarkPluginFrontmatter } = await render(post);
+---
+
+<BlogPost {...post.data} minutesRead={remarkPluginFrontmatter.minutesRead}>
+	<Content />
+</BlogPost>

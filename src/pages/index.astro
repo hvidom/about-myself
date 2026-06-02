@@ -1,0 +1,273 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import LottieAnimation from "@/components/LottieAnimations.astro";
+---
+
+<Layout 
+  title="hvidom | Full-Stack Developer & Business Strategist"
+  description="Personal portfolio website of Hryhorii Ilin (hvidom). Showcasing technical stack, open source configurations, and digital agency enterprise models."
+  numStars={45} 
+  starSize={0.12} 
+  bgLightness={0.04}
+>
+  <div class="absolute inset-0 -z-50 opacity-15 pointer-events-none mix-blend-screen overflow-hidden">
+    <LottieAnimation src="/animations/mD7zjZySFw.lottie" class="w-full h-full scale-110" />
+  </div>
+
+  <header class="border-b border-border/40 backdrop-blur-xl sticky top-0 z-50 bg-background/80 transition-all">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl font-black tracking-tighter text-primary">hvidom</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      </div>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
+        <a href="#about" class="hover:text-foreground transition-colors">About</a>
+        <a href="#services" class="hover:text-foreground transition-colors">Expertise</a>
+        <a href="#workflow" class="hover:text-foreground transition-colors">Process</a>
+        <a href="#stack" class="hover:text-foreground transition-colors">Tech Toolchain</a>
+      </nav>
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/hvidom" target="_blank" rel="noopener noreferrer" class="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">GitHub</a>
+        <a href="https://www.linkedin.com/in/hryhorii-ilin-952426341" target="_blank" rel="noopener noreferrer" class="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">LinkedIn</a>
+        <a href="mailto:devopsick@pm.me" class="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Email</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-12 space-y-32">
+    
+    <section id="about" class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-8">
+      <div class="lg:col-span-7 space-y-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
+          📍 Based in Dublin, Ireland
+        </div>
+        <h1 class="text-4xl font-extrabold tracking-tight lg:text-5xl leading-none">Hryhorii Ilin</h1>
+        <p class="text-xl text-muted-foreground font-medium tracking-tight mt-2">Full-Stack Developer & Business Strategist</p>
+        <p class="text-base text-muted-foreground leading-relaxed max-w-2xl">
+          Experienced Developer and Sales Manager with more than 15 years of expertise in software development, sales, and coaching. Specializing in building and deploying applications using modern frameworks and managing cloud/server infrastructure, with a passion for driving open-source projects to production.
+        </p>
+        
+        <div class="flex flex-wrap gap-2 pt-2">
+          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Chess</span>
+          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Running</span>
+          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Swimming</span>
+          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Open-source software contributions</span>
+          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Entrepreneurship & business strategy</span>
+          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Psychology of Sales</span>
+        </div>
+      </div>
+      
+      <div class="lg:col-span-5 flex justify-center items-center relative h-80 w-80 justify-self-center lg:justify-self-end">
+        <div class="absolute inset-0 bg-primary/5 rounded-full filter blur-3xl"></div>
+        <LottieAnimation src="/animations/hacker.lottie" class="w-full h-full relative z-10" />
+      </div>
+    </section>
+
+    <section id="services" class="space-y-12">
+      <div class="text-center space-y-3 max-w-3xl mx-auto">
+        <h2 class="text-3xl font-semibold tracking-tight border-none pb-0">Full-Cycle Digital Agency Expertise</h2>
+        <p class="text-muted-foreground text-lg">Where your dreams and ideas materialize into a premium quality product.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-card border border-border p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 transition-all duration-300">
+          <div class="space-y-4">
+            <div class="text-xs font-mono text-primary font-bold">📂 CORE_MODULE_01</div>
+            <h3 class="text-xl font-bold tracking-tight">Research Marketing</h3>
+            <ul class="space-y-1.5 list-none my-0 ml-0 pl-0">
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Valuable insights</li>
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Customer-centric focus</li>
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Target lead generation</li>
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Market forecasting</li>
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Competitive advantage</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-card border border-border p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 transition-all duration-300">
+          <div class="space-y-4">
+            <div class="text-xs font-mono text-primary font-bold">📂 CORE_MODULE_02</div>
+            <h3 class="text-xl font-bold tracking-tight">Data Analytics</h3>
+            <ul class="space-y-1.5 list-none my-0 ml-0 pl-0">
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Database maintenance</li>
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Data point recognition</li>
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Database security</li>
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Demographic research</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-card border border-border p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 transition-all duration-300">
+          <div class="space-y-4">
+            <div class="text-xs font-mono text-primary font-bold">📂 CORE_MODULE_03</div>
+            <h3 class="text-xl font-bold tracking-tight">Business Consulting</h3>
+            <ul class="space-y-1.5 list-none my-0 ml-0 pl-0">
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Strategic business planning</li>
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Scale-up & expansion consulting</li>
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Internet business architecture</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-card border border-border p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 transition-all duration-300">
+          <div class="space-y-4">
+            <div class="text-xs font-mono text-primary font-bold">📂 CORE_MODULE_04</div>
+            <h3 class="text-xl font-bold tracking-tight">Brand Strategy</h3>
+            <ul class="space-y-1.5 list-none my-0 ml-0 pl-0">
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Strategic analysis & reporting</li>
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Logo & visual identity design</li>
+              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Corporate rebranding</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="workflow" class="space-y-16 relative">
+      <div class="max-w-2xl">
+        <h2 class="text-3xl font-semibold tracking-tight border-none pb-0">Execution Process & Sequencing</h2>
+        <p class="text-muted-foreground mt-2">A predictable timeline that transforms abstract business concepts into production-ready software solutions.</p>
+      </div>
+
+      <div class="space-y-24 relative before:absolute before:inset-0 before:left-4 md:before:left-1/2 before:w-px before:bg-border/60 before:-z-10">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
+          <div class="md:text-right space-y-3 md:pr-12">
+            <div class="w-9 h-9 md:ml-auto rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">01</div>
+            <h3 class="text-2xl font-semibold tracking-tight">Discovery, Onboarding & Market Research</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              The initial step focuses on discovering your company's core vision and forming deep long-term partnerships. Here, we lay down custom foundational strategies, map user interaction behaviors, and structure project milestones. We thoroughly analyze matching production methodologies to formulate an explicit project action plan.
+            </p>
+          </div>
+          <div class="flex justify-start md:pl-12 h-128 w-lg">
+            <LottieAnimation src="/animations/eye.lottie" class="w-full h-full scale-110" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
+          <div class="order-2 md:order-1 flex justify-end md:pr-12 h-128 w-lg justify-self-end">
+            <LottieAnimation src="/animations/hand.lottie" class="w-full h-full scale-110" />
+          </div>
+          <div class="order-1 md:order-2 space-y-3 md:pl-12">
+            <div class="w-9 h-9 rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">02</div>
+            <h3 class="text-2xl font-semibold tracking-tight">Data Analytics & Structural Planning</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              Utilizing deep modernized tools to interpret user metrics. Excellent management starts with pristine data parsing. If your platform struggles with data synchronization, complex demographic databases, or scale blocks, we design optimized custom toolsets to clear operations bottlenecks.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
+          <div class="space-y-3 md:text-right md:pr-12">
+            <div class="w-9 h-9 md:ml-auto rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">03</div>
+            <h3 class="text-2xl font-semibold tracking-tight">Brand Identity & Content Architecture</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              Branding acts as the foundation of your digital authority. Legacy styling fails in rapidly evolving tech spaces. Our #1 objective is realigning your company assets with sleek modern layout conventions by synchronizing digital reputation parameters, user reviews, and design choices into a unified brand identity.
+            </p>
+          </div>
+          <div class="flex justify-start md:pl-12 h-128 w-lg">
+            <LottieAnimation src="/animations/pc.lottie" class="w-full h-full scale-110" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
+          <div class="order-2 md:order-1 flex justify-end md:pr-12 h-64 w-64 justify-self-end">
+            <LottieAnimation src="/animations/lab.lottie" class="w-full h-full scale-110" />
+          </div>
+          <div class="order-1 md:order-2 space-y-3 md:pl-12">
+            <div class="w-9 h-9 rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">04</div>
+            <h3 class="text-2xl font-semibold tracking-tight">Core Server Provisioning & Core Engineering</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              Deploying bulletproof server platforms with deep root access configurations and kernel-level firewalls. Communication vectors are completely protected with robust end-to-end encryption. Flat monthly infrastructure prices cover container compute resources, fast SSD storage systems, network bandwidth, automated updates, and security patches.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
+          <div class="space-y-3 md:text-right md:pr-12">
+            <div class="w-9 h-9 md:ml-auto rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">05</div>
+            <h3 class="text-2xl font-semibold tracking-tight">Development & Rigorous Verification</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              Engineering systems that balance high customer desirability, sustainable profitability, and performant technical architectures. We handle modern tech-stack identification, system backend API development, and client user-interface assembly. Before any program version is pushed to deployment, we guarantee its high performance, absolute data security, and total structural integrity.
+            </p>
+          </div>
+          <div class="flex justify-start md:pl-12 h-64 w-64">
+            <LottieAnimation src="/animations/dj.lottie" class="w-full h-full scale-110" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
+          <div class="order-2 md:order-1 flex justify-end md:pr-12 h-64 w-64 justify-self-end">
+            <LottieAnimation src="/animations/on-rocket_20260602190205.lottie"  class="w-full h-full scale-110"/>
+          </div>
+          <div class="order-1 md:order-2 space-y-3 md:pl-12">
+            <div class="w-9 h-9 rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">06</div>
+            <h3 class="text-2xl font-semibold tracking-tight">Marketing Launch & Production Live Release</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              Formulating custom data-driven online presence plans modeled after major global enterprise methods. We build real organic search growth loops by executing deep keyword positioning, semantic user modeling, and strict competitive infrastructure evaluations to expand visibility across platforms.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="stack" class="bg-card border border-border p-8 md:p-12 rounded-3xl space-y-8 relative overflow-hidden">
+      <div class="absolute -right-8 -bottom-8 w-48 h-48 opacity-10 pointer-events-none">
+        <LottieAnimation src="/animations/like_20260602190154.lottie" />
+      </div>
+
+      <div>
+        <h2 class="text-3xl font-semibold tracking-tight border-none pb-0">Technical Stack & Operational Toolchain</h2>
+        <p class="text-muted-foreground text-sm mt-1">Full-stack software developer skill verification matrices.</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
+        <div class="space-y-3">
+          <h4 class="text-sm font-mono tracking-wider uppercase text-primary font-bold">Languages & Core Tools</h4>
+          <div class="flex flex-wrap gap-1.5">
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">TypeScript</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">JavaScript</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Tailwind</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">VSCode</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">TurboRepo</code>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="text-sm font-mono tracking-wider uppercase text-primary font-bold">Frameworks & Formats</h4>
+          <div class="flex flex-wrap gap-1.5">
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">React</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Vue</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Astro</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Next.js</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Node.js</code>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="text-sm font-mono tracking-wider uppercase text-primary font-bold">Data, DevOps & Cloud Systems</h4>
+          <div class="flex flex-wrap gap-1.5">
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Cloudflare</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Vercel</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Hetzner</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Docker</code>
+            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">PostgreSQL</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-border/40 bg-card/40 mt-32 py-8 text-center text-xs text-muted-foreground font-mono">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>© 2026 Hryhorii Ilin (hvidom). All rights reserved. Powered by Astro & Tailwind CSS.</div>
+      <div class="flex gap-4">
+        <a href="mailto:devopsick@pm.me" class="hover:text-primary transition-colors">devopsick@pm.me</a>
+        <span>•</span>
+        <span class="text-primary">Dublin, Ireland</span>
+      </div>
+    </div>
+  </footer>
+</Layout>

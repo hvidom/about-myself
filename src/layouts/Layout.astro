@@ -1,0 +1,43 @@
+---
+import BaseHead from "@/components/layouts/BaseHead.astro";
+import SpaceBackground from "@/components/layouts/SpaceBackground.astro";
+import Stars from "@/components/layouts/Stars.astro";
+import { cn } from "@/lib/utils";
+
+type Props = {
+  title: string;
+  description?: string;
+  mainClass?: string;
+  numStars?: number;
+  starSize?: number;
+  bgLightness?: number;
+};
+
+const { 
+  title, 
+  description, 
+  mainClass,
+  numStars = 24,
+  starSize = 0.15,
+  bgLightness = 0.05 
+} = Astro.props;
+---
+
+<html lang="en" class="scroll-smooth dark">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body class="min-h-screen bg-background text-foreground relative overflow-x-hidden antialiased selection:bg-primary selection:text-primary-foreground">
+    
+    <Stars numStars={numStars} starSize={starSize} bgLightness={bgLightness} />
+    
+    
+    <div class="relative z-10 w-full min-h-screen pointer-events-none">
+      <SpaceBackground />
+      <main class={cn("pointer-events-auto", mainClass)}>
+        <slot />
+      </main>
+      
+    </div>
+  </body>
+</html>

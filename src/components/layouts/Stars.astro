@@ -1,0 +1,563 @@
+---
+interface Props {
+  className?: string;
+  numStars?: number;
+  starSize?: number;
+  bgLightness?: number;
+}
+
+const {
+  className = "",
+  numStars = 24, 
+  starSize = 0.15,
+  bgLightness = 0.05,
+} = Astro.props;
+---
+
+<div
+  class={`stars-container ${className}`}
+  data-num-stars={numStars}
+  data-star-size={starSize}
+  data-bg-lightness={bgLightness}
+>
+</div>
+
+<style>
+  .stars-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: #010103;
+  }
+  
+  .stars-container :global(canvas) {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+</style>
+
+<script>
+  import * as THREE from "three";
+
+  const VERTEX_SHADER = `
+    varying vec2 vUv;
+    void main() {
+        vUv = uv;
+        gl_Position = vec4(position, 1.0);
+    }
+  `;
+
+  const BUFFER_A_FRAG = `
+    uniform vec3      iResolution;
+    uniform float     iTime;
+    uniform int       iFrame;
+    uniform sampler2D iChannel0;
+
+    vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec4 permute(vec4 x) { return mod289(((x * 34.0) + 1.0) * x); }
+    vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+
+    float snoise(vec3 v) {
+        const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+        const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+        vec3 i  = floor(v + dot(v, C.yyy));
+        vec3 x0 = v - i + dot(i, C.xxx);
+        vec3 g = step(x0.yzx, x0.xyz);
+        vec3 l = 1.0 - g;
+        vec3 i1 = min(g.xyz, l.zxy);
+        vec3 i2 = max(g.xyz, l.zxy);
+        vec3 x1 = x0 - i1 + C.xxx;
+        vec3 x2 = x0 - i2 + C.yyy;
+        vec3 x3 = x0 - D.yyy;
+        i = mod289(i);
+        vec4 p = permute(permute(permute(
+                    i.z + vec4(0.0, i1.z, i2.z, 1.0))
+                  + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+                  + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+        float n_ = 0.142857142857;
+        vec3 ns = n_ * D.wyz - D.xzx;
+        vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+        vec4 x_ = floor(j * ns.z);
+        vec4 y_ = floor(j - 7.0 * x_);
+        vec4 x = x_ * ns.x + ns.yyyy;
+        vec4 y = y_ * ns.x + ns.yyyy;
+        vec4 h = 1.0 - abs(x) - abs(y);
+        vec4 b0 = vec4(x.xy, y.xy);
+        vec4 b1 = vec4(x.zw, y.zw);
+        vec4 s0 = floor(b0) * 2.0 + 1.0;
+        vec4 s1 = floor(b1) * 2.0 + 1.0;
+        vec4 sh = -step(h, vec4(0.0));
+        vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
+        vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
+        vec3 p0 = vec3(a0.xy, h.x);
+        vec3 p1 = vec3(a0.zw, h.y);
+        vec3 p2 = vec3(a1.xy, h.z);
+        vec3 p3 = vec3(a1.zw, h.w);
+        vec4 norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));
+        p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+        vec4 m = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);
+        m = m * m;
+        return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
+    }
+
+    float tilingNoise(vec2 position, float size) {
+        float value = snoise(vec3(position * size, 0.0));
+        float wrapx = snoise(vec3(position * size - vec2(size, 0.0), 0.0));
+        value = mix(value, wrapx, max(0.0, position.x * size - (size - 1.0)));
+        float wrapy = snoise(vec3(position * size - vec2(0.0, size), 0.0));
+        float wrapxy = snoise(vec3(position * size - vec2(size, size), 0.0));
+        wrapy = mix(wrapy, wrapxy, max(0.0, position.x * size - (size - 1.0)));
+        return mix(value, wrapy, max(0.0, position.y * size - (size - 1.0)));
+    }
+
+    void initialize(out vec4 fragColor, in vec2 fragCoord) {
+        vec2 uv = fragCoord / iResolution.xy;
+        const int octaves = 4; // Оптимизация: снизили количество октав шума с 6 до 4
+        float value = 0.0;
+        float maxValue = 0.0;
+        for (float octave = 0.0; octave < float(octaves); octave++) {
+            value += pow(2.0, -octave) * tilingNoise(uv, 8.0 * pow(2.0, octave));
+            maxValue += pow(2.0, -octave);
+        }
+        maxValue *= 0.5;
+        fragColor = vec4(0.5 * (1.0 + value / maxValue) * vec3(1.0), 1.0);
+        fragColor.g = iResolution.x;
+    }
+
+    void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+        fragColor = texture(iChannel0, fragCoord / iResolution.xy);
+        if (fragColor.g != iResolution.x) {
+            initialize(fragColor, fragCoord);
+        }
+    }
+
+    void main(void) {
+        vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
+        mainImage(color, gl_FragCoord.xy);
+        color.w = 1.0;
+        gl_FragColor = color;
+    }
+  `;
+
+  const BUFFER_FINAL_FRAG = `
+    uniform vec3      iResolution;
+    uniform float     iTime;
+    uniform sampler2D iChannel0;
+    uniform float     starSize;
+    uniform float     bgLightness;
+
+    varying vec2 vUv;
+
+    const float FLIGHT_SPEED = 6.0;
+    const float DRAW_DISTANCE = 35.0; 
+    const float FADEOUT_DISTANCE = 10.0;
+    const float FIELD_OF_VIEW = 1.05;
+    const float STAR_CORE_SIZE = 0.14;
+    const float CLUSTER_SCALE = 0.02;
+    const float STAR_THRESHOLD = 0.775;
+
+    vec3 hsv2rgb(vec3 c) {
+        vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+        vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+        return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+    }
+
+    float rand(vec2 co){
+        return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    }
+
+    vec3 getRayDirection(vec2 fragCoord, vec3 cameraDirection) {
+        vec2 uv = fragCoord.xy / iResolution.xy;
+        const float screenWidth = 1.0;
+        float originToScreen = screenWidth / 2.0 / tan(FIELD_OF_VIEW / 2.0);
+        vec3 screenCenter = originToScreen * cameraDirection;
+        vec3 baseX = normalize(cross(screenCenter, vec3(0, -1.0, 0)));
+        vec3 baseY = normalize(cross(screenCenter, baseX));
+        return normalize(screenCenter + (uv.x - 0.5) * baseX + (uv.y - 0.5) * iResolution.y / iResolution.x * baseY);
+    }
+
+    float getDistance(ivec3 chunkPath, vec3 localStart, vec3 localPosition) {
+        return length(vec3(chunkPath) + localPosition - localStart);
+    }
+
+    void move(inout vec3 localPosition, vec3 rayDirection, vec3 directionBound) {
+        vec3 directionSign = sign(rayDirection);
+        vec3 amountVector = (directionBound - directionSign * localPosition) / abs(rayDirection);
+        float amount = min(amountVector.x, min(amountVector.y, amountVector.z));
+        localPosition += amount * rayDirection;
+    }
+
+    void moveInsideBox(inout vec3 localPosition, inout ivec3 chunk, vec3 directionSign, vec3 directionBound) {
+        const float eps = 0.0000001;
+        if (localPosition.x * directionSign.x >= directionBound.x - eps) {
+            localPosition.x -= directionSign.x;
+            chunk.x += int(directionSign.x);
+        } else if (localPosition.y * directionSign.y >= directionBound.y - eps) {
+            localPosition.y -= directionSign.y;
+            chunk.y += int(directionSign.y);
+        } else if (localPosition.z * directionSign.z >= directionBound.z - eps) {
+            localPosition.z -= directionSign.z;
+            chunk.z += int(directionSign.z);
+        }
+    }
+
+    bool hasStar(ivec3 chunk) {
+        vec2 chunkF = vec2(chunk.xy);
+        return texture(iChannel0, mod(CLUSTER_SCALE * (chunkF + vec2(chunk.zx)) + vec2(0.724, 0.111), 1.0)).r > STAR_THRESHOLD
+            && texture(iChannel0, mod(CLUSTER_SCALE * (vec2(chunk.xz) + vec2(chunk.zy)) + vec2(0.333, 0.777), 1.0)).r > STAR_THRESHOLD;
+    }
+
+    vec3 getStarToRayVector(vec3 rayBase, vec3 rayDirection, vec3 starPosition) {
+        float r = (dot(rayDirection, starPosition) - dot(rayDirection, rayBase)) / dot(rayDirection, rayDirection);
+        vec3 pointOnRay = rayBase + r * rayDirection;
+        return pointOnRay - starPosition;
+    }
+
+    vec3 getStarPosition(ivec3 chunk, float starSize) {
+        vec3 c = vec3(chunk);
+        vec3 position = abs(vec3(rand(vec2(c.x / c.y + 0.24, c.y / c.z + 0.66)),
+                                 rand(vec2(c.x / c.z + 0.73, c.z / c.y + 0.45)),
+                                 rand(vec2(c.y / c.x + 0.12, c.y / c.z + 0.76))));
+        return starSize * vec3(1.0) + (1.0 - 2.0 * starSize) * position;
+    }
+
+    vec4 getNebulaColor(vec3 globalPosition, vec3 rayDirection) {
+        vec3 color = vec3(0.0);
+        float spaceLeft = 1.0;
+        const float layerDistance = 10.0;
+        const int steps = 2; 
+        for (int i = 0; i <= steps; i++) {
+            vec3 noiseeval = globalPosition + rayDirection * ((1.0 - fract(globalPosition.z / layerDistance) + float(i)) * layerDistance / rayDirection.z);
+            noiseeval.xy += noiseeval.z;
+            float value = bgLightness * texture(iChannel0, fract(noiseeval.xy / 60.0)).r;
+            if (i == 0) {
+                value *= 1.0 - fract(globalPosition.z / layerDistance);
+            } else if (i == steps) {
+                value *= fract(globalPosition.z / layerDistance);
+            }
+            float hue = mod(noiseeval.z / layerDistance / 34.444, 1.0);
+            color += spaceLeft * hsv2rgb(vec3(hue, 1.0, value));
+            spaceLeft = max(0.0, spaceLeft - value * 2.0);
+        }
+        return vec4(color, 1.0);
+    }
+
+    vec4 getStarGlowColor(float starDistance, float angle, float hue) {
+        float progress = 1.0 - starDistance;
+        return vec4(hsv2rgb(vec3(hue, 0.3, 1.0)), 0.4 * pow(progress, 2.0) * mix(pow(abs(sin(angle * 2.5)), 8.0), 1.0, progress));
+    }
+
+    float atan2(vec2 value) {
+        if (value.x > 0.0) return atan(value.y / value.x);
+        if (value.x == 0.0) return 3.141592 * 0.5 * sign(value.y);
+        return value.y >= 0.0 ? atan(value.y / value.x) + 3.141592 : atan(value.y / value.x) - 3.141592;
+    }
+
+    vec3 getStarColor(vec3 starSurfaceLocation, float seed, float viewDistance) {
+        const float DISTANCE_FAR = 20.0;
+        const float DISTANCE_NEAR = 15.0;
+        if (viewDistance > DISTANCE_FAR) return vec3(1.0);
+        float fadeToWhite = max(0.0, (viewDistance - DISTANCE_NEAR) / (DISTANCE_FAR - DISTANCE_NEAR));
+        vec3 coordinate = vec3(acos(starSurfaceLocation.y), atan2(starSurfaceLocation.xz), seed);
+        float progress = pow(texture(iChannel0, fract(0.3 * coordinate.xy + seed * vec2(1.1))).r, 4.0);
+        return mix(mix(vec3(1.0, 0.98, 0.9), vec3(1.0, 0.627, 0.01), progress), vec3(1.0), fadeToWhite);
+    }
+
+    vec4 blendColors(vec4 front, vec4 back) {
+        return vec4(mix(back.rgb, front.rgb, front.a / (front.a + back.a)), front.a + back.a - front.a * back.a);
+    }
+
+    void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+        vec3 movementDirection = normalize(vec3(0.01, 0.0, 1.0));
+        vec3 rayDirection = getRayDirection(fragCoord, movementDirection);
+        vec3 directionSign = sign(rayDirection);
+        vec3 directionBound = vec3(0.5) + 0.5 * directionSign;
+        vec3 globalPosition = vec3(3.14159, 3.14159, 0.0) + (iTime + 1000.0) * FLIGHT_SPEED * movementDirection;
+        ivec3 chunk = ivec3(globalPosition);
+        vec3 localPosition = mod(globalPosition, 1.0);
+        moveInsideBox(localPosition, chunk, directionSign, directionBound);
+        ivec3 startChunk = chunk;
+        vec3 localStart = localPosition;
+        fragColor = vec4(0.0);
+
+        // Оптимизация: Заменили динамический цикл на фиксированный NUM_STARS (из препроцессора)
+        // И убрали тяжелый блок просчета черных дыр (Гравитационное линзирование)
+        for (int i = 0; i < NUM_STARS; i++) { 
+            move(localPosition, rayDirection, directionBound);
+            moveInsideBox(localPosition, chunk, directionSign, directionBound);
+            if (hasStar(chunk)) {
+                vec3 starPosition = getStarPosition(chunk, 0.5 * starSize);
+                float currentDistance = getDistance(chunk - startChunk, localStart, starPosition);
+                vec3 starToRayVector = getStarToRayVector(localPosition, rayDirection, starPosition);
+                float distanceToStar = length(starToRayVector) * 2.0;
+                if (distanceToStar < starSize) {
+                    float starMaxBrightness = clamp((DRAW_DISTANCE - currentDistance) / FADEOUT_DISTANCE, 0.001, 1.0);
+                    vec3 cF = vec3(chunk);
+                    float starColorSeed = (cF.x + 13.0 * cF.y + 7.0 * cF.z) * 0.00453;
+                    if (distanceToStar < starSize * STAR_CORE_SIZE) {
+                        vec3 starSurfaceVector = normalize(starToRayVector + rayDirection * sqrt(pow(STAR_CORE_SIZE * starSize, 2.0) - pow(distanceToStar, 2.0)));
+                        fragColor = blendColors(fragColor, vec4(getStarColor(starSurfaceVector, starColorSeed, currentDistance), starMaxBrightness));
+                        break;
+                    } else {
+                        float localStarDistance = ((distanceToStar / starSize) - STAR_CORE_SIZE) / (1.0 - STAR_CORE_SIZE);
+                        vec4 glowColor = getStarGlowColor(localStarDistance, atan2(starToRayVector.xy), starColorSeed);
+                        glowColor.a *= starMaxBrightness;
+                        fragColor = blendColors(fragColor, glowColor);
+                    }
+                }
+            }
+            if (length(vec3(chunk - startChunk)) > DRAW_DISTANCE) break;
+        }
+        if (fragColor.a < 1.0) {
+            fragColor = blendColors(fragColor, getNebulaColor(globalPosition, rayDirection));
+        }
+    }
+
+    void main(void) {
+        vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
+        mainImage(color, gl_FragCoord.xy);
+        color.w = 1.0;
+        gl_FragColor = color;
+    }
+  `;
+
+  const startTime = +new Date();
+
+  class App {
+    container: HTMLElement;
+    pixelRatio: number;
+    width: number;
+    height: number;
+    params: { starSize: number; numStars: number; bgLightness: number };
+    renderer: THREE.WebGLRenderer;
+    orthoCamera: THREE.OrthographicCamera;
+    counter: number;
+    isPlaying: boolean;
+    targetA: BufferManager;
+    targetC: BufferManager;
+    animationFrameId: number = 0;
+    bufferA!: BufferShader;
+    bufferImage!: BufferShader;
+
+    constructor(container: HTMLElement, params: any) {
+      this.container = container;
+      // Оптимизация Fill Rate: Снизили разрешение рендера до 0.75 для фонового изображения
+      this.pixelRatio = Math.min(window.devicePixelRatio, 0.75);
+      
+      this.width = Math.floor((container.clientWidth || window.innerWidth) * this.pixelRatio);
+      this.height = Math.floor((container.clientHeight || window.innerHeight) * this.pixelRatio);
+      this.params = params;
+
+      this.renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance", alpha: true });
+      this.orthoCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      this.counter = 0;
+      this.isPlaying = true;
+
+      this.renderer.setSize(container.clientWidth || window.innerWidth, container.clientHeight || window.innerHeight, false);
+      this.renderer.setPixelRatio(this.pixelRatio);
+      container.appendChild(this.renderer.domElement);
+
+      this.targetA = new BufferManager(this.renderer, { width: this.width, height: this.height });
+      this.targetC = new BufferManager(this.renderer, { width: this.width, height: this.height });
+    }
+
+    start() {
+      const resolution = new THREE.Vector3(this.width, this.height, this.pixelRatio);
+
+      this.bufferA = new BufferShader(BUFFER_A_FRAG, {
+        iFrame: { value: 0 },
+        iResolution: { value: resolution },
+        iChannel0: { value: null }
+      });
+
+      // Оптимизация: Передаем количество звезд через defines вместо uniform
+      this.bufferImage = new BufferShader(BUFFER_FINAL_FRAG, {
+        iResolution: { value: resolution },
+        iChannel0: { value: null },
+        iTime: { value: 0.0 },
+        starSize: { value: this.params.starSize },
+        bgLightness: { value: this.params.bgLightness }
+      }, {
+        NUM_STARS: Math.min(this.params.numStars, 32).toString()
+      });
+
+      this.animate();
+    }
+
+    resize() {
+      const w = this.container.clientWidth || window.innerWidth;
+      const h = this.container.clientHeight || window.innerHeight;
+      
+      this.width = Math.floor(w * this.pixelRatio);
+      this.height = Math.floor(h * this.pixelRatio);
+      
+      this.renderer.setSize(w, h, false);
+      
+      const resolution = new THREE.Vector3(this.width, this.height, this.pixelRatio);
+      this.bufferA.uniforms["iResolution"].value = resolution;
+      this.bufferImage.uniforms["iResolution"].value = resolution;
+
+      this.targetA.setSize(this.width, this.height);
+      this.targetC.setSize(this.width, this.height);
+    }
+
+    animate() {
+      if (!this.isPlaying) return;
+      
+      // Оптимизация: Избегаем дублирования циклов requestAnimationFrame
+      if (this.animationFrameId) {
+        cancelAnimationFrame(this.animationFrameId);
+      }
+      
+      this.animationFrameId = requestAnimationFrame(() => this.animate());
+
+      this.bufferA.uniforms["iFrame"].value = this.counter++;
+      this.bufferA.uniforms["iChannel0"].value = this.targetA.readBuffer.texture;
+      this.targetA.render(this.bufferA.scene, this.orthoCamera);
+
+      this.bufferImage.uniforms["iChannel0"].value = this.targetA.readBuffer.texture;
+
+      const currentTime = +new Date();
+      
+      this.bufferImage.uniforms["iTime"].value = (currentTime - startTime) / 1000;
+      this.bufferImage.uniforms["starSize"].value = this.params.starSize;
+      this.bufferImage.uniforms["bgLightness"].value = this.params.bgLightness;
+
+      this.targetC.render(this.bufferImage.scene, this.orthoCamera, true);
+    }
+
+    destroy() {
+      this.isPlaying = false;
+      cancelAnimationFrame(this.animationFrameId);
+      this.renderer.dispose();
+      this.targetA.dispose();
+      this.targetC.dispose();
+    }
+  }
+
+  class BufferShader {
+    uniforms: any;
+    material: THREE.ShaderMaterial;
+    scene: THREE.Scene;
+
+    constructor(fragmentShader: string, uniforms = {}, defines = {}) {
+      this.uniforms = uniforms;
+      this.material = new THREE.ShaderMaterial({
+        fragmentShader: fragmentShader,
+        vertexShader: VERTEX_SHADER,
+        uniforms: uniforms,
+        defines: defines, // Добавлена поддержка статических дефайнов
+        depthWrite: false,
+        depthTest: false
+      });
+      this.scene = new THREE.Scene();
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.material);
+      this.scene.add(mesh);
+    }
+  }
+
+  class BufferManager {
+    renderer: THREE.WebGLRenderer;
+    readBuffer: THREE.WebGLRenderTarget;
+    writeBuffer: THREE.WebGLRenderTarget;
+
+    constructor(renderer: THREE.WebGLRenderer, size: { width: number; height: number }) {
+      this.renderer = renderer;
+      this.readBuffer = new THREE.WebGLRenderTarget(size.width, size.height, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat,
+        type: THREE.FloatType,
+        depthBuffer: false,
+        stencilBuffer: false,
+      });
+      this.writeBuffer = this.readBuffer.clone();
+    }
+
+    setSize(w: number, h: number) {
+      this.readBuffer.setSize(w, h);
+      this.writeBuffer.setSize(w, h);
+    }
+
+    swap() {
+      const temp = this.readBuffer;
+      this.readBuffer = this.writeBuffer;
+      this.writeBuffer = temp;
+    }
+
+    render(scene: THREE.Scene, camera: THREE.Camera, toScreen = false) {
+      if (toScreen) {
+        this.renderer.setRenderTarget(null);
+        this.renderer.render(scene, camera);
+      } else {
+        this.renderer.setRenderTarget(this.writeBuffer);
+        this.renderer.render(scene, camera);
+        this.renderer.setRenderTarget(null);
+        this.swap();
+      }
+    }
+
+    dispose() {
+      this.readBuffer.dispose();
+      this.writeBuffer.dispose();
+    }
+  }
+
+  function startStarsAnimation() {
+    document.querySelectorAll(".stars-container").forEach((el) => {
+      const container = el as HTMLElement;
+      if (container.querySelector('canvas')) return; 
+
+      const numStars = parseInt(container.dataset.numStars || "24", 10);
+      const starSize = parseFloat(container.dataset.starSize || "0.15");
+      const bgLightness = parseFloat(container.dataset.bgLightness || "0.05");
+
+      let app = new App(container, { numStars, starSize, bgLightness });
+      app.start();
+
+      let resizeTimeout: any;
+      const handleResize = () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          app.resize();
+        }, 100);
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (!app.isPlaying) {
+              app.isPlaying = true;
+              app.animate();
+            }
+          } else {
+            app.isPlaying = false;
+          }
+        });
+      }, { threshold: 0.01 });
+
+      observer.observe(container);
+      window.addEventListener("resize", handleResize);
+
+      document.addEventListener("astro:before-swap", () => {
+        window.removeEventListener("resize", handleResize);
+        observer.disconnect();
+        app.destroy();
+      }, { once: true });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => setTimeout(startStarsAnimation, 20));
+  } else {
+    setTimeout(startStarsAnimation, 20);
+  }
+  document.addEventListener("astro:page-load", () => setTimeout(startStarsAnimation, 20));
+</script>

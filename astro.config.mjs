@@ -67,6 +67,12 @@ export default defineConfig({
 
   adapter: cloudflare(),
   output: "server",
+  server: {
+    port: 4321,
+  },
+  experimental: {
+    advancedRouting: true,
+  },
   vite: {
     plugins: [tailwindcss()],
   },

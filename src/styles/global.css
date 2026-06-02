@@ -122,10 +122,7 @@
 
 	body {
 		@apply bg-background text-foreground;
-		transition: background-color 0.5s ease;
 	}
-
-	
 
 	/* ⬇️ SHADCN UI TYPOGRAPHY CONFIGURATION ⬇️ */
 
@@ -215,4 +212,3 @@
 		@apply bg-transparent;
 	}
 }
-

@@ -6,7 +6,7 @@ interface Props {
 const { class: className } = Astro.props;
 ---
 
-<div class:list={['fixed inset-0 -z-50 pointer-events-none overflow-hidden bg-transparent', className]}>
+<div class:list={['fixed inset-0 -z-50 pointer-events-none overflow-hidden bg-transparent', className]} transition:persist>
   <canvas id="stars-canvas" class="absolute inset-0 h-full w-full"></canvas>
 
   <svg id="shooting-stars-svg" class="absolute inset-0 h-full w-full" aria-hidden="true">

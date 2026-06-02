@@ -3,6 +3,7 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
+import { unified } from '@astrojs/markdown-remark';
 import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
@@ -31,21 +32,23 @@ export default defineConfig({
       theme: "github-dark-dimmed", 
       wrap: true, 
     },
-    gfm: true,
-    rehypePlugins: [
-      [
-        rehypeExternalLinks,
-        {
-          content: {
-            type: "text",
-            value: " 🔗",
+    processor: unified({
+      gfm: true,
+      rehypePlugins: [
+        [
+          rehypeExternalLinks,
+          {
+            content: {
+              type: "text",
+              value: " 🔗",
+            },
+            target: "_blank",
+            rel: ["nofollow", "noreferrer"],
           },
-          target: "_blank",
-          rel: ["nofollow", "noreferrer"],
-        },
+        ],
       ],
-    ],
-    remarkPlugins: [remarkReadingTime],
+      remarkPlugins: [remarkReadingTime],
+    }),
   },
   fonts: [{
     provider: fontProviders.local(),
@@ -63,7 +66,7 @@ export default defineConfig({
   }],
 
   adapter: cloudflare(),
-
+  output: "server",
   vite: {
     plugins: [tailwindcss()],
   },

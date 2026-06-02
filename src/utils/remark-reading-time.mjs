@@ -1,4 +1,3 @@
-import { toString } from "mdast-util-to-string";
 import { calculateReadingTime } from "./wordsChecker.ts"; // Maps directly to your .ts utility
 
 /**

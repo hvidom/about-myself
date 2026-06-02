@@ -1,114 +1,100 @@
 ---
-import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-import BaseHead from "../../components/BaseHead.astro";
-import Footer from "../../components/Footer.astro";
-import FormattedDate from "../../components/FormattedDate.astro";
-import Header from "../../components/Header.astro";
-import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
+import { Image } from "astro:assets";
 
 const posts = (await getCollection("blog")).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Layout 
+  title="Blog | hvidom"
+  description="Personal blog and technical articles of Hryhorii Ilin (hvidom). Exploring software engineering, data analytics, strategy, and infrastructure."
+>
+  <Header />
+
+  <main class="max-w-6xl mx-auto px-6 py-16 space-y-12">
+    <!-- Blog Section Header -->
+    <div class="space-y-4">
+      <h1>Writing & Insights</h1>
+      <div class="h-1 w-20 bg-linear-to-r from-primary to-emerald-400 rounded-full"></div>
+      <p>
+        Articles on full-stack web development, CRM automating systems, scalable cloud operations, and strategic sales methodologies.
+      </p>
+    </div>
+
+    <!-- Posts Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+      {posts.map((post, index) => {
+        const isFeatured = index === 0;
+        return (
+          <a 
+            href={`/blog/${post.id}/`} 
+            class:list={[
+              "group bg-card/30 hover:bg-card/50 border border-border/60 hover:border-primary/45 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between",
+              isFeatured ? "md:col-span-2 md:flex-row" : ""
+            ]}
+          >
+            {/* Optional Image */}
+            {post.data.heroImage && (
+              <div class:list={[
+                "overflow-hidden bg-muted/20 relative",
+                isFeatured ? "md:w-1/2 aspect-video md:aspect-auto min-h-[240px]" : "aspect-2/1 w-full"
+              ]}>
+                <Image 
+                  width={720} 
+                  height={360} 
+                  src={post.data.heroImage} 
+                  alt="" 
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div class="absolute inset-0 bg-linear-to-t from-background/40 to-transparent"></div>
+              </div>
+            )}
+
+            {/* Post Content */}
+            <div class:list={[
+              "p-6 flex flex-col justify-between flex-1 gap-6",
+              isFeatured && post.data.heroImage ? "md:w-1/2" : ""
+            ]}>
+              <div class="space-y-4">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-[10px] font-mono text-muted-foreground uppercase">
+                    <FormattedDate date={post.data.pubDate} />
+                  </span>
+                  {post.data.category && (
+                    <>
+                      <span class="text-border text-xs">•</span>
+                      <span class="text-[10px] font-mono text-primary font-bold uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
+                        {post.data.category}
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                <h2 class="text-xl font-bold leading-tight group-hover:text-primary transition-colors">
+                  {post.data.title}
+                </h2>
+                
+                <p class="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                  {post.data.description}
+                </p>
+              </div>
+
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/30 pt-4">
+                <span class="font-medium group-hover:text-foreground transition-colors">Read Article</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-1 size-4"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

@@ -1,43 +1,40 @@
 ---
 import BaseHead from "@/components/layouts/BaseHead.astro";
+import Preloader from "@/components/layouts/Preloader.astro";
+import ScrollToTop from "@/components/layouts/ScrollToTop.astro";
 import SpaceBackground from "@/components/layouts/SpaceBackground.astro";
-import Stars from "@/components/layouts/Stars.astro";
 import { cn } from "@/lib/utils";
+import { ClientRouter } from "astro:transitions";
 
 type Props = {
   title: string;
   description?: string;
   mainClass?: string;
-  numStars?: number;
-  starSize?: number;
-  bgLightness?: number;
 };
 
-const { 
-  title, 
-  description, 
-  mainClass,
-  numStars = 24,
-  starSize = 0.15,
-  bgLightness = 0.05 
-} = Astro.props;
+
+const { title, description, mainClass } = Astro.props;
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=0, s-maxage=31536000, must-revalidate",
+);
 ---
 
-<html lang="en" class="scroll-smooth dark">
+<html lang="en" class="scroll-smooth" data-astro-transition-persist="theme">
   <head>
     <BaseHead title={title} description={description} />
+    <ClientRouter />
   </head>
   <body class="min-h-screen bg-background text-foreground relative overflow-x-hidden antialiased selection:bg-primary selection:text-primary-foreground">
-    
-    <Stars numStars={numStars} starSize={starSize} bgLightness={bgLightness} />
-    
-    
+    <Preloader />
+
+    <SpaceBackground />
     <div class="relative z-10 w-full min-h-screen pointer-events-none">
-      <SpaceBackground />
+
       <main class={cn("pointer-events-auto", mainClass)}>
         <slot />
+        <ScrollToTop />
       </main>
-      
     </div>
   </body>
 </html>

@@ -1,273 +1,329 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import LottieAnimation from "@/components/LottieAnimations.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import { getCollection } from "astro:content";
+import FormattedDate from "@/components/FormattedDate.astro";
+
+// Fetch latest blog posts for the feed
+const posts = await getCollection("blog");
+const latestPosts = posts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
 ---
 
 <Layout 
   title="hvidom | Full-Stack Developer & Business Strategist"
   description="Personal portfolio website of Hryhorii Ilin (hvidom). Showcasing technical stack, open source configurations, and digital agency enterprise models."
-  numStars={45} 
-  starSize={0.12} 
-  bgLightness={0.04}
 >
-  <div class="absolute inset-0 -z-50 opacity-15 pointer-events-none mix-blend-screen overflow-hidden">
-    <LottieAnimation src="/animations/mD7zjZySFw.lottie" class="w-full h-full scale-110" />
-  </div>
+  <Header />
 
-  <header class="border-b border-border/40 backdrop-blur-xl sticky top-0 z-50 bg-background/80 transition-all">
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <span class="text-2xl font-black tracking-tighter text-primary">hvidom</span>
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-      </div>
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
-        <a href="#about" class="hover:text-foreground transition-colors">About</a>
-        <a href="#services" class="hover:text-foreground transition-colors">Expertise</a>
-        <a href="#workflow" class="hover:text-foreground transition-colors">Process</a>
-        <a href="#stack" class="hover:text-foreground transition-colors">Tech Toolchain</a>
-      </nav>
-      <div class="flex items-center gap-4">
-        <a href="https://github.com/hvidom" target="_blank" rel="noopener noreferrer" class="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">GitHub</a>
-        <a href="https://www.linkedin.com/in/hryhorii-ilin-952426341" target="_blank" rel="noopener noreferrer" class="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">LinkedIn</a>
-        <a href="mailto:devopsick@pm.me" class="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Email</a>
-      </div>
-    </div>
-  </header>
-
-  <main class="max-w-7xl mx-auto px-6 py-12 space-y-32">
+  <main class="max-w-6xl mx-auto px-6 py-16 space-y-36">
     
-    <section id="about" class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-8">
+    <!-- Hero Section -->
+    <section id="hero" class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-4">
       <div class="lg:col-span-7 space-y-6">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
-          📍 Based in Dublin, Ireland
+          <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+          Based in Dublin, Ireland
         </div>
-        <h1 class="text-4xl font-extrabold tracking-tight lg:text-5xl leading-none">Hryhorii Ilin</h1>
-        <p class="text-xl text-muted-foreground font-medium tracking-tight mt-2">Full-Stack Developer & Business Strategist</p>
-        <p class="text-base text-muted-foreground leading-relaxed max-w-2xl">
+        
+        <h1>
+          Hryhorii Ilin
+        </h1>
+        
+        <p class="text-xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-primary via-emerald-400 to-violet-400">
+          Full-Stack Developer
+        </p>
+        
+        <p>
           Experienced Developer and Sales Manager with more than 15 years of expertise in software development, sales, and coaching. Specializing in building and deploying applications using modern frameworks and managing cloud/server infrastructure, with a passion for driving open-source projects to production.
         </p>
         
-        <div class="flex flex-wrap gap-2 pt-2">
-          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Chess</span>
-          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Running</span>
-          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Swimming</span>
-          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Open-source software contributions</span>
-          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Entrepreneurship & business strategy</span>
-          <span class="text-xs font-medium bg-muted px-3 py-1 rounded-md border border-border">Psychology of Sales</span>
+        <div class="flex flex-wrap gap-3 pt-4">
+          <a 
+            href="#timeline" 
+            class="h-10 px-5 rounded-lg bg-primary text-primary-foreground font-medium text-sm flex items-center justify-center gap-1.5 hover:bg-primary/95 transition-all shadow-md shadow-primary/20 hover:shadow-primary/30 hover:scale-[1.02]"
+          >
+            Explore CV Timeline
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="m9 18 6-6-6-6"/></svg>
+          </a>
+          
+          <a 
+            href="https://github.com/hvidom" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="h-10 px-5 rounded-lg border border-border bg-card/60 backdrop-blur-sm text-foreground font-medium text-sm flex items-center justify-center gap-1.5 hover:bg-muted/40 transition-all hover:scale-[1.02]"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/></svg>
+            GitHub Profile
+          </a>
         </div>
       </div>
       
-      <div class="lg:col-span-5 flex justify-center items-center relative h-80 w-80 justify-self-center lg:justify-self-end">
-        <div class="absolute inset-0 bg-primary/5 rounded-full filter blur-3xl"></div>
-        <LottieAnimation src="/animations/hacker.lottie" class="w-full h-full relative z-10" />
+      <!-- Interactive Right Column Illustration -->
+      <div class="lg:col-span-5 flex justify-center items-center relative h-80 w-full lg:w-80 justify-self-center lg:justify-self-end">
+        <!-- Floating Glass Panel -->
+        <div class="absolute inset-0 bg-primary/5 rounded-3xl border border-primary/10 backdrop-blur-[2px] filter blur-xs"></div>
+        <div class="absolute -inset-4 bg-linear-to-tr from-primary/10 to-violet-500/10 rounded-full filter blur-2xl opacity-70 animate-pulse"></div>
+        <LottieAnimation src="/animations/hacker.lottie" class="w-[85%] h-[85%] relative z-10" />
       </div>
     </section>
 
+    <!-- Experience / CV Timeline Section -->
+    <section id="timeline" class="space-y-12">
+      <div class="space-y-4">
+        <h2 >Professional CV Timeline</h2>
+        <div class="h-1 w-20 bg-linear-to-r from-primary to-emerald-400 rounded-full"></div>
+        <p >
+          A track record spanning over 15 years, integrating software architecture, strategic infrastructure, and customer-focused sales leadership.
+        </p>
+      </div>
+
+      <div class="relative border-l border-border/80 ml-4 md:ml-6 space-y-12 py-2">
+        <!-- Timeline Item 1 -->
+        <div class="relative pl-8 md:pl-10 group">
+          <!-- Dot Indicator -->
+          <div class="absolute left-[-6px] top-1.5 w-3 h-3 rounded-full bg-primary border-4 border-background group-hover:scale-125 transition-transform shadow-md shadow-primary/45"></div>
+          
+          <div class="bg-card/40 border border-border/60 hover:border-primary/40 backdrop-blur-sm p-6 rounded-2xl space-y-3 transition-all duration-300">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <span class="text-xs font-mono text-primary font-bold">2020 - PRESENT</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 self-start md:self-auto">Lead Role</span>
+            </div>
+            
+            <h3 class="text-xl font-bold text-foreground">Sales Director & Technology Architect</h3>
+            <p class="text-xs font-semibold text-muted-foreground">Strategic Pipelines & Enterprise Systems</p>
+            
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              Leading sales engineering and technology integrations. Designed and deployed automated CRM mapping workflows (HubSpot, Salesforce) integrated directly with backend customer telemetry databases. Coached over 30+ sales agents, bridging the gap between deep technical implementation and human sales psychology.
+            </p>
+            
+            <div class="flex flex-wrap gap-2 pt-2">
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">Sales Strategy</span>
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">CRM Automation</span>
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">Sales Coaching</span>
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">API Integrations</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Item 2 -->
+        <div class="relative pl-8 md:pl-10 group">
+          <!-- Dot Indicator -->
+          <div class="absolute left-[-6px] top-1.5 w-3 h-3 rounded-full bg-violet-400 border-4 border-background group-hover:scale-125 transition-transform shadow-md shadow-violet-400/45"></div>
+          
+          <div class="bg-card/40 border border-border/60 hover:border-violet-400/40 backdrop-blur-sm p-6 rounded-2xl space-y-3 transition-all duration-300">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <span class="text-xs font-mono text-violet-400 font-bold">2015 - 2020</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 self-start md:self-auto">Full-Stack</span>
+            </div>
+            
+            <h3 class="text-xl font-bold text-foreground">Senior Full-Stack Developer</h3>
+            <p class="text-xs font-semibold text-muted-foreground">High-performance Client Applications</p>
+            
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              Spearheaded UI design and system backend architectures for multiple digital products. Built highly responsive components using React, Vue, and Next.js, and designed efficient node APIs handling complex relational queries. Maintained 99.9% application uptime by optimizing codebases and setting up strict CI/CD verification workflows.
+            </p>
+            
+            <div class="flex flex-wrap gap-2 pt-2">
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">React/Next.js</span>
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">Node.js</span>
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">PostgreSQL</span>
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">CI/CD Pipelines</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Item 3 -->
+        <div class="relative pl-8 md:pl-10 group">
+          <!-- Dot Indicator -->
+          <div class="absolute left-[-6px] top-1.5 w-3 h-3 rounded-full bg-emerald-400 border-4 border-background group-hover:scale-125 transition-transform shadow-md shadow-emerald-400/45"></div>
+          
+          <div class="bg-card/40 border border-border/60 hover:border-emerald-400/40 backdrop-blur-sm p-6 rounded-2xl space-y-3 transition-all duration-300">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <span class="text-xs font-mono text-emerald-400 font-bold">2011 - 2015</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 self-start md:self-auto">DevOps</span>
+            </div>
+            
+            <h3 class="text-xl font-bold text-foreground">Infrastructure Engineer & Linux Administrator</h3>
+            <p class="text-xs font-semibold text-muted-foreground">Server Security & High Availability Hosting</p>
+            
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              Configured highly secure server clusters with custom network routing, kernel-level firewall settings, and automated backup operations. Oversaw full DevOps processes, setting up isolated Docker containers, load balancers, and Cloudflare DNS security protections for enterprise clients.
+            </p>
+            
+            <div class="flex flex-wrap gap-2 pt-2">
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">Linux/Bash</span>
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">Docker</span>
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">Server Security</span>
+              <span class="text-[10px] font-mono bg-muted/60 px-2 py-0.5 rounded border border-border">Cloudflare</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services / Modules Grid -->
     <section id="services" class="space-y-12">
-      <div class="text-center space-y-3 max-w-3xl mx-auto">
-        <h2 class="text-3xl font-semibold tracking-tight border-none pb-0">Full-Cycle Digital Agency Expertise</h2>
-        <p class="text-muted-foreground text-lg">Where your dreams and ideas materialize into a premium quality product.</p>
+      <div class="text-center space-y-3 max-w-2xl mx-auto">
+        <h2 class="text-3xl font-extrabold tracking-tight">Enterprise Service Modules</h2>
+        <div class="h-1 w-20 bg-linear-to-r from-primary to-violet-500 rounded-full mx-auto"></div>
+        <p class="text-muted-foreground text-sm">
+          A modular, business-oriented framework designed to translate abstract concepts into reliable products.
+        </p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-card border border-border p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 transition-all duration-300">
+        <!-- Module 1 -->
+        <div class="bg-card/40 border border-border/80 p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
           <div class="space-y-4">
-            <div class="text-xs font-mono text-primary font-bold">📂 CORE_MODULE_01</div>
-            <h3 class="text-xl font-bold tracking-tight">Research Marketing</h3>
-            <ul class="space-y-1.5 list-none my-0 ml-0 pl-0">
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Valuable insights</li>
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Customer-centric focus</li>
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Target lead generation</li>
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Market forecasting</li>
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Competitive advantage</li>
+            <div class="text-[10px] font-mono text-primary font-bold">MODULE_01 // RESEARCH</div>
+            <h3 class="text-lg font-bold tracking-tight">Market Strategy</h3>
+            <ul class="space-y-2 text-xs text-muted-foreground list-none my-0 ml-0 pl-0">
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Customer-centric modeling</li>
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Lead-generation architectures</li>
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Competitive forecasting</li>
             </ul>
           </div>
         </div>
 
-        <div class="bg-card border border-border p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 transition-all duration-300">
+        <!-- Module 2 -->
+        <div class="bg-card/40 border border-border/80 p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
           <div class="space-y-4">
-            <div class="text-xs font-mono text-primary font-bold">📂 CORE_MODULE_02</div>
-            <h3 class="text-xl font-bold tracking-tight">Data Analytics</h3>
-            <ul class="space-y-1.5 list-none my-0 ml-0 pl-0">
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Database maintenance</li>
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Data point recognition</li>
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Database security</li>
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Demographic research</li>
+            <div class="text-[10px] font-mono text-primary font-bold">MODULE_02 // ANALYTICS</div>
+            <h3 class="text-lg font-bold tracking-tight">Data Integration</h3>
+            <ul class="space-y-2 text-xs text-muted-foreground list-none my-0 ml-0 pl-0">
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Relational DB management</li>
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Analytics pipeline structure</li>
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Demographic cohort matching</li>
             </ul>
           </div>
         </div>
 
-        <div class="bg-card border border-border p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 transition-all duration-300">
+        <!-- Module 3 -->
+        <div class="bg-card/40 border border-border/80 p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
           <div class="space-y-4">
-            <div class="text-xs font-mono text-primary font-bold">📂 CORE_MODULE_03</div>
-            <h3 class="text-xl font-bold tracking-tight">Business Consulting</h3>
-            <ul class="space-y-1.5 list-none my-0 ml-0 pl-0">
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Strategic business planning</li>
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Scale-up & expansion consulting</li>
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Internet business architecture</li>
+            <div class="text-[10px] font-mono text-primary font-bold">MODULE_03 // ARCHITECTURE</div>
+            <h3 class="text-lg font-bold tracking-tight">Business Consulting</h3>
+            <ul class="space-y-2 text-xs text-muted-foreground list-none my-0 ml-0 pl-0">
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Strategic business architecture</li>
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Scalability assessments</li>
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Modern toolstack integration</li>
             </ul>
           </div>
         </div>
 
-        <div class="bg-card border border-border p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 transition-all duration-300">
+        <!-- Module 4 -->
+        <div class="bg-card/40 border border-border/80 p-6 rounded-2xl flex flex-col justify-between group hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
           <div class="space-y-4">
-            <div class="text-xs font-mono text-primary font-bold">📂 CORE_MODULE_04</div>
-            <h3 class="text-xl font-bold tracking-tight">Brand Strategy</h3>
-            <ul class="space-y-1.5 list-none my-0 ml-0 pl-0">
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Strategic analysis & reporting</li>
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Logo & visual identity design</li>
-              <li class="text-xs text-muted-foreground flex items-center gap-2 mt-0"><span class="text-primary font-bold">▪</span> Corporate rebranding</li>
+            <div class="text-[10px] font-mono text-primary font-bold">MODULE_04 // BRAND</div>
+            <h3 class="text-lg font-bold tracking-tight">Visual Identity</h3>
+            <ul class="space-y-2 text-xs text-muted-foreground list-none my-0 ml-0 pl-0">
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Interactive UI conventions</li>
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Corporate digital redesign</li>
+              <li class="flex items-center gap-2 mt-0"><span class="w-1.5 h-1.5 rounded-full bg-primary/70"></span>Sleek modern layouts</li>
             </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="workflow" class="space-y-16 relative">
-      <div class="max-w-2xl">
-        <h2 class="text-3xl font-semibold tracking-tight border-none pb-0">Execution Process & Sequencing</h2>
-        <p class="text-muted-foreground mt-2">A predictable timeline that transforms abstract business concepts into production-ready software solutions.</p>
+    <!-- Technical Stack & Toolchain Section -->
+    <section id="stack" class="bg-card/40 border border-border/60 p-8 md:p-12 rounded-3xl space-y-8 relative overflow-hidden backdrop-blur-sm">
+      <div class="absolute -right-8 -bottom-8 w-44 h-44 opacity-5 pointer-events-none">
+        <LottieAnimation src="/animations/like.lottie" />
       </div>
 
-      <div class="space-y-24 relative before:absolute before:inset-0 before:left-4 md:before:left-1/2 before:w-px before:bg-border/60 before:-z-10">
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
-          <div class="md:text-right space-y-3 md:pr-12">
-            <div class="w-9 h-9 md:ml-auto rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">01</div>
-            <h3 class="text-2xl font-semibold tracking-tight">Discovery, Onboarding & Market Research</h3>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              The initial step focuses on discovering your company's core vision and forming deep long-term partnerships. Here, we lay down custom foundational strategies, map user interaction behaviors, and structure project milestones. We thoroughly analyze matching production methodologies to formulate an explicit project action plan.
-            </p>
-          </div>
-          <div class="flex justify-start md:pl-12 h-128 w-lg">
-            <LottieAnimation src="/animations/eye.lottie" class="w-full h-full scale-110" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
-          <div class="order-2 md:order-1 flex justify-end md:pr-12 h-128 w-lg justify-self-end">
-            <LottieAnimation src="/animations/hand.lottie" class="w-full h-full scale-110" />
-          </div>
-          <div class="order-1 md:order-2 space-y-3 md:pl-12">
-            <div class="w-9 h-9 rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">02</div>
-            <h3 class="text-2xl font-semibold tracking-tight">Data Analytics & Structural Planning</h3>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              Utilizing deep modernized tools to interpret user metrics. Excellent management starts with pristine data parsing. If your platform struggles with data synchronization, complex demographic databases, or scale blocks, we design optimized custom toolsets to clear operations bottlenecks.
-            </p>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
-          <div class="space-y-3 md:text-right md:pr-12">
-            <div class="w-9 h-9 md:ml-auto rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">03</div>
-            <h3 class="text-2xl font-semibold tracking-tight">Brand Identity & Content Architecture</h3>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              Branding acts as the foundation of your digital authority. Legacy styling fails in rapidly evolving tech spaces. Our #1 objective is realigning your company assets with sleek modern layout conventions by synchronizing digital reputation parameters, user reviews, and design choices into a unified brand identity.
-            </p>
-          </div>
-          <div class="flex justify-start md:pl-12 h-128 w-lg">
-            <LottieAnimation src="/animations/pc.lottie" class="w-full h-full scale-110" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
-          <div class="order-2 md:order-1 flex justify-end md:pr-12 h-64 w-64 justify-self-end">
-            <LottieAnimation src="/animations/lab.lottie" class="w-full h-full scale-110" />
-          </div>
-          <div class="order-1 md:order-2 space-y-3 md:pl-12">
-            <div class="w-9 h-9 rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">04</div>
-            <h3 class="text-2xl font-semibold tracking-tight">Core Server Provisioning & Core Engineering</h3>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              Deploying bulletproof server platforms with deep root access configurations and kernel-level firewalls. Communication vectors are completely protected with robust end-to-end encryption. Flat monthly infrastructure prices cover container compute resources, fast SSD storage systems, network bandwidth, automated updates, and security patches.
-            </p>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
-          <div class="space-y-3 md:text-right md:pr-12">
-            <div class="w-9 h-9 md:ml-auto rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">05</div>
-            <h3 class="text-2xl font-semibold tracking-tight">Development & Rigorous Verification</h3>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              Engineering systems that balance high customer desirability, sustainable profitability, and performant technical architectures. We handle modern tech-stack identification, system backend API development, and client user-interface assembly. Before any program version is pushed to deployment, we guarantee its high performance, absolute data security, and total structural integrity.
-            </p>
-          </div>
-          <div class="flex justify-start md:pl-12 h-64 w-64">
-            <LottieAnimation src="/animations/dj.lottie" class="w-full h-full scale-110" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
-          <div class="order-2 md:order-1 flex justify-end md:pr-12 h-64 w-64 justify-self-end">
-            <LottieAnimation src="/animations/on-rocket_20260602190205.lottie"  class="w-full h-full scale-110"/>
-          </div>
-          <div class="order-1 md:order-2 space-y-3 md:pl-12">
-            <div class="w-9 h-9 rounded-full bg-primary text-primary-foreground font-mono font-bold flex items-center justify-center text-sm shadow-lg shadow-primary/30">06</div>
-            <h3 class="text-2xl font-semibold tracking-tight">Marketing Launch & Production Live Release</h3>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              Formulating custom data-driven online presence plans modeled after major global enterprise methods. We build real organic search growth loops by executing deep keyword positioning, semantic user modeling, and strict competitive infrastructure evaluations to expand visibility across platforms.
-            </p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <section id="stack" class="bg-card border border-border p-8 md:p-12 rounded-3xl space-y-8 relative overflow-hidden">
-      <div class="absolute -right-8 -bottom-8 w-48 h-48 opacity-10 pointer-events-none">
-        <LottieAnimation src="/animations/like_20260602190154.lottie" />
-      </div>
-
-      <div>
-        <h2 class="text-3xl font-semibold tracking-tight border-none pb-0">Technical Stack & Operational Toolchain</h2>
-        <p class="text-muted-foreground text-sm mt-1">Full-stack software developer skill verification matrices.</p>
+      <div class="space-y-2">
+        <h2 class="text-3xl font-extrabold tracking-tight">Technical Stack & Core Skills</h2>
+        <p class="text-muted-foreground text-sm">Validated expertise across programming languages, system layouts, and business administration tools.</p>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
+        <!-- Languages -->
         <div class="space-y-3">
-          <h4 class="text-sm font-mono tracking-wider uppercase text-primary font-bold">Languages & Core Tools</h4>
-          <div class="flex flex-wrap gap-1.5">
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">TypeScript</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">JavaScript</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Tailwind</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">VSCode</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">TurboRepo</code>
+          <h4 class="text-xs font-mono tracking-wider uppercase text-primary font-bold">Languages & Core Tools</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">TypeScript</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">JavaScript</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">Tailwind CSS</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">Python</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">Bash Scripting</span>
           </div>
         </div>
 
+        <!-- Frameworks -->
         <div class="space-y-3">
-          <h4 class="text-sm font-mono tracking-wider uppercase text-primary font-bold">Frameworks & Formats</h4>
-          <div class="flex flex-wrap gap-1.5">
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">React</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Vue</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Astro</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Next.js</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Node.js</code>
+          <h4 class="text-xs font-mono tracking-wider uppercase text-primary font-bold">Frameworks & Environments</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">Astro</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">React / Vue</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">Next.js</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">Node.js</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">Express / Fastify</span>
           </div>
         </div>
 
+        <!-- Database/DevOps -->
         <div class="space-y-3">
-          <h4 class="text-sm font-mono tracking-wider uppercase text-primary font-bold">Data, DevOps & Cloud Systems</h4>
-          <div class="flex flex-wrap gap-1.5">
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Cloudflare</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Vercel</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Hetzner</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">Docker</code>
-            <code class="text-xs px-2.5 py-1 bg-background border border-border rounded font-mono">PostgreSQL</code>
+          <h4 class="text-xs font-mono tracking-wider uppercase text-primary font-bold">DevOps & Cloud Systems</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">Docker</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">Cloudflare</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">PostgreSQL</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">Hetzner / VPS</span>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-background/80 border border-border/80 rounded font-mono">Git / CI/CD</span>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Latest Blog Feed Section -->
+    <section id="blog-feed" class="space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div class="space-y-2">
+          <h2 class="text-3xl font-extrabold tracking-tight">Recent Writing</h2>
+          <p class="text-muted-foreground text-sm">Exploring frontend architectures, strategy models, and server infrastructure configs.</p>
+        </div>
+        <a 
+          href="/blog" 
+          class="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors group shrink-0"
+        >
+          View all posts 
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {latestPosts.map((post) => (
+          <a 
+            href={`/blog/${post.id}/`} 
+            class="group bg-card/30 border border-border/60 rounded-2xl overflow-hidden hover:border-primary/40 hover:bg-card/50 transition-all duration-300 flex flex-col justify-between"
+          >
+            <div class="p-6 space-y-4">
+              <span class="text-[10px] font-mono text-muted-foreground tracking-wider uppercase">
+                <FormattedDate date={post.data.pubDate} />
+              </span>
+              <h3 class="text-lg font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                {post.data.title}
+              </h3>
+              <p class="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+                {post.data.description}
+              </p>
+            </div>
+            
+            <div class="px-6 py-4 border-t border-border/30 bg-muted/20 flex items-center justify-between text-xs text-muted-foreground">
+              <span>Read article</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-1 size-3.5"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </div>
+          </a>
+        ))}
       </div>
     </section>
 
   </main>
 
-  <footer class="border-t border-border/40 bg-card/40 mt-32 py-8 text-center text-xs text-muted-foreground font-mono">
-    <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div>© 2026 Hryhorii Ilin (hvidom). All rights reserved. Powered by Astro & Tailwind CSS.</div>
-      <div class="flex gap-4">
-        <a href="mailto:devopsick@pm.me" class="hover:text-primary transition-colors">devopsick@pm.me</a>
-        <span>•</span>
-        <span class="text-primary">Dublin, Ireland</span>
-      </div>
-    </div>
-  </footer>
+  <Footer />
 </Layout>

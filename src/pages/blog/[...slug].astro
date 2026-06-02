@@ -14,6 +14,7 @@ export async function getStaticPaths() {
 const post = Astro.props;
 // ⬇️ FIX: Pass 'post' as an argument to the standalone 'render' function
 const { Content, remarkPluginFrontmatter } = await render(post);
+export const prerender = true;
 ---
 
 <BlogPost {...post.data} minutesRead={remarkPluginFrontmatter.minutesRead}>

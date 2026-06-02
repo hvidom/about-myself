@@ -1,6 +1,8 @@
 ---
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL } from "@/consts";
+import "@/styles/scrollbar.css";
 import "@/styles/global.css";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title: string;
@@ -43,23 +45,22 @@ const { title, description = SITE_DESCRIPTION, image = "/og.jpg" } = Astro.props
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image, Astro.url)} />
 
-
+<ClientRouter />
 
 <script is:inline>
-	const getThemePreference = () => {
-		if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-			return localStorage.getItem('theme');
-		}
-		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+	const getTheme = () => {
+	  if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+		return localStorage.getItem('theme');
+	  }
+	  return 'dark';
 	};
-	const isDark = getThemePreference() === 'dark';
-	document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
- 
-	if (typeof localStorage !== 'undefined') {
-		const observer = new MutationObserver(() => {
-			const isDark = document.documentElement.classList.contains('dark');
-			localStorage.setItem('theme', isDark ? 'dark' : 'light');
-		});
-		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-	}
-</script>
+	
+	const setClass = () => {
+	  const isDark = getTheme() === 'dark';
+	  document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+	};
+  
+	setClass();
+	// Важно для работы темы при переходах внутри Astro Router
+	document.addEventListener('astro:after-swap', setClass);
+  </script>

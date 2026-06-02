@@ -7,7 +7,6 @@ import { unified } from '@astrojs/markdown-remark';
 import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
-import rehypeExternalLinks from "rehype-external-links";
 import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
 // https://astro.build/config
 export default defineConfig({
@@ -34,19 +33,6 @@ export default defineConfig({
     },
     processor: unified({
       gfm: true,
-      rehypePlugins: [
-        [
-          rehypeExternalLinks,
-          {
-            content: {
-              type: "text",
-              value: " 🔗",
-            },
-            target: "_blank",
-            rel: ["nofollow", "noreferrer"],
-          },
-        ],
-      ],
       remarkPlugins: [remarkReadingTime],
     }),
   },

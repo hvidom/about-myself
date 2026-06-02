@@ -61,5 +61,19 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      rollupOptions: {
+        onwarn(warning, warn) {
+          if (
+            warning.code === 'EVAL' && 
+            warning.id && 
+            warning.id.includes('@dotlottie/player-component')
+          ) {
+            return;
+          }
+          warn(warning);
+        }
+      }
+    }
   },
 });

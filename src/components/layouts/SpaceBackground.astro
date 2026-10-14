@@ -66,17 +66,18 @@ const { class: className } = Astro.props;
     let activeComets: Comet[] = [];
 
     // --- GENERATE STARS WITH PULSING ENGINE ---
-    function generateStars(width: number, height: number) {
-      const area = width * height;
+    // Stars for the horizontal band [top, bottom) of the viewport.
+    function makeStars(width: number, top: number, bottom: number): Star[] {
+      const area = width * (bottom - top);
       const numStars = Math.floor(area * STAR_DENSITY);
-      
-      stars = Array.from({ length: numStars }, () => {
+
+      return Array.from({ length: numStars }, () => {
         const baseRadius = Math.random() * 0.5 + 0.4;
         const isPulsing = Math.random() < 0.20; // 20% become pulsing variant stars
 
         return {
           x: Math.random() * width,
-          y: Math.random() * height,
+          y: top + Math.random() * (bottom - top),
           baseRadius,
           radius: baseRadius,
           opacity: Math.random() * 0.6 + 0.4,
@@ -87,12 +88,23 @@ const { class: className } = Astro.props;
       });
     }
 
+    // Mobile toolbars change only the height while you scroll: keep the stars where they are
+    // and fill in the new band, so the sky never reshuffles under the page.
+    let starsWidth = 0;
+    let starsHeight = 0;
     function resize() {
       const width = window.innerWidth;
       const height = window.innerHeight;
       canvas!.width = width;
       canvas!.height = height;
-      generateStars(width, height);
+      if (width !== starsWidth) {
+        stars = makeStars(width, 0, height);
+        starsWidth = width;
+        starsHeight = height;
+      } else if (height > starsHeight) {
+        stars.push(...makeStars(width, starsHeight, height));
+        starsHeight = height;
+      }
     }
 
     // --- COMET GENERATION UTILITIES ---

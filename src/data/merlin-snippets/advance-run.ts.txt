@@ -1,0 +1,49 @@
+/**
+ * Walk a run through its nodes until it has to wait or it ends. The run holds a 3-minute lock:
+ * the scheduler tick and a start for a new lead never take it at the same time.
+ */
+export async function advanceRun(
+  runId: string,
+): Promise<"progressed" | "idle" | "busy" | "failed"> {
+  const [claimed] = await db
+    .update(merlinSkillRuns)
+    .set({ lockedUntil: new Date(Date.now() + LOCK_MS) })
+    .where(
+      and(
+        eq(merlinSkillRuns.id, runId),
+        inArray(merlinSkillRuns.status, ["running", "waiting"]),
+        sql`(${merlinSkillRuns.lockedUntil} is null or ${merlinSkillRuns.lockedUntil} < now())`,
+      ),
+    )
+    .returning();
+  if (!claimed) return "busy";
+  // … load the skill and the lead; stop the run if either is gone or the skill is off
+
+    for (let step = 0; step < MAX_STEPS; step += 1) {
+      const node = nodes.get(cur.nodeId);
+      if (!node) {
+        await finish("stopped", "node_removed");
+        return "progressed";
+      }
+      const result = await execNode(node, { cur, skill, lead });
+      if (result.kind === "wait") {
+        cur.status = "waiting";
+        cur.waitUntil = result.until;
+        cur.waitReply = result.reply;
+        if (result.since !== undefined) cur.waitSince = result.since;
+        await save(cur);
+        return cur.nodeId !== startNode || cur.log.length > startLog ? "progressed" : "idle";
+      }
+      if (result.kind === "fail") {
+        await finish("failed", result.code, result.error);
+        return "failed";
+      }
+      cur.state.ports.push(`${node.id}:${result.port}`);
+      cur.log.push(entry(node.id, "port", { port: result.port }));
+      const next = nextNodeId(skill.graph, node.id, result.port);
+      if (!next) {
+        await finish("done", "done");
+        return "progressed";
+      }
+      cur.nodeId = next;
+      // … record the visit and keep walking

@@ -1,0 +1,40 @@
+/**
+ * Lay out left to right: the column is the longest path from the trigger (flows have no loops);
+ * within a column, by the parent's position and its output number. Steps the trigger can't reach
+ * go to a separate column on the right. Sticky notes don't move.
+ */
+export function autoLayout(graph: SkillGraph, heights: Record<string, number> = {}): SkillGraph {
+  const byId = new Map(graph.nodes.map((node) => [node.id, node]));
+  const incoming = new Map<string, SkillEdge[]>();
+  for (const edge of graph.edges) {
+    if (!byId.has(edge.source) || !byId.has(edge.target)) continue;
+    incoming.set(edge.target, [...(incoming.get(edge.target) ?? []), edge]);
+  }
+  const layer = new Map<string, number>();
+  const depth = (id: string, trail: Set<string>): number => {
+    const known = layer.get(id);
+    if (known !== undefined) return known;
+    if (trail.has(id)) return 0; // a loop: validation never lets one through, just don't hang here
+    trail.add(id);
+    const parents = incoming.get(id) ?? [];
+    const value =
+      parents.length === 0 ? 0 : Math.max(...parents.map((edge) => depth(edge.source, trail) + 1));
+    trail.delete(id);
+    layer.set(id, value);
+    return value;
+  };
+  const trigger = graph.nodes.find((node) => node.type === "trigger.lead");
+  const reachable = new Set<string>();
+  if (trigger) {
+    const queue = [trigger.id];
+    while (queue.length > 0) {
+      const id = queue.shift() as string;
+      if (reachable.has(id)) continue;
+      reachable.add(id);
+      for (const edge of graph.edges) if (edge.source === id) queue.push(edge.target);
+    }
+  }
+  for (const node of graph.nodes) if (reachable.has(node.id)) depth(node.id, new Set());
+  const maxLayer = Math.max(0, ...layer.values());
+  for (const node of graph.nodes) if (!reachable.has(node.id)) layer.set(node.id, maxLayer + 1);
+  // … then each column is stacked under its parents, in output order (yes above, no below)

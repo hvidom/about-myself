@@ -1,8 +1,12 @@
 ---
 // dotLottie player (web component). @dotlottie/player-component is deprecated in favour of
 // @lottiefiles/dotlottie-wc; the element is lazy-loaded on the client only.
+// The player is created when its box nears the viewport, with `src` set before it connects:
+// setting `src` on a player that is still initialising is silently ignored.
+// With reduced motion the animation stays on its first frame.
 interface Props {
   src: string;
+  /** Sizing classes for the wrapper; defaults to filling the parent. */
   class?: string;
   label?: string;
 }
@@ -10,17 +14,40 @@ interface Props {
 const { src, class: className, label } = Astro.props;
 ---
 
-<div class:list={["flex h-full w-full items-center justify-center overflow-hidden", className]}>
-  <dotlottie-wc
-    src={src}
-    autoplay
-    loop
-    aria-label={label}
-    aria-hidden={label ? undefined : "true"}
-    style="width: 100%; height: 100%;"
-  ></dotlottie-wc>
+<div
+  class:list={["flex items-center justify-center overflow-hidden", className ?? "size-full"]}
+  data-lottie={src}
+  role={label ? "img" : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : "true"}
+>
 </div>
 
 <script>
   import "@lottiefiles/dotlottie-wc";
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const box = entry.target as HTMLElement;
+        observer.unobserve(box);
+        const player = document.createElement("dotlottie-wc");
+        player.setAttribute("src", box.dataset.lottie ?? "");
+        player.setAttribute("loop", "");
+        if (!reduced.matches) player.setAttribute("autoplay", "");
+        player.style.cssText = "width: 100%; height: 100%;";
+        box.appendChild(player);
+      }
+    },
+    { rootMargin: "300px" },
+  );
+
+  document.addEventListener("astro:page-load", () => {
+    for (const box of document.querySelectorAll<HTMLElement>("[data-lottie]:not([data-lottie-ready])")) {
+      box.dataset.lottieReady = "";
+      observer.observe(box);
+    }
+  });
 </script>

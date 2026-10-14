@@ -1,4 +1,5 @@
 ---
+import LottieAnimation from "@/components/LottieAnimations.astro";
 import { cardVariants } from "@/components/ui/card";
 import { EXPERTISE, TONE } from "@/data/profile";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ import SectionHeading from "./SectionHeading.astro";
         const tone = TONE[module.tone];
         return (
           <li class={cn(cardVariants({ variant: "glass" }), "gap-4 rounded-2xl px-6 py-6")}>
+            <LottieAnimation src={module.animation} class="h-32 w-full" />
             <p class={cn("font-mono text-[11px] font-bold tracking-wide", tone.text)}>{module.code}</p>
             <h3 class="text-lg font-bold tracking-tight text-foreground">{module.title}</h3>
             <ul class="space-y-2 text-sm text-muted-foreground">

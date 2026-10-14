@@ -26,7 +26,8 @@ Deploying or pushing is the owner's call: do not run `deploy`, `git push` or cre
 - `src/components/home/*`: home sections. `src/components/ui/*`: shadcn components with brand variants.
 - `src/styles/global.css`: shadcn tokens plus `--turquoise --green --cyan --violet --pink --gold`,
   utilities `glass`, `space-sky`, `text-brand`, `grid-faint`; `.prose` styles blog posts only.
-- `src/lib/shooter.ts`, `src/lib/pixel.ts`: generated SVG art (deterministic, CSS-only animation).
+- `src/lib/pixel.ts`: generated pixel-art SVG (deterministic). Lottie files live in `public/animations/`
+  and render through `src/components/LottieAnimations.astro` (lazy, still frame with reduced motion).
 - `src/fetch.ts`: advanced routing entry (Hono). Keep Astro's handler order.
 - Blog: `src/content/blog/*.mdx`. `draft: true` hides a post from pages, RSS and sitemap.
 - `proxy/`: Pages project that forwards hvidom.is-a.dev to the Worker. Not part of the Astro build.

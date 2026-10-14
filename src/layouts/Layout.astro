@@ -8,26 +8,29 @@ import { cn } from "@/lib/utils";
 type Props = {
   title: string;
   description?: string;
+  image?: string;
+  article?: { publishedTime: Date; modifiedTime?: Date | undefined };
   mainClass?: string;
 };
 
-const { title, description, mainClass } = Astro.props;
+const { title, description, image, article, mainClass } = Astro.props;
 
 // Prerendered pages are served as static assets; headers only apply to on-demand pages.
 if (!Astro.isPrerendered) {
   Astro.response.headers.set(
     "Cache-Control",
-    "public, max-age=0, s-maxage=31536000, must-revalidate",
+    // Short shared cache: HTML points at hashed /_astro files that a later deploy replaces.
+    "public, max-age=0, s-maxage=300, must-revalidate",
   );
 }
 ---
 
 <html lang="en" class="dark scroll-smooth">
   <head>
-    <BaseHead title={title} description={description} />
+    <BaseHead title={title} description={description} image={image} article={article} />
   </head>
   <body
-    class="relative min-h-screen overflow-x-hidden bg-background font-sans text-foreground antialiased selection:bg-turquoise/40 selection:text-foreground"
+    class="relative min-h-screen overflow-x-hidden bg-background font-sans text-foreground antialiased"
   >
     <a
       href="#main"

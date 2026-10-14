@@ -46,5 +46,6 @@ is-a.dev can only point a subdomain at Cloudflare **Pages**, while this site is 
 - `src/data/profile.ts`: all home-page text (journey, projects, expertise, links)
 - `src/components/home/*`: home sections; `src/components/ui/*`: shadcn components with brand variants
 - `src/styles/global.css`: design tokens (`--turquoise`, `--green`, …) and the `glass`, `space-sky`, `text-brand` utilities
-- `src/lib/shooter.ts`: the "contribution radar" mini-game in the hero (pure SVG + CSS)
+- `src/components/LottieAnimations.astro` + `public/animations/*.lottie`: the hero hacker and section illustrations (lazy, still with reduced motion)
+- `src/components/home/Merlin.astro`: the Merlin deck and code tabs; snippets live in `src/data/merlin-snippets/`
 - Blog posts: `src/content/blog/*.mdx`; `draft: true` keeps a post out of the site, RSS and sitemap

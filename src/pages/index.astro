@@ -6,6 +6,7 @@ import Expertise from "@/components/home/Expertise.astro";
 import FeaturedWork from "@/components/home/FeaturedWork.astro";
 import Hero from "@/components/home/Hero.astro";
 import Journey from "@/components/home/Journey.astro";
+import Merlin from "@/components/home/Merlin.astro";
 import RecentPosts from "@/components/home/RecentPosts.astro";
 import Stack from "@/components/home/Stack.astro";
 import Telemetry from "@/components/home/Telemetry.astro";
@@ -29,6 +30,7 @@ const posts = (await publishedPosts()).slice(0, 3);
     <Terminal />
     <Journey />
     <FeaturedWork />
+    <Merlin />
     <Expertise />
     <Stack />
     <Telemetry />

@@ -35,3 +35,6 @@ playwright-report/
 blob-report/
 playwright/.cache/
 coverage/
+
+# private agent notes synced by memanto (never publish)
+MEMORY.md

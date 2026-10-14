@@ -1,47 +1,36 @@
 ---
-
+// "Back to top" button. It is re-rendered on every navigation, so the listeners of the previous
+// page are dropped with an AbortController. While hidden it is `invisible`: out of the tab order.
 ---
 
 <button
   id="scroll-to-top"
-  class="fixed bottom-6 right-6 z-50 h-10 w-10 flex items-center justify-center rounded-full border border-border/40 bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-primary hover:bg-muted shadow-md translate-y-20 opacity-0 pointer-events-none transition-all duration-300 active:scale-95"
+  type="button"
+  class="pointer-events-none invisible fixed right-6 bottom-6 z-50 flex size-10 translate-y-20 items-center justify-center rounded-full border border-border/40 bg-background/80 text-muted-foreground opacity-0 shadow-md backdrop-blur-sm transition-all duration-300 hover:bg-muted hover:text-primary active:scale-95"
   aria-label="Scroll to top"
 >
-  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+  <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"></path>
   </svg>
 </button>
 
-<script is:inline>
-  function initScrollToTop() {
-    const scrollBtn = document.getElementById('scroll-to-top');
-    if (!scrollBtn) return;
-    const toggleVisibility = () => {
-      if (window.scrollY > 300) {
-        scrollBtn.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
-        scrollBtn.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
-      } else {
-        scrollBtn.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
-        scrollBtn.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
-      }
-    };
-    const scrollToTop = () => {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth' 
-      });
-    };
-    window.removeEventListener('scroll', toggleVisibility);
-    window.addEventListener('scroll', toggleVisibility);
+<script>
+  const HIDDEN = ["pointer-events-none", "invisible", "translate-y-20", "opacity-0"];
+  let controller: AbortController | undefined;
 
-    scrollBtn.removeEventListener('click', scrollToTop);
-    scrollBtn.addEventListener('click', scrollToTop);
-    toggleVisibility();
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initScrollToTop);
-  } else {
-    initScrollToTop();
-  }
-  document.addEventListener('astro:page-load', initScrollToTop);
+  document.addEventListener("astro:page-load", () => {
+    controller?.abort();
+    const button = document.getElementById("scroll-to-top");
+    if (!button) return;
+    controller = new AbortController();
+    const { signal } = controller;
+    const toggle = () => {
+      const hidden = window.scrollY <= 300;
+      for (const name of HIDDEN) button.classList.toggle(name, hidden);
+    };
+    window.addEventListener("scroll", toggle, { passive: true, signal });
+    // No `behavior`: html's smooth scroll decides, and the reduced-motion rule turns it off.
+    button.addEventListener("click", () => window.scrollTo({ top: 0 }), { signal });
+    toggle();
+  });
 </script>

@@ -29,6 +29,17 @@ describe("SectionHeading", () => {
 		expect(text(html)).toContain("~ $ whoami");
 	});
 
+	test("adds a Lottie on the right only when asked", async () => {
+		const plain = await container.renderToString(SectionHeading, {
+			props: { eyebrow: "x", title: "T" },
+		});
+		const animated = await container.renderToString(SectionHeading, {
+			props: { eyebrow: "x", title: "T", animation: "/animations/dj.lottie" },
+		});
+		expect(plain).not.toContain("data-lottie");
+		expect(animated).toContain('data-lottie="/animations/dj.lottie"');
+	});
+
 	test("renders the lead paragraph only when given", async () => {
 		const without = await container.renderToString(SectionHeading, {
 			props: { eyebrow: "x", title: "T" },
@@ -49,6 +60,20 @@ describe("Hero", () => {
 		expect(text(html)).toContain(
 			"Full-stack developer · infrastructure tinkerer · ex-sales director",
 		);
+	});
+
+	test("'Made in Ukraine' sits under the Dublin badge, both above the name", async () => {
+		const plain = text(await container.renderToString(Hero));
+		const dublin = plain.indexOf("Based in Dublin, Ireland");
+		const ukraine = plain.indexOf("Made in Ukraine");
+		expect(dublin).toBeGreaterThanOrEqual(0);
+		expect(ukraine).toBeGreaterThan(dublin);
+		expect(plain.indexOf("Hryhorii Ilin")).toBeGreaterThan(ukraine);
+	});
+
+	test("the hacker is back, as a decorative Lottie", async () => {
+		const html = await container.renderToString(Hero);
+		expect(html).toMatch(/data-lottie="\/animations\/hacker\.lottie"[^>]*aria-hidden="true"/);
 	});
 
 	test("screen readers get every phrase, the animated copy is hidden", async () => {

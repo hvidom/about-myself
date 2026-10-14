@@ -1,25 +1,38 @@
 ---
-// Section header: a mono "command" eyebrow, the title, and an optional lead paragraph.
+// Section header: a mono "command" eyebrow, the title, an optional lead paragraph and an optional
+// Lottie illustration on the right (from the sm breakpoint).
+import LottieAnimation from "@/components/LottieAnimations.astro";
+
 interface Props {
   eyebrow: string;
   title: string;
   id?: string;
   align?: "left" | "center";
+  animation?: string;
 }
 
-const { eyebrow, title, id, align = "left" } = Astro.props;
+const { eyebrow, title, id, align = "left", animation } = Astro.props;
 ---
 
-<div class:list={["max-w-2xl space-y-3", align === "center" && "mx-auto text-center"]}>
-  <p class="font-mono text-sm text-turquoise">
-    <span class="text-violet">~</span> <span class="text-green">$</span>{" "}{eyebrow}
-  </p>
-  <h2 id={id} class="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">{title}</h2>
+<div class:list={[animation && "flex items-end justify-between gap-6"]}>
+  <div class:list={["max-w-2xl space-y-3", align === "center" && "mx-auto text-center"]}>
+    <p class="font-mono text-sm text-turquoise">
+      <span class="text-violet">~</span> <span class="text-green">$</span>{" "}{eyebrow}
+    </p>
+    <h2 id={id} class="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">{title}</h2>
+    {
+      Astro.slots.has("default") && (
+        <p class="text-base leading-relaxed text-muted-foreground">
+          <slot />
+        </p>
+      )
+    }
+  </div>
   {
-    Astro.slots.has("default") && (
-      <p class="text-base leading-relaxed text-muted-foreground">
-        <slot />
-      </p>
+    animation && (
+      <div class="hidden size-36 shrink-0 sm:block lg:size-44">
+        <LottieAnimation src={animation} />
+      </div>
     )
   }
 </div>

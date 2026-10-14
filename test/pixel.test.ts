@@ -1,22 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { ASTRONAUT, astronautSvg, rng, SHIP, sprite } from "@/lib/pixel";
-
-describe("rng", () => {
-	test("is deterministic for a seed", () => {
-		const a = rng(42);
-		const b = rng(42);
-		expect(Array.from({ length: 5 }, a)).toEqual(Array.from({ length: 5 }, b));
-	});
-
-	test("returns values in [0, 1)", () => {
-		const r = rng(7);
-		for (let i = 0; i < 1000; i++) {
-			const v = r();
-			expect(v).toBeGreaterThanOrEqual(0);
-			expect(v).toBeLessThan(1);
-		}
-	});
-});
+import { ASTRONAUT, astronautSvg, sprite } from "@/lib/pixel";
 
 describe("sprite", () => {
 	test("draws one rect per painted pixel and skips the rest", () => {
@@ -32,9 +15,7 @@ describe("sprite", () => {
 
 describe("pixel art maps", () => {
 	test("rows have equal width", () => {
-		for (const map of [SHIP, ASTRONAUT]) {
-			expect(new Set(map.map((row) => row.length)).size).toBe(1);
-		}
+		expect(new Set(ASTRONAUT.map((row) => row.length)).size).toBe(1);
 	});
 
 	test("astronaut svg is crisp and sized by pixel size", () => {

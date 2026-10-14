@@ -1,4 +1,4 @@
-// Pixel-art helpers shared by the hero mini-game and the neofetch astronaut.
+// Pixel-art helper for the neofetch astronaut.
 // Output is plain SVG markup, rendered on the server with `set:html`.
 
 /** Draws an ASCII map as SVG rects; characters missing from the palette stay empty. */
@@ -18,19 +18,6 @@ export function sprite(
 	});
 	return out;
 }
-
-/** Small deterministic PRNG so the generated art is identical on every build. */
-export function rng(seed: number): () => number {
-	let s = seed | 0;
-	return () => {
-		s = (s + 0x6d2b79f5) | 0;
-		let t = Math.imul(s ^ (s >>> 15), 1 | s);
-		t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-		return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-	};
-}
-
-export const SHIP = ["...X...", "..XXX..", "..XCX..", "X.XXX.X", "XXXXXXX", "X.X.X.X"] as const;
 
 export const ASTRONAUT = [
 	".....OOOOOO.....",

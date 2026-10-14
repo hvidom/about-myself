@@ -1,0 +1,22 @@
+/** Node outputs: at most one edge from each; a node with no edge on an output ends the run. */
+export const SKILL_PORTS: Record<SkillNodeType, readonly string[]> = {
+  "trigger.lead": ["next"],
+  "wait.delay": ["next"],
+  "wait.hours": ["next"],
+  "if.hours": ["yes", "no"],
+  "if.lead": ["yes", "no"],
+  "split.ab": ["a", "b"],
+  "ai.intent": ["booking", "quote", "warranty", "question", "other"],
+  "whatsapp.template": ["sent", "failed"],
+  "message.send": ["sent", "failed"],
+  "wait.reply": ["replied", "timeout"],
+  "merlin.chat": ["handoff", "done"],
+  "inbox.note": ["next"],
+  assign: ["next"],
+  notify: ["next"],
+  task: ["next"],
+  "lead.stage": ["next"],
+  "lead.tag": ["next"],
+  "deal.create": ["created", "exists"],
+  webhook: ["next", "failed"],
+};

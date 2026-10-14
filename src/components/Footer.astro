@@ -1,4 +1,5 @@
 ---
+import LottieAnimation from "@/components/LottieAnimations.astro";
 import { LINKS } from "@/data/profile";
 
 const year = new Date().getFullYear();
@@ -13,14 +14,15 @@ const year = new Date().getFullYear();
   </div>
 
   <div class="relative mx-auto flex max-w-6xl flex-col items-center gap-5 px-6 pt-14 pb-56 text-center">
-    <p class="text-brand text-2xl font-black sm:text-3xl">Thanks for flying by</p>
+    <LottieAnimation src="/animations/hand.lottie" class="size-28 sm:size-32" />
+    <p class="text-brand font-heading text-2xl sm:text-3xl">Thanks for flying by</p>
     <p class="font-mono text-xs text-muted-foreground sm:text-sm">built in Dublin · see you in the commits</p>
     <nav aria-label="Elsewhere" class="flex flex-wrap justify-center gap-x-6 gap-y-2 font-mono text-xs text-muted-foreground">
       <a href={LINKS.email} class="transition-colors hover:text-turquoise">{LINKS.emailText}</a>
       <a href={LINKS.github} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-turquoise">github</a>
       <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-turquoise">linkedin</a>
       <a href={LINKS.dailydev} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-turquoise">daily.dev</a>
-      <a href="/rss.xml" class="transition-colors hover:text-turquoise">rss</a>
+      <a href="/rss.xml" data-astro-reload class="transition-colors hover:text-turquoise">rss</a>
     </nav>
     <p class="font-mono text-[11px] text-muted-foreground/70">
       © {year} Hryhorii Ilin · Astro · Tailwind CSS · shadcn/ui · Cloudflare Workers

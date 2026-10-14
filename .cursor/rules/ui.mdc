@@ -13,8 +13,8 @@ alwaysApply: false
 - In `.astro`, apply `buttonVariants({ variant, size })` to `<a>`/`<button>`; keep zero client JS
   unless a section needs it (then a small `<script>` listening to `astro:page-load`).
 - Section headers use `SectionHeading` (mono "~ $ command" eyebrow + h2). One `h1` per page.
-- Motion: transform/opacity only, respect `prefers-reduced-motion` (global rule in global.css,
-  generated SVG has its own media query). Decorative SVG gets `aria-hidden="true"`.
+- Motion: transform/opacity only, respect `prefers-reduced-motion` (global rule in global.css;
+  Lottie players stay on frame one). Decorative SVG and Lottie boxes get `aria-hidden="true"`.
 - Whitespace: Astro 7 trims line-break whitespace between inline tags. Use `{" "}`.
 - External links: `target="_blank" rel="noopener noreferrer"`. Images: `astro:assets` `<Image>` for
   local files, explicit `width`/`height` for remote ones.

@@ -1,0 +1,244 @@
+---
+// Merlin, the AI layer of Content Factory: a short slide deck (scroll-snap, swipeable without JS)
+// and real code from the private repo in tabs, highlighted at build time.
+import { Code } from "astro:components";
+import { cardVariants } from "@/components/ui/card";
+import { MERLIN_SLIDES, MERLIN_SNIPPETS, MERLIN_STATS, TONE } from "@/data/profile";
+import { cn } from "@/lib/utils";
+import MerlinVisual from "./MerlinVisual.astro";
+import SectionHeading from "./SectionHeading.astro";
+
+const sources = import.meta.glob<string>("../../data/merlin-snippets/*.ts.txt", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+});
+const source = (id: string) => {
+  const code = sources[`../../data/merlin-snippets/${id}.ts.txt`];
+  if (code === undefined) throw new Error(`Missing snippet ${id}`);
+  return code.trimEnd();
+};
+const total = String(MERLIN_SLIDES.length).padStart(2, "0");
+---
+
+<section id="merlin" aria-labelledby="merlin-title" class="scroll-mt-24 space-y-10">
+  <SectionHeading eyebrow="merlin --help" title="Meet Merlin" id="merlin-title" animation="/animations/like.lottie">
+    The AI layer of Content Factory: a teammate in the chat, automations on a canvas and a night shift for
+    customers. A short deck, then the code.
+  </SectionHeading>
+
+  <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    {
+      MERLIN_STATS.map((stat, i) => (
+        <div class="glass flex flex-col-reverse rounded-2xl px-5 py-4">
+          <dt class="mt-1 text-sm text-muted-foreground">{stat.label}</dt>
+          <dd class={cn("text-3xl font-black", i % 2 ? "text-turquoise" : "text-violet")}>{stat.value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+
+  <div class={cn(cardVariants({ variant: "glass" }), "gap-0 overflow-hidden rounded-3xl py-0")} data-deck>
+    <div class="flex items-center justify-between gap-3 border-b border-border px-5 py-3 font-mono text-xs text-muted-foreground">
+      <span><span class="text-violet">~</span>/merlin/deck</span>
+      <div class="flex items-center gap-2">
+        <span aria-live="polite" data-deck-count>01 / {total}</span>
+        <button
+          type="button"
+          class="grid size-8 place-items-center rounded-full border border-border transition-colors hover:border-turquoise/50 hover:text-turquoise disabled:opacity-40"
+          aria-label="Previous slide"
+          data-deck-prev
+          disabled
+        >
+          <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+        </button>
+        <button
+          type="button"
+          class="grid size-8 place-items-center rounded-full border border-border transition-colors hover:border-turquoise/50 hover:text-turquoise disabled:opacity-40"
+          aria-label="Next slide"
+          data-deck-next
+        >
+          <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <ol
+      class="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain hide-scrollbar focus-visible:outline-offset-[-2px]"
+      aria-label={`Merlin in ${MERLIN_SLIDES.length} slides`}
+      tabindex="0"
+      data-deck-track
+    >
+      {
+        MERLIN_SLIDES.map((slide, i) => (
+          <li
+            class="grid w-full shrink-0 snap-start grid-cols-1 content-center gap-8 p-6 sm:p-10 md:grid-cols-2 md:items-center"
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${MERLIN_SLIDES.length}`}
+          >
+            <div class="space-y-4">
+              <p class={cn("font-mono text-xs font-bold tracking-widest", TONE[slide.tone].text)}>
+                {String(i + 1).padStart(2, "0")} / {total}
+              </p>
+              <h3 class="text-2xl tracking-tight text-foreground sm:text-3xl">{slide.title}</h3>
+              <p class="leading-relaxed text-muted-foreground">{slide.text}</p>
+              <ul class="space-y-2 text-sm text-muted-foreground">
+                {slide.points.map((point) => (
+                  <li class="flex gap-2.5">
+                    <span class={cn("mt-2 size-1.5 shrink-0 rounded-full", TONE[slide.tone].dot)} aria-hidden="true" />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <MerlinVisual visual={slide.visual} />
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="flex justify-center gap-2 border-t border-border py-3" data-deck-dots>
+      {
+        MERLIN_SLIDES.map((slide, i) => (
+          <button
+            type="button"
+            class="h-1.5 w-4 rounded-full bg-muted-foreground/30 transition-all aria-[current=true]:w-8 aria-[current=true]:bg-turquoise"
+            aria-label={`Slide ${i + 1}: ${slide.title}`}
+            aria-current={i === 0 ? "true" : "false"}
+          />
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    <div class="space-y-1">
+      <h3 class="text-xl text-foreground">From the source</h3>
+      <p class="text-sm text-muted-foreground">
+        Real code from the private repository. Comments are translated from Russian; nothing personal is in it.
+      </p>
+    </div>
+
+    <div class="overflow-hidden rounded-2xl border border-border bg-[#22272e]" data-tabs>
+      <div role="tablist" aria-label="Code snippets" class="flex overflow-x-auto border-b border-white/10 hide-scrollbar">
+        {
+          MERLIN_SNIPPETS.map((snippet, i) => (
+            <button
+              type="button"
+              role="tab"
+              id={`snippet-tab-${snippet.id}`}
+              aria-controls={`snippet-${snippet.id}`}
+              aria-selected={i === 0 ? "true" : "false"}
+              tabindex={i === 0 ? 0 : -1}
+              class="shrink-0 border-b-2 border-transparent px-4 py-3 font-mono text-xs whitespace-nowrap text-white/60 transition-colors hover:text-white aria-selected:border-turquoise aria-selected:text-white"
+            >
+              {snippet.title}
+            </button>
+          ))
+        }
+      </div>
+      {
+        MERLIN_SNIPPETS.map((snippet, i) => (
+          <div role="tabpanel" id={`snippet-${snippet.id}`} aria-labelledby={`snippet-tab-${snippet.id}`} hidden={i !== 0}>
+            <div class="space-y-1 border-b border-white/10 px-4 py-3">
+              <p class="font-mono text-[11px] text-[#9aa5b1]">{snippet.path}</p>
+              <p class="text-sm text-[#adbac7]">{snippet.note}</p>
+            </div>
+            <Code code={source(snippet.id)} lang="ts" theme="github-dark-dimmed" class="max-h-[28rem] overflow-auto p-4 text-[13px] leading-relaxed" />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  // Deck: buttons, dots and the counter follow the scroll position. Tabs: click or arrow keys.
+  function deck(root: HTMLElement) {
+    if (root.dataset.ready) return;
+    root.dataset.ready = "1";
+    const track = root.querySelector<HTMLElement>("[data-deck-track]");
+    const prev = root.querySelector<HTMLButtonElement>("[data-deck-prev]");
+    const next = root.querySelector<HTMLButtonElement>("[data-deck-next]");
+    const count = root.querySelector<HTMLElement>("[data-deck-count]");
+    const dots = [...root.querySelectorAll<HTMLButtonElement>("[data-deck-dots] button")];
+    if (!track || !prev || !next || !count) return;
+    const slides = track.children.length;
+    const pad = (n: number) => String(n).padStart(2, "0");
+    // `|| 1`: a deck that is not laid out yet (inside a hidden parent) has no width.
+    const index = () => Math.round(track.scrollLeft / (track.clientWidth || 1));
+    // Where the deck is heading. Quick clicks and key repeats step from here, not from a scroll
+    // position that is still animating.
+    let target = 0;
+    let shown = 0;
+    let settle = 0;
+    // The counter is a live region: write it only when the slide really changes.
+    const sync = (i: number) => {
+      if (i === shown) return;
+      shown = i;
+      count.textContent = `${pad(i + 1)} / ${pad(slides)}`;
+      prev.disabled = i === 0;
+      next.disabled = i === slides - 1;
+      dots.forEach((dot, d) => dot.setAttribute("aria-current", String(d === i)));
+    };
+    const go = (i: number) => {
+      target = Math.max(0, Math.min(slides - 1, i));
+      const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      track.scrollTo({ left: target * track.clientWidth, behavior: smooth ? "smooth" : "auto" });
+      sync(target);
+    };
+    prev.addEventListener("click", () => go(target - 1));
+    next.addEventListener("click", () => go(target + 1));
+    dots.forEach((dot, d) => dot.addEventListener("click", () => go(d)));
+    // Swipes, snapping and resizes: settle on the slide once the scroll stops.
+    track.addEventListener(
+      "scroll",
+      () => {
+        window.clearTimeout(settle);
+        settle = window.setTimeout(() => {
+          target = index();
+          sync(target);
+        }, 120);
+      },
+      { passive: true },
+    );
+    track.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+        event.preventDefault();
+        go(target + (event.key === "ArrowRight" ? 1 : -1));
+      }
+    });
+  }
+
+  function tabs(root: HTMLElement) {
+    if (root.dataset.ready) return;
+    root.dataset.ready = "1";
+    const list = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const select = (tab: HTMLButtonElement) => {
+      for (const other of list) {
+        const on = other === tab;
+        other.setAttribute("aria-selected", String(on));
+        other.tabIndex = on ? 0 : -1;
+        const panel = document.getElementById(other.getAttribute("aria-controls") ?? "");
+        if (panel) panel.hidden = !on;
+      }
+    };
+    list.forEach((tab, i) => {
+      tab.addEventListener("click", () => select(tab));
+      tab.addEventListener("keydown", (event) => {
+        const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+        if (!step) return;
+        event.preventDefault();
+        const target = list[(i + step + list.length) % list.length];
+        if (!target) return;
+        select(target);
+        target.focus();
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    document.querySelectorAll<HTMLElement>("[data-deck]").forEach(deck);
+    document.querySelectorAll<HTMLElement>("[data-tabs]").forEach(tabs);
+  });
+</script>

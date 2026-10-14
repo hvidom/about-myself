@@ -80,7 +80,7 @@ export const CF_METRICS = [
 	{ value: "35", label: "background jobs" },
 ];
 
-export const CF_MODULES: { title: string; text: string; tone: Tone }[] = [
+export const CF_MODULES: { title: string; text: string; tone: Tone; href?: string }[] = [
 	{
 		title: "Omnichannel inbox",
 		text: "WhatsApp, Messenger, Instagram, email, web chat",
@@ -91,7 +91,12 @@ export const CF_MODULES: { title: string; text: string; tone: Tone }[] = [
 		text: "Leads → deals → jobs, price calculator, quotes",
 		tone: "turquoise",
 	},
-	{ title: "AI agent “Merlin”", text: "Night-shift replies, n8n-style skills, MCP", tone: "pink" },
+	{
+		title: "AI agent “Merlin”",
+		text: "Night-shift replies, n8n-style skills, MCP",
+		tone: "pink",
+		href: "#merlin",
+	},
 	{
 		title: "Website CMS on Git",
 		text: "Edits radioking.ie, deploys to Cloudflare",
@@ -130,17 +135,185 @@ export const SITES = [
 		text: "Website and shop for a car-electronics installer in Dublin: a landing page per search intent, about 175 products with Stripe Checkout and server-side order reconciliation. It replaced WordPress without breaking a single URL.",
 		tags: ["Astro", "React", "Hono", "Stripe", "Cloudflare Workers"],
 	},
-	{
-		name: "verocleaning.ca",
-		href: "https://verocleaning.ca",
-		image: "verocleaning",
-		text: "Fixed-price house cleaning in Toronto and the GTA: an instant quote builder, content edited in Pages CMS, and a DataForSEO keyword pipeline that decides which pages get built.",
-		tags: ["Astro", "Hono", "Drizzle", "shadcn/ui", "Cloudflare"],
-	},
 ] as const;
 
+// Merlin, the AI layer of Content Factory. Counts come from the private repo (tests: vitest run).
+export const MERLIN_STATS = [
+	{ value: "11", label: "chat tools" },
+	{ value: "19", label: "skill steps" },
+	{ value: "35", label: "emotions" },
+	{ value: "88", label: "unit tests" },
+];
+
+export const MERLIN_TOOLS = [
+	"search_records",
+	"create_task",
+	"attention_summary",
+	"my_open_tasks",
+	"draft_customer_reply",
+	"summarize_conversation",
+	"write_article",
+	"article_status",
+	"find_tips",
+	"merlin_skills",
+	"update_skill_instructions",
+];
+
+// The skill editor's palette, grouped as in the app.
+export const MERLIN_BLOCKS: { group: string; tone: Tone; steps: string[] }[] = [
+	{
+		group: "Flow",
+		tone: "gold",
+		steps: [
+			"Lead trigger",
+			"Pause",
+			"Wait for working hours",
+			"Working hours?",
+			"Check the lead",
+			"A/B split",
+			"Wait for a reply",
+		],
+	},
+	{
+		group: "Merlin thinks",
+		tone: "violet",
+		steps: ["AI: what the customer wants", "Merlin chats"],
+	},
+	{
+		group: "Merlin writes",
+		tone: "green",
+		steps: ["WhatsApp template", "Message to the customer"],
+	},
+	{
+		group: "For the team",
+		tone: "cyan",
+		steps: ["Note in the chat", "Assign", "Notify the team", "Create a task"],
+	},
+	{ group: "CRM", tone: "turquoise", steps: ["Change the stage", "Tags", "Create a deal"] },
+	{ group: "Other systems", tone: "pink", steps: ["Webhook"] },
+];
+
+export type MerlinVisual = "tools" | "flow" | "blocks" | "guards" | "night" | "face";
+
+export const MERLIN_SLIDES: {
+	visual: MerlinVisual;
+	title: string;
+	text: string;
+	points: string[];
+	tone: Tone;
+}[] = [
+	{
+		visual: "tools",
+		title: "An AI teammate inside the CRM",
+		text: "Staff ask in plain words. Merlin answers with 11 tools: he searches records, creates tasks, drafts replies to customers and summarises long conversations.",
+		points: [
+			"“What needs my attention?” is one question, not five screens",
+			"Every answer gets 👍 or 👎 and “how it should have been”",
+			"Those corrections go back into his instructions",
+		],
+		tone: "violet",
+	},
+	{
+		visual: "flow",
+		title: "Skills: automations on a canvas",
+		text: "The team draws a flow, like in n8n: one trigger, then steps. Merlin runs it for every lead that matches.",
+		points: [
+			"Triggers: a lead is created, changes stage, or is stuck for N days",
+			"AI steps branch the flow by what the customer wants",
+			"Live counters show how many leads passed each step and wait there now",
+		],
+		tone: "turquoise",
+	},
+	{
+		visual: "blocks",
+		title: "19 building blocks",
+		text: "Waits and checks, AI decisions, WhatsApp messages, CRM changes and a signed webhook for everything else.",
+		points: [
+			"React Flow editor with a minimap, undo/redo and copy/paste between skills",
+			"Drop a step onto a connection to insert it",
+			"One-click auto layout, sticky notes and step search",
+		],
+		tone: "gold",
+	},
+	{
+		visual: "guards",
+		title: "Guard rails before autopilot",
+		text: "A flow that writes to customers has to be predictable, so a skill is checked before it can be switched on.",
+		points: [
+			"One run per lead per skill, locked so two workers never share it",
+			"Meta’s 24-hour messaging window is respected",
+			"A dry run first, or a real run on a single test lead",
+			"The “stuck” trigger only looks back 7 days, never at a legacy backlog",
+		],
+		tone: "green",
+	},
+	{
+		visual: "night",
+		title: "The night shift",
+		text: "From 19:00 to 08:00 Merlin answers customers in the chosen channels while the sales team is off.",
+		points: [
+			"Waits for 60 seconds of quiet, because customers write in bursts",
+			"Steps back the moment a person replies",
+			"Never names prices and hands over when a human is needed",
+			"Reply caps per conversation and per night, and a digest in the morning",
+		],
+		tone: "cyan",
+	},
+	{
+		visual: "face",
+		title: "A face with feelings",
+		text: "A jelly mascot with 35 emotions. He listens while you type, thinks, looks proud when a task is done and dozes when you are away.",
+		points: [
+			"Closes his eyes when you type a password, an API key or a card number",
+			"A corner buddy with page tips, cheers and reminders to take a break",
+			"“Quiet until morning” and an off switch",
+		],
+		tone: "pink",
+	},
+];
+
+// Real code from the private repo; comments translated, nothing personal. Files: ./merlin-snippets.
+export const MERLIN_SNIPPETS: { id: string; title: string; path: string; note: string }[] = [
+	{
+		id: "step-ports",
+		title: "Step registry",
+		path: "packages/types/src/merlin-skills.ts",
+		note: "One typed table drives the editor’s handles, the validator and the engine’s routing.",
+	},
+	{
+		id: "advance-run",
+		title: "Run engine",
+		path: "apps/api/src/lib/merlin-skills.ts",
+		note: "A resumable state machine: an atomic UPDATE … RETURNING claims the run, then every step returns a port, a wait or a failure.",
+	},
+	{
+		id: "ai-intent",
+		title: "AI intent step",
+		path: "apps/api/src/lib/merlin-skills.ts",
+		note: "An LLM classification becomes a branch of the graph, and falls back to “other” when there is no conversation or the model fails.",
+	},
+	{
+		id: "stale-window",
+		title: "Stale window & A/B",
+		path: "packages/types/src/merlin-skills.ts",
+		note: "A bounded look-back for the “stuck” trigger, and an A/B split that hashes the run id (FNV-1a), so nothing extra is stored.",
+	},
+	{
+		id: "auto-layout",
+		title: "Auto layout",
+		path: "apps/admin/src/lib/merlin-skill-graph.ts",
+		note: "Layered layout for the canvas: the column is the longest path from the trigger, found with a memoised DFS and a loop guard.",
+	},
+];
+
 // What I work on. Areas of expertise, not a price list.
-export const EXPERTISE: { code: string; title: string; items: string[]; tone: Tone }[] = [
+export const EXPERTISE: {
+	code: string;
+	title: string;
+	items: string[];
+	tone: Tone;
+	animation: string;
+}[] = [
 	{
 		code: "MODULE_01 // RESEARCH",
 		title: "Market strategy",
@@ -150,6 +323,7 @@ export const EXPERTISE: { code: string; title: string; items: string[]; tone: To
 			"Competitive forecasting",
 		],
 		tone: "turquoise",
+		animation: "/animations/lab-feature.lottie",
 	},
 	{
 		code: "MODULE_02 // ANALYTICS",
@@ -160,6 +334,7 @@ export const EXPERTISE: { code: string; title: string; items: string[]; tone: To
 			"Demographic cohort matching",
 		],
 		tone: "green",
+		animation: "/animations/seo-feature.lottie",
 	},
 	{
 		code: "MODULE_03 // ARCHITECTURE",
@@ -170,12 +345,14 @@ export const EXPERTISE: { code: string; title: string; items: string[]; tone: To
 			"Modern toolstack integration",
 		],
 		tone: "violet",
+		animation: "/animations/bg.lottie",
 	},
 	{
 		code: "MODULE_04 // BRAND",
 		title: "Visual identity",
 		items: ["Interactive UI conventions", "Corporate digital redesign", "Sleek modern layouts"],
 		tone: "pink",
+		animation: "/animations/mobile-app-feature.lottie",
 	},
 ];
 

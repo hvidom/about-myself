@@ -16,7 +16,12 @@ const { title, description, pubDate, updatedDate, heroImage, minutesRead, catego
   Astro.props;
 ---
 
-<Layout title={title} description={description}>
+<Layout
+  title={title}
+  description={description}
+  image={heroImage?.src}
+  article={{ publishedTime: pubDate, modifiedTime: updatedDate }}
+>
   <Header />
 
   <main id="main" class="mx-auto max-w-3xl px-5 py-12 sm:px-6">

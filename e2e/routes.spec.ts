@@ -29,11 +29,27 @@ test("feeds, sitemap and the social card are served", async ({ request }) => {
 		["/sitemap-index.xml", "xml"],
 		["/og.jpg", "image/jpeg"],
 		["/animations/on-rocket.lottie", "lottie"],
+		["/animations/hacker.lottie", "lottie"],
 	] as const) {
 		const res = await request.get(path);
 		expect(res.status(), path).toBe(200);
 		expect(res.headers()["content-type"], path).toContain(type);
 	}
+});
+
+test("pages are served with security headers", async ({ request }) => {
+	for (const path of ["/", "/blog/"]) {
+		const headers = (await request.get(path)).headers();
+		expect(headers["x-content-type-options"], path).toBe("nosniff");
+		expect(headers["x-frame-options"], path).toBe("DENY");
+		expect(headers["referrer-policy"], path).toBe("strict-origin-when-cross-origin");
+	}
+});
+
+test("the sitemap lists pages, not redirects", async ({ request }) => {
+	const xml = await (await request.get("/sitemap-0.xml")).text();
+	expect(xml).toContain("/blog/</loc>");
+	expect(xml).not.toMatch(/\/about\/?<\/loc>/);
 });
 
 test("head has canonical, description and an absolute social image", async ({ page }) => {

@@ -105,7 +105,7 @@
 
 @theme inline {
 	--breakpoint-3xl: 1920px;
-	--font-heading: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+	--font-heading: var(--font-days-one), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 	--font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 	--font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
@@ -256,6 +256,14 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+	/* Days One has one weight: no faux bold for font-black / font-bold headings. */
+	h1,
+	h2,
+	h3,
+	h4 {
+		font-family: var(--font-heading);
+		font-synthesis-weight: none;
+	}
 	:focus-visible {
 		outline: 2px solid var(--ring);
 		outline-offset: 2px;
@@ -320,13 +328,25 @@
 		}
 		:where(pre) {
 			@apply relative my-6 overflow-x-auto rounded-xl border border-border p-4 font-mono text-sm leading-relaxed;
+			/* Dark in both themes: the Shiki theme (github-dark-dimmed) has light text. */
 			/* biome-ignore lint/complexity/noImportantStyles: Shiki writes an inline background on <pre>. */
-			background-color: color-mix(in oklch, var(--space-0) 88%, black) !important;
+			background-color: oklch(0.11 0.027 268) !important;
 		}
 		:where(pre > code) {
 			@apply block w-full bg-transparent p-0 font-normal;
 		}
 	}
+}
+
+/* github-dark-dimmed paints comments #768390: 3.9:1 on its own background, below WCAG AA. */
+.astro-code span[style*="#768390" i] {
+	/* biome-ignore lint/complexity/noImportantStyles: Shiki writes the colour inline. */
+	color: #909dab !important;
+}
+
+/* ClientRouter restores the scroll position on back/forward with scrollTo(): jump, don't glide. */
+html[data-astro-transition] {
+	scroll-behavior: auto;
 }
 
 /* Reduced motion must beat every component animation, hence !important. */

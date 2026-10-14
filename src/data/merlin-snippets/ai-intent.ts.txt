@@ -1,0 +1,27 @@
+/** Merlin reads the lead's conversation and picks the output by what the customer wants. */
+async function intentNode(nodeId: string, ctx: Ctx): Promise<Step> {
+  const cid = await ensureConversation(ctx);
+  if (!cid) {
+    ctx.cur.log.push(entry(nodeId, "no_conversation"));
+    return { kind: "port", port: "other" };
+  }
+  try {
+    const ai = await classifyConversation(cid, { force: true });
+    const port = intentPort(ai?.intent);
+    ctx.cur.log.push(entry(nodeId, "intent", { intent: ai?.intent ?? "other" }));
+    return { kind: "port", port };
+  } catch (error) {
+    ctx.cur.log.push(entry(nodeId, "ai_error", { error: errorText(error).slice(0, 200) }));
+    return { kind: "port", port: "other" };
+  }
+}
+
+/** Output of the "AI: what the customer wants" step: spam and anything else go to "other". */
+export function intentPort(intent: ConversationIntent | null | undefined): string {
+  return intent === "booking" ||
+    intent === "quote" ||
+    intent === "warranty" ||
+    intent === "question"
+    ? intent
+    : "other";
+}

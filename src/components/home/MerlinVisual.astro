@@ -1,0 +1,175 @@
+---
+// The right-hand picture of each Merlin slide. Plain HTML/SVG, no screenshots: nothing from the
+// real CRM (customers, numbers, stages) can leak onto the page.
+import { MERLIN_BLOCKS, MERLIN_TOOLS, type MerlinVisual, TONE } from "@/data/profile";
+import { cn } from "@/lib/utils";
+
+interface Props {
+  visual: MerlinVisual;
+}
+
+const { visual } = Astro.props;
+const ports = ["booking", "quote", "warranty", "question", "other"];
+---
+
+<div class="rounded-2xl border border-border bg-background/50 p-5 font-mono text-xs sm:p-6 sm:text-[13px]">
+  {
+    visual === "tools" && (
+      <div class="space-y-3">
+        <p>
+          <span class="text-violet">merlin</span> <span class="text-green">$</span> tools --list
+        </p>
+        <ul class="flex flex-wrap gap-2">
+          {MERLIN_TOOLS.map((tool) => (
+            <li class="rounded-md border border-violet/30 bg-violet/10 px-2 py-1 text-foreground">{tool}()</li>
+          ))}
+        </ul>
+        <p class="text-muted-foreground">
+          <span class="text-green">✓</span> {MERLIN_TOOLS.length} tools · answers rated 👍/👎
+        </p>
+      </div>
+    )
+  }
+
+  {
+    visual === "flow" && (
+      <ol class="space-y-2" aria-label="Example flow">
+        <li class="rounded-xl border border-gold/40 bg-gold/10 px-3 py-2 text-foreground">
+          <span class="text-gold">trigger</span> · lead stuck in a stage for 3 days
+        </li>
+        <li class="ml-4 border-l border-border py-1 pl-3 text-muted-foreground" aria-hidden="true">↓</li>
+        <li class="rounded-xl border border-border bg-card px-3 py-2 text-foreground">Wait for working hours</li>
+        <li class="ml-4 border-l border-border py-1 pl-3 text-muted-foreground" aria-hidden="true">↓</li>
+        <li class="space-y-2 rounded-xl border border-violet/40 bg-violet/10 px-3 py-2">
+          <span class="text-foreground">AI: what the customer wants</span>
+          <span class="flex flex-wrap gap-1.5">
+            {ports.map((port) => (
+              <span class="rounded-full border border-violet/30 bg-background/60 px-2 py-0.5 text-[11px] text-violet">{port}</span>
+            ))}
+          </span>
+        </li>
+        <li class="ml-4 border-l border-border py-1 pl-3 text-muted-foreground" aria-hidden="true">↓</li>
+        <li class="grid grid-cols-3 gap-2 text-center text-[11px] sm:text-xs">
+          <span class="rounded-xl border border-green/40 bg-green/10 px-2 py-2 text-foreground">Merlin chats</span>
+          <span class="rounded-xl border border-turquoise/40 bg-turquoise/10 px-2 py-2 text-foreground">Create a deal</span>
+          <span class="rounded-xl border border-cyan/40 bg-cyan/10 px-2 py-2 text-foreground">Notify the team</span>
+        </li>
+      </ol>
+    )
+  }
+
+  {
+    visual === "blocks" && (
+      <div class="space-y-3">
+        {MERLIN_BLOCKS.map((block) => (
+          <div class="space-y-1.5">
+            <p class={cn("text-[11px] font-bold tracking-widest uppercase", TONE[block.tone].text)}>{block.group}</p>
+            <ul class="flex flex-wrap gap-1.5">
+              {block.steps.map((step) => (
+                <li class={cn("rounded-md border px-2 py-0.5 text-[11px] text-foreground", TONE[block.tone].border, TONE[block.tone].bg)}>
+                  {step}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  {
+    visual === "guards" && (
+      <div class="space-y-2">
+        <p>
+          <span class="text-violet">merlin</span> <span class="text-green">$</span> skill check
+        </p>
+        <ul class="space-y-1.5">
+          {["exactly one trigger", "no loops in the flow", "one connection per output", "every step set up"].map((line) => (
+            <li>
+              <span class="text-green">✓</span> {line}
+            </li>
+          ))}
+        </ul>
+        <p class="pt-1 text-muted-foreground">18 kinds of problems are caught before a skill goes live.</p>
+        <p class="text-turquoise">→ ready to switch on</p>
+      </div>
+    )
+  }
+
+  {
+    visual === "night" && (
+      <div class="space-y-4">
+        <div class="flex items-center justify-between text-muted-foreground">
+          <span>12:00</span>
+          <span class="text-cyan">19:00 → 08:00</span>
+          <span>12:00</span>
+        </div>
+        <div class="relative h-3 overflow-hidden rounded-full bg-gold/30" aria-hidden="true">
+          <span class="absolute inset-y-0 left-[29%] w-[54%] rounded-full bg-linear-to-r from-violet to-cyan"></span>
+        </div>
+        <p class="rounded-xl border border-cyan/30 bg-cyan/10 px-3 py-2 leading-relaxed text-foreground">
+          🌙 Merlin is answering this customer tonight while sales are off. Reply here in the morning and he steps back.
+        </p>
+      </div>
+    )
+  }
+
+  {
+    visual === "face" && (
+      <div class="flex flex-col items-center gap-4">
+        <svg viewBox="0 0 120 100" class="merlin-face w-32" role="img" aria-label="Merlin, a violet jelly face">
+          <path
+            d="M60 8c26 0 46 20 50 46 3 22-12 38-50 38S7 76 10 54C14 28 34 8 60 8z"
+            fill="var(--violet)"
+            opacity="0.9"
+          />
+          <ellipse cx="44" cy="50" rx="6" ry="8" fill="white" class="merlin-eye" />
+          <ellipse cx="76" cy="50" rx="6" ry="8" fill="white" class="merlin-eye" />
+          <path d="M52 68q8 6 16 0" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" />
+        </svg>
+        <ul class="flex flex-wrap justify-center gap-1.5">
+          {["listening", "thinking", "proud", "dozing", "eyes shut: secret typed"].map((mood) => (
+            <li class="rounded-full border border-pink/30 bg-pink/10 px-2 py-0.5 text-[11px] text-foreground">{mood}</li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .merlin-face {
+    animation: merlin-wobble 4s ease-in-out infinite;
+    transform-origin: 50% 90%;
+  }
+  .merlin-eye {
+    animation: merlin-blink 5s infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @keyframes merlin-wobble {
+    0%,
+    100% {
+      transform: scale(1, 1);
+    }
+    50% {
+      transform: scale(1.04, 0.96);
+    }
+  }
+  @keyframes merlin-blink {
+    0%,
+    92%,
+    100% {
+      transform: scaleY(1);
+    }
+    95% {
+      transform: scaleY(0.1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .merlin-face,
+    .merlin-eye {
+      animation: none;
+    }
+  }
+</style>

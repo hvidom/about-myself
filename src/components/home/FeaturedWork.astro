@@ -1,19 +1,18 @@
 ---
 import { Image } from "astro:assets";
 import radioking from "@/assets/projects/radioking.webp";
-import verocleaning from "@/assets/projects/verocleaning.webp";
 import { badgeVariants } from "@/components/ui/badge";
 import { cardVariants } from "@/components/ui/card";
 import { CF_METRICS, CF_MODULES, CF_STACK, SITES, TONE } from "@/data/profile";
 import { cn } from "@/lib/utils";
 import SectionHeading from "./SectionHeading.astro";
 
-const shots = { radioking, verocleaning };
+const shots = { radioking };
 ---
 
 <section id="work" aria-labelledby="work-title" class="scroll-mt-24 space-y-10">
-  <SectionHeading eyebrow="ls ~/projects" title="Featured work" id="work-title">
-    The thing I'm proudest of runs a real business every day. The websites around it bring in the leads.
+  <SectionHeading eyebrow="ls ~/projects" title="Featured work" id="work-title" animation="/animations/soft-dev-feature.lottie">
+    The thing I'm proudest of runs a real business every day. The website around it brings in the leads.
   </SectionHeading>
 
   <article class={cn(cardVariants({ variant: "glass" }), "grid-faint relative gap-8 rounded-3xl p-6 sm:p-10")}>
@@ -55,7 +54,13 @@ const shots = { radioking, verocleaning };
                 <span class={cn("size-2.5 rounded-full", tone.dot)} />
               </span>
               <span>
-                <span class="block font-semibold text-foreground">{module.title}</span>
+                {module.href ? (
+                  <a href={module.href} class="block font-semibold text-foreground transition-colors hover:text-turquoise">
+                    {module.title} <span class="text-turquoise" aria-hidden="true">↓</span>
+                  </a>
+                ) : (
+                  <span class="block font-semibold text-foreground">{module.title}</span>
+                )}
                 <span class="block text-sm text-muted-foreground">{module.text}</span>
               </span>
             </li>
@@ -67,10 +72,10 @@ const shots = { radioking, verocleaning };
     <p class="relative border-t border-border pt-5 font-mono text-xs leading-relaxed text-muted-foreground">{CF_STACK}</p>
   </article>
 
-  <div class="grid gap-6 md:grid-cols-2">
+  <div class="grid gap-6">
     {
       SITES.map((site) => (
-        <article class={cn(cardVariants({ variant: "glass" }), "group gap-0 rounded-3xl py-0")}>
+        <article class={cn(cardVariants({ variant: "glass" }), "group gap-0 overflow-hidden rounded-3xl py-0 md:grid md:grid-cols-[1.2fr_1fr] md:items-center")}>
           <a href={site.href} target="_blank" rel="noopener noreferrer" class="block overflow-hidden" tabindex="-1" aria-hidden="true">
             <Image
               src={shots[site.image]}
@@ -80,10 +85,10 @@ const shots = { radioking, verocleaning };
               class="aspect-[960/639] w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             />
           </a>
-          <div class="space-y-4 p-6">
+          <div class="space-y-4 p-6 md:p-8">
             <h3 class="text-xl font-bold">
               <a href={site.href} target="_blank" rel="noopener noreferrer" class="text-foreground transition-colors hover:text-turquoise">
-                {site.name}
+                {site.name}{" "}
                 <span class="text-turquoise" aria-hidden="true">↗</span>
               </a>
             </h3>

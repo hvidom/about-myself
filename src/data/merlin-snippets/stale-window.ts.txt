@@ -1,0 +1,22 @@
+/**
+ * "Stuck" trigger window: the lead entered the stage before `now − days`, but no more than a week
+ * before that. A skill that is switched on picks up leads that got stuck recently, never a legacy
+ * backlog of imported leads that have sat in one stage for years.
+ */
+export const SKILL_STALE_LOOKBACK_DAYS = 7;
+
+export function staleWindow(days: number, now: Date): { from: Date; to: Date } {
+  const DAY = 86_400_000;
+  const to = new Date(now.getTime() - days * DAY);
+  return { from: new Date(to.getTime() - SKILL_STALE_LOOKBACK_DAYS * DAY), to };
+}
+
+/** A/B branch per run (FNV-1a): a retried step lands on the same branch, A gets `percentA` of 100. */
+export function splitPort(seed: string, percentA: number): "a" | "b" {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash % 100 < percentA ? "a" : "b";
+}

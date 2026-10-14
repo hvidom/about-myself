@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import Footer from "@/components/Footer.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import Header from "@/components/Header.astro";
+import LottieAnimation from "@/components/LottieAnimations.astro";
 import { badgeVariants } from "@/components/ui/badge";
 import { cardVariants } from "@/components/ui/card";
 import Layout from "@/layouts/Layout.astro";
@@ -32,6 +33,7 @@ const posts = await publishedPosts();
     {
       posts.length === 0 && (
         <div class="glass grid-faint rounded-3xl p-10 text-center">
+          <LottieAnimation src="/animations/meditation.lottie" class="mx-auto mb-4 size-40" />
           <p class="font-mono text-sm text-muted-foreground">
             <span class="text-green">$</span> ls ~/blog
             <br />

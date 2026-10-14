@@ -12,15 +12,98 @@ test.describe("home", () => {
 			"The short version",
 			"Professional journey",
 			"Featured work",
+			"Meet Merlin",
 			"Areas of expertise",
 			"Tech stack",
 			"GitHub telemetry",
 		]) {
 			await expect(page.getByRole("heading", { level: 2, name })).toBeVisible();
 		}
-		await expect(page.getByRole("img", { name: /spaceship shoots down squares/ })).toBeVisible();
+		await expect(page.locator('[data-lottie="/animations/hacker.lottie"]')).toBeVisible();
 		await expectNoHorizontalScroll(page);
 		expect(errors).toEqual([]);
+	});
+
+	test("the hero hacker and section Lotties load", async ({ page }) => {
+		await page.goto("/");
+		const hacker = page.locator('[data-lottie="/animations/hacker.lottie"] dotlottie-wc');
+		await expect(hacker).toHaveAttribute("src", "/animations/hacker.lottie");
+		await expect
+			.poll(() =>
+				hacker.evaluate(
+					(el) => (el as HTMLElement & { dotLottie?: { isLoaded: boolean } }).dotLottie?.isLoaded,
+				),
+			)
+			.toBe(true);
+		// Below the fold nothing is fetched until it is scrolled near.
+		await expect(page.locator('[data-lottie="/animations/hand.lottie"] dotlottie-wc')).toHaveCount(
+			0,
+		);
+	});
+
+	test("hero fits a 360px phone with every typewriter phrase", async ({ page }) => {
+		await page.setViewportSize({ width: 360, height: 780 });
+		await page.goto("/");
+		const phrases: string[] = JSON.parse(
+			(await page.locator("[data-typewriter]").getAttribute("data-phrases")) ?? "[]",
+		);
+		expect(phrases.length).toBeGreaterThan(1);
+		for (const phrase of phrases) {
+			const right = await page.evaluate((text) => {
+				const target = document.querySelector("[data-typewriter-text]");
+				if (target) target.textContent = text;
+				const hero = document.querySelector("#hero-title")?.closest("section");
+				return Math.max(
+					...[...(hero?.querySelectorAll("*") ?? [])].map((el) => el.getBoundingClientRect().right),
+				);
+			}, phrase);
+			expect(right, phrase).toBeLessThanOrEqual(360);
+		}
+	});
+
+	test("quick clicks on the Merlin deck do not skip slides", async ({ page }) => {
+		await page.goto("/");
+		const deck = page.locator("[data-deck]");
+		await deck.scrollIntoViewIfNeeded();
+		const next = deck.getByRole("button", { name: "Next slide" });
+		await next.click();
+		await next.click();
+		await next.click();
+		await expect(deck.locator("[data-deck-count]")).toHaveText("04 / 06");
+		const track = deck.locator("[data-deck-track]");
+		await expect
+			.poll(() => track.evaluate((t) => Math.round(t.scrollLeft / t.clientWidth)))
+			.toBe(3);
+	});
+
+	test("Merlin deck pages with buttons and dots", async ({ page }) => {
+		await page.goto("/");
+		const deck = page.locator("[data-deck]");
+		await deck.scrollIntoViewIfNeeded();
+		const count = deck.locator("[data-deck-count]");
+		await expect(count).toHaveText("01 / 06");
+		await expect(deck.getByRole("button", { name: "Previous slide" })).toBeDisabled();
+		await deck.getByRole("button", { name: "Next slide" }).click();
+		await expect(count).toHaveText("02 / 06");
+		await deck.getByRole("button", { name: /^Slide 6:/ }).click();
+		await expect(count).toHaveText("06 / 06");
+		await expect(deck.getByRole("button", { name: "Next slide" })).toBeDisabled();
+		const track = deck.locator("[data-deck-track]");
+		await expect
+			.poll(() => track.evaluate((t) => Math.round(t.scrollLeft / t.clientWidth)))
+			.toBe(5);
+	});
+
+	test("code snippets switch tabs by click and arrow keys", async ({ page }) => {
+		await page.goto("/");
+		const first = page.getByRole("tab", { name: "Step registry" });
+		await expect(first).toHaveAttribute("aria-selected", "true");
+		await expect(page.getByRole("tabpanel")).toContainText("SKILL_PORTS");
+		await page.getByRole("tab", { name: "Run engine" }).click();
+		await expect(page.getByRole("tabpanel")).toContainText("advanceRun");
+		await page.keyboard.press("ArrowRight");
+		await expect(page.getByRole("tab", { name: "AI intent step" })).toBeFocused();
+		await expect(page.getByRole("tabpanel")).toContainText("intentNode");
 	});
 
 	test("terminal prompts keep their spaces", async ({ page }) => {
@@ -71,4 +154,25 @@ test.describe("home", () => {
 		await expect(skip).toBeFocused();
 		await expect(skip).toBeVisible();
 	});
+});
+
+test.describe("without JavaScript", () => {
+	test.use({ javaScriptEnabled: false });
+
+	test("the page is readable and no loader covers it", async ({ page }) => {
+		await page.goto("/");
+		await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+		await expect(page.locator("#global-preloader")).toBeHidden();
+	});
+});
+
+test("scroll-to-top stays out of reach until the page is scrolled", async ({ page }) => {
+	await page.goto("/");
+	const button = page.getByRole("button", { name: "Scroll to top" });
+	await expect(button).toBeHidden();
+	await page.evaluate(() => window.scrollTo(0, 1500));
+	await expect(button).toBeVisible();
+	await button.click();
+	await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+	await expect(button).toBeHidden();
 });

@@ -19,6 +19,10 @@ export default defineConfig({
 	prefetch: {
 		prefetchAll: true,
 	},
+	// A config redirect (not a page calling Astro.redirect) also keeps /about out of the sitemap.
+	redirects: {
+		"/about": { status: 301, destination: "/#whoami" },
+	},
 	// MDX extends this config, so blog posts (.mdx) get the same processor and Shiki theme.
 	markdown: {
 		processor: unified({
@@ -44,6 +48,16 @@ export default defineConfig({
 					},
 				],
 			},
+		},
+		{
+			// Headings only: a single 400 weight, Latin + Cyrillic.
+			provider: fontProviders.fontsource(),
+			name: "Days One",
+			cssVariable: "--font-days-one",
+			weights: [400],
+			styles: ["normal"],
+			subsets: ["latin", "cyrillic"],
+			fallbacks: ["sans-serif"],
 		},
 		{
 			provider: fontProviders.fontsource(),

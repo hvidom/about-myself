@@ -92,6 +92,12 @@ describe("Terminal", () => {
 		for (const row of NEOFETCH) expect(plain).toContain(row.key);
 		expect(plain).toContain("hvidom@dublin ~ $ neofetch");
 	});
+
+	test("the neofetch logo is the tea-break astronaut Lottie, decorative", async () => {
+		const html = await container.renderToString(Terminal);
+		expect(html).toMatch(/data-lottie="\/animations\/meditation\.lottie"[^>]*aria-hidden="true"/);
+		expect(html).not.toContain('shape-rendering="crispEdges"');
+	});
 });
 
 describe("shadcn variants", () => {

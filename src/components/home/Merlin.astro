@@ -1,9 +1,11 @@
 ---
 // Merlin, the AI layer of Content Factory: a short slide deck (scroll-snap, swipeable without JS)
-// and real code from the private repo in tabs, highlighted at build time.
+// and real code from the private repo in a terminal with tabs, highlighted at build time. Each tab
+// types its `cat` command and streams the file in, like Magic UI's Terminal.
 import { Code } from "astro:components";
 import { cardVariants } from "@/components/ui/card";
 import { MERLIN_SLIDES, MERLIN_SNIPPETS, MERLIN_STATS, TONE } from "@/data/profile";
+import { brandCodeTheme } from "@/lib/code-theme";
 import { cn } from "@/lib/utils";
 import MerlinVisual from "./MerlinVisual.astro";
 import SectionHeading from "./SectionHeading.astro";
@@ -119,8 +121,15 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
       </p>
     </div>
 
-    <div class="overflow-hidden rounded-2xl border border-border bg-[#22272e]" data-tabs>
-      <div role="tablist" aria-label="Code snippets" class="flex overflow-x-auto border-b border-white/10 hide-scrollbar">
+    <div class="glass overflow-hidden rounded-2xl font-mono" data-tabs data-source>
+      <div class="flex items-center gap-2 border-b border-border bg-foreground/[0.03] px-4 py-3">
+        <span class="size-3 shrink-0 rounded-full bg-[#ff5f57]" aria-hidden="true"></span>
+        <span class="size-3 shrink-0 rounded-full bg-[#febc2e]" aria-hidden="true"></span>
+        <span class="size-3 shrink-0 rounded-full bg-[#28c840]" aria-hidden="true"></span>
+        <span class="flex-1 truncate text-center text-xs text-muted-foreground">hvidom@dublin: ~/content-factory — zsh</span>
+        <span class="w-13 shrink-0" aria-hidden="true"></span>
+      </div>
+      <div role="tablist" aria-label="Code snippets" class="flex overflow-x-auto border-b border-border hide-scrollbar">
         {
           MERLIN_SNIPPETS.map((snippet, i) => (
             <button
@@ -130,24 +139,47 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
               aria-controls={`snippet-${snippet.id}`}
               aria-selected={i === 0 ? "true" : "false"}
               tabindex={i === 0 ? 0 : -1}
-              class="shrink-0 border-b-2 border-transparent px-4 py-3 font-mono text-xs whitespace-nowrap text-white/60 transition-colors hover:text-white aria-selected:border-turquoise aria-selected:text-white"
+              class="group flex shrink-0 items-center gap-2 border-r border-border px-4 py-2.5 text-xs whitespace-nowrap text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground aria-selected:bg-foreground/[0.06] aria-selected:text-foreground"
             >
+              <span class="size-1.5 rounded-full bg-muted-foreground/40 transition-colors group-aria-selected:bg-turquoise group-aria-selected:shadow-[0_0_8px_var(--turquoise)]" aria-hidden="true" />
               {snippet.title}
             </button>
           ))
         }
       </div>
-      {
-        MERLIN_SNIPPETS.map((snippet, i) => (
-          <div role="tabpanel" id={`snippet-${snippet.id}`} aria-labelledby={`snippet-tab-${snippet.id}`} hidden={i !== 0}>
-            <div class="space-y-1 border-b border-white/10 px-4 py-3">
-              <p class="font-mono text-[11px] text-[#9aa5b1]">{snippet.path}</p>
-              <p class="text-sm text-[#adbac7]">{snippet.note}</p>
-            </div>
-            <Code code={source(snippet.id)} lang="ts" theme="github-dark-dimmed" class="max-h-[28rem] overflow-auto p-4 text-[13px] leading-relaxed" />
-          </div>
-        ))
-      }
+      {/* Every panel sits in the same grid cell, so the window is as tall as the longest file. */}
+      <div class="grid grid-cols-1 p-4 text-xs leading-relaxed sm:p-6 sm:text-[13px]">
+        {
+          MERLIN_SNIPPETS.map((snippet, i) => {
+            const code = source(snippet.id);
+            const command = `cat ${snippet.path}`;
+            return (
+              <div
+                role="tabpanel"
+                id={`snippet-${snippet.id}`}
+                aria-labelledby={`snippet-tab-${snippet.id}`}
+                class:list={["col-start-1 row-start-1 min-w-0 space-y-3", i !== 0 && "invisible"]}
+                inert={i !== 0}
+                data-source-panel
+              >
+                <p class="wrap-anywhere">
+                  <span class="text-turquoise">hvidom</span><span class="text-muted-foreground">@</span><span class="text-violet">dublin</span>{" "}
+                  <span class="text-muted-foreground">~/content-factory</span>{" "}<span class="text-green">$</span>{" "}
+                  <span class="sr-only">{command}</span><span aria-hidden="true" data-type={command}>{command}</span><span class="ml-0.5 hidden h-[1.1em] w-2 animate-blink bg-turquoise align-text-bottom" aria-hidden="true" data-caret />
+                </p>
+                <p class="text-muted-foreground italic" data-line># {snippet.note}</p>
+                <Code code={code} lang="ts" theme={brandCodeTheme} class="py-1" />
+                <p class="text-green" data-line>✔ {code.split("\n").length} lines of TypeScript</p>
+                <p data-line>
+                  <span class="text-turquoise">hvidom</span><span class="text-muted-foreground">@</span><span class="text-violet">dublin</span>{" "}
+                  <span class="text-muted-foreground">~/content-factory</span>{" "}<span class="text-green">$</span>{" "}
+                  <span class="inline-block h-[1.1em] w-2 animate-blink bg-foreground align-text-bottom" aria-hidden="true" />
+                </p>
+              </div>
+            );
+          })
+        }
+      </div>
     </div>
   </div>
 </section>
@@ -210,19 +242,72 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
     });
   }
 
+  // Source terminal: the active tab types its `cat` command, then the file streams in line by line.
+  // Without JS (or with reduced motion) every line is simply there.
+  const TYPE_MS = 28;
+  const LINE_MS = 32;
+
   function tabs(root: HTMLElement) {
     if (root.dataset.ready) return;
     root.dataset.ready = "1";
     const list = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panelOf = (tab: HTMLButtonElement) => document.getElementById(tab.getAttribute("aria-controls") ?? "");
+    const animate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let run = 0;
+    let seen = false;
+
+    const finish = (panel: HTMLElement) => {
+      delete panel.dataset.playing;
+      const typed = panel.querySelector<HTMLElement>("[data-type]");
+      if (typed) typed.textContent = typed.dataset.type ?? "";
+      panel.querySelector<HTMLElement>("[data-caret]")?.classList.add("hidden");
+    };
+
+    const play = (panel: HTMLElement) => {
+      const id = ++run;
+      const typed = panel.querySelector<HTMLElement>("[data-type]");
+      const caret = panel.querySelector<HTMLElement>("[data-caret]");
+      const lines = [...panel.querySelectorAll<HTMLElement>(".line, [data-line]")];
+      const command = typed?.dataset.type ?? "";
+      for (const line of lines) delete line.dataset.shown;
+      panel.dataset.playing = "1";
+      if (typed) typed.textContent = "";
+      caret?.classList.remove("hidden");
+
+      let chars = 0;
+      let shown = 0;
+      const step = () => {
+        if (id !== run || !panel.isConnected) return;
+        if (chars < command.length) {
+          chars++;
+          if (typed) typed.textContent = command.slice(0, chars);
+          window.setTimeout(step, TYPE_MS);
+          return;
+        }
+        caret?.classList.add("hidden");
+        const line = lines[shown++];
+        if (!line) return finish(panel);
+        line.dataset.shown = "1";
+        window.setTimeout(step, LINE_MS);
+      };
+      window.setTimeout(step, TYPE_MS * 4);
+    };
+
     const select = (tab: HTMLButtonElement) => {
       for (const other of list) {
         const on = other === tab;
         other.setAttribute("aria-selected", String(on));
         other.tabIndex = on ? 0 : -1;
-        const panel = document.getElementById(other.getAttribute("aria-controls") ?? "");
-        if (panel) panel.hidden = !on;
+        const panel = panelOf(other);
+        if (!panel) continue;
+        panel.classList.toggle("invisible", !on);
+        panel.inert = !on;
+        if (!on) finish(panel);
       }
+      const panel = panelOf(tab);
+      if (panel && animate && seen) play(panel);
     };
+
     list.forEach((tab, i) => {
       tab.addEventListener("click", () => select(tab));
       tab.addEventListener("keydown", (event) => {
@@ -235,6 +320,27 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
         target.focus();
       });
     });
+
+    if (!animate) return;
+    // Like Magic UI's startOnView: the first tab waits, blank, until the terminal is on screen.
+    const first = list.find((tab) => tab.getAttribute("aria-selected") === "true");
+    const firstPanel = first && panelOf(first);
+    if (!firstPanel) return;
+    firstPanel.dataset.playing = "1";
+    const typed = firstPanel.querySelector<HTMLElement>("[data-type]");
+    if (typed) typed.textContent = "";
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        seen = true;
+        const active = list.find((tab) => tab.getAttribute("aria-selected") === "true");
+        const panel = active && panelOf(active);
+        if (panel) play(panel);
+      },
+      { threshold: 0.25 },
+    );
+    observer.observe(root);
   }
 
   document.addEventListener("astro:page-load", () => {
@@ -242,3 +348,19 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
     document.querySelectorAll<HTMLElement>("[data-tabs]").forEach(tabs);
   });
 </script>
+
+<style>
+  /* Lines of the source terminal fade in from above while a tab plays (see play() above). */
+  [data-source-panel] :global(.line) {
+    display: inline-block;
+  }
+  [data-source-panel] :global(:is(.line, [data-line])) {
+    transition:
+      opacity 0.3s ease-out,
+      transform 0.3s ease-out;
+  }
+  [data-source-panel][data-playing] :global(:is(.line, [data-line]):not([data-shown])) {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+</style>

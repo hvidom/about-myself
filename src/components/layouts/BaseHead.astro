@@ -24,6 +24,25 @@ const fullTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="color-scheme" content="dark" />
 <meta name="theme-color" content="#0b1130" />
+<script is:inline>
+  // Black sky before the first paint, and again after ClientRouter swaps <html> attributes.
+  // Mirrors applySky() in src/lib/sky.ts. Anything but "black" means the default blue sky.
+  (() => {
+    if (window.__sky) return;
+    window.__sky = true;
+    const apply = () => {
+      let black = false;
+      try {
+        black = localStorage.getItem("sky") === "black";
+      } catch {}
+      if (black) document.documentElement.dataset.sky = "black";
+      else delete document.documentElement.dataset.sky;
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", black ? "#050505" : "#0b1130");
+    };
+    apply();
+    document.addEventListener("astro:after-swap", apply);
+  })();
+</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" sizes="32x32" />
 <link rel="sitemap" href="/sitemap-index.xml" />

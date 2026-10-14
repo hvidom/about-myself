@@ -103,6 +103,28 @@
 	--sidebar-ring: oklch(0.8 0.13 182);
 }
 
+/* Black sky, switched by SkyToggle (html[data-sky="black"]): neutral surfaces, dimmer glows. */
+html[data-sky="black"] {
+	--background: oklch(0.1 0 0);
+	--card: oklch(0.17 0.008 270);
+	--popover: oklch(0.15 0.008 270);
+	--secondary: oklch(0.22 0.008 270);
+	--muted: oklch(0.22 0.008 270);
+	--sidebar: oklch(0.15 0.008 270);
+	--space-0: oklch(0.04 0 0);
+	--space-1: oklch(0.13 0.008 270);
+	--glow-violet: 9%;
+	--glow-turquoise: 6%;
+	--glow-green: 3%;
+}
+
+/* The sky toggle grows the new sky as a circle; only the clip-path animation should run. */
+html.sky-switching::view-transition-old(root),
+html.sky-switching::view-transition-new(root) {
+	animation: none;
+	mix-blend-mode: normal;
+}
+
 @theme inline {
 	--breakpoint-3xl: 1920px;
 	--font-heading: var(--font-days-one), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -190,17 +212,17 @@
 	background:
 		radial-gradient(
 			60rem 40rem at 88% -12%,
-			color-mix(in oklch, var(--violet) 24%, transparent),
+			color-mix(in oklch, var(--violet) var(--glow-violet, 24%), transparent),
 			transparent 62%
 		),
 		radial-gradient(
 			52rem 36rem at -12% 108%,
-			color-mix(in oklch, var(--turquoise) 14%, transparent),
+			color-mix(in oklch, var(--turquoise) var(--glow-turquoise, 14%), transparent),
 			transparent 62%
 		),
 		radial-gradient(
 			40rem 28rem at 55% 120%,
-			color-mix(in oklch, var(--green) 8%, transparent),
+			color-mix(in oklch, var(--green) var(--glow-green, 8%), transparent),
 			transparent 60%
 		),
 		linear-gradient(160deg, var(--space-1), var(--space-0));

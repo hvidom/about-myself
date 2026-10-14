@@ -3,7 +3,7 @@ export const SITE_TITLE = "hvidom";
 export const SITE_SUBTITLE = "Software Developer & Business Strategist";
 export const SITE_DESCRIPTION =
 	"Personal website, developer portfolio, and digital business consultant showcase of Hryhorii Ilin (hvidom).";
-export const SITE_URL = "https://hvidom.ia-a.dev";
+export const SITE_URL = "https://about-myself.devopsick.workers.dev";
 
 export const PERSONAL_INFO = {
 	name: "Hryhorii Ilin",

@@ -1,7 +1,7 @@
 {
 	"extends": "astro/tsconfigs/strict",
 	"include": [".astro/types.d.ts", "**/*", "./worker-configuration.d.ts"],
-	"exclude": ["dist"],
+	"exclude": ["dist", "proxy"],
 	"compilerOptions": {
 		"strictNullChecks": true,
 		"types": ["./worker-configuration.d.ts"],
@@ -27,6 +27,7 @@
 		},
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
-		"noPropertyAccessFromIndexSignature": false
+		"noPropertyAccessFromIndexSignature": false,
+		"plugins": [{ "name": "@astrojs/ts-plugin" }]
 	}
 }

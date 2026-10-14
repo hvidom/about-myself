@@ -6,15 +6,15 @@ interface Props {
 const { class: className } = Astro.props;
 ---
 
-<div class:list={['fixed inset-0 -z-50 pointer-events-none overflow-hidden bg-transparent', className]} transition:persist>
+<div class:list={['space-sky fixed inset-0 -z-50 pointer-events-none overflow-hidden', className]} transition:persist aria-hidden="true">
   <canvas id="stars-canvas" class="absolute inset-0 h-full w-full"></canvas>
 
   <svg id="shooting-stars-svg" class="absolute inset-0 h-full w-full" aria-hidden="true">
     <g id="comet-group"></g>
     <defs>
       <linearGradient id="space-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color: #2EB9DF; stop-opacity: 0;" />
-        <stop offset="100%" style="stop-color: #9E00FF; stop-opacity: 1;" />
+        <stop offset="0%" style="stop-color: var(--turquoise); stop-opacity: 0;" />
+        <stop offset="100%" style="stop-color: var(--green); stop-opacity: 1;" />
       </linearGradient>
     </defs>
   </svg>
@@ -202,8 +202,24 @@ const { class: className } = Astro.props;
     }
 
     // --- INITIALIZE SYSTEM ---
-    window.addEventListener('resize', resize);
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.addEventListener('resize', () => {
+      resize();
+      if (reduceMotion) drawStatic();
+    });
     resize();
-    requestAnimationFrame(tick);
+
+    function drawStatic() {
+      ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+      for (const star of stars) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+      }
+    }
+
+    if (reduceMotion) drawStatic();
+    else requestAnimationFrame(tick);
   }
 </script>

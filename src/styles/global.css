@@ -1,46 +1,120 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-/* 1. REMOVED: @import "@fontsource-variable/inter"; - No longer needed! */
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Design tokens (shadcn/ui).
+ * Palette shared with the github.com/hvidom artwork: deep-space navy, turquoise as the
+ * primary, green as the accent, violet / pink / gold for details.
+ */
 :root {
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.141 0.015 240);
+	--background: oklch(0.985 0.006 200);
+	--foreground: oklch(0.21 0.035 262);
 	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.141 0.015 240);
+	--card-foreground: oklch(0.21 0.035 262);
 	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.141 0.015 240);
-	--primary: oklch(0.627 0.194 149.3);
-	--primary-foreground: oklch(0.979 0.012 145.5);
-	--secondary: oklch(0.961 0.004 240);
-	--secondary-foreground: oklch(0.19 0.017 240);
-	--muted: oklch(0.961 0.004 240);
-	--muted-foreground: oklch(0.552 0.016 240);
-	--accent: oklch(0.961 0.004 240);
-	--accent-foreground: oklch(0.19 0.017 240);
-	--destructive: oklch(0.628 0.224 25.6);
+	--popover-foreground: oklch(0.21 0.035 262);
+	--primary: oklch(0.52 0.1 186);
+	--primary-foreground: oklch(0.985 0.012 180);
+	--secondary: oklch(0.955 0.012 200);
+	--secondary-foreground: oklch(0.26 0.035 258);
+	--muted: oklch(0.955 0.01 220);
+	--muted-foreground: oklch(0.48 0.03 256);
+	--accent: oklch(0.95 0.045 162);
+	--accent-foreground: oklch(0.36 0.08 160);
+	--destructive: oklch(0.577 0.215 27.3);
 	--destructive-foreground: oklch(0.985 0 0);
-	--border: oklch(0.922 0.004 240);
-	--input: oklch(0.922 0.004 240);
-	--ring: oklch(0.627 0.194 149.3);
-	--radius: 0.5rem;
-	--sidebar: oklch(0.985 0.002 240);
-	--sidebar-foreground: oklch(0.21 0.018 240);
-	--sidebar-primary: oklch(0.627 0.194 149.3);
-	--sidebar-primary-foreground: oklch(1 0 0);
-	--sidebar-accent: oklch(0.961 0.004 240);
-	--sidebar-accent-foreground: oklch(0.627 0.194 149.3);
-	--sidebar-border: oklch(0.922 0.004 240);
-	--sidebar-ring: oklch(0.627 0.194 149.3);
+	--border: oklch(0.905 0.012 225);
+	--input: oklch(0.905 0.012 225);
+	--ring: oklch(0.52 0.1 186);
+	--radius: 0.75rem;
+
+	--chart-1: oklch(0.52 0.1 186);
+	--chart-2: oklch(0.56 0.15 150);
+	--chart-3: oklch(0.55 0.12 225);
+	--chart-4: oklch(0.52 0.2 292);
+	--chart-5: oklch(0.58 0.2 350);
+
+	/* Brand accents (text-turquoise, bg-green/10, …) */
+	--turquoise: oklch(0.52 0.1 186);
+	--green: oklch(0.56 0.15 150);
+	--cyan: oklch(0.55 0.12 225);
+	--violet: oklch(0.52 0.2 292);
+	--pink: oklch(0.58 0.2 350);
+	--gold: oklch(0.62 0.14 70);
+	--space-0: oklch(0.985 0.006 200);
+	--space-1: oklch(0.96 0.02 195);
+
+	--sidebar: oklch(0.975 0.008 200);
+	--sidebar-foreground: oklch(0.21 0.035 262);
+	--sidebar-primary: oklch(0.52 0.1 186);
+	--sidebar-primary-foreground: oklch(0.985 0.012 180);
+	--sidebar-accent: oklch(0.95 0.045 162);
+	--sidebar-accent-foreground: oklch(0.36 0.08 160);
+	--sidebar-border: oklch(0.905 0.012 225);
+	--sidebar-ring: oklch(0.52 0.1 186);
+}
+
+.dark {
+	--background: oklch(0.14 0.032 268);
+	--foreground: oklch(0.94 0.012 250);
+	--card: oklch(0.19 0.05 270);
+	--card-foreground: oklch(0.94 0.012 250);
+	--popover: oklch(0.17 0.045 270);
+	--popover-foreground: oklch(0.94 0.012 250);
+	--primary: oklch(0.8 0.13 182);
+	--primary-foreground: oklch(0.21 0.05 205);
+	--secondary: oklch(0.25 0.045 268);
+	--secondary-foreground: oklch(0.94 0.012 250);
+	--muted: oklch(0.23 0.04 268);
+	--muted-foreground: oklch(0.74 0.03 258);
+	--accent: oklch(0.29 0.06 168);
+	--accent-foreground: oklch(0.9 0.09 160);
+	--destructive: oklch(0.65 0.2 25);
+	--destructive-foreground: oklch(0.97 0.02 25);
+	--border: oklch(1 0 0 / 10%);
+	--input: oklch(1 0 0 / 14%);
+	--ring: oklch(0.8 0.13 182);
+
+	--chart-1: oklch(0.8 0.13 182);
+	--chart-2: oklch(0.79 0.2 146);
+	--chart-3: oklch(0.8 0.13 212);
+	--chart-4: oklch(0.76 0.14 293);
+	--chart-5: oklch(0.73 0.17 350);
+
+	--turquoise: oklch(0.8 0.13 182);
+	--green: oklch(0.79 0.2 146);
+	--cyan: oklch(0.8 0.13 212);
+	--violet: oklch(0.76 0.14 293);
+	--pink: oklch(0.73 0.17 350);
+	--gold: oklch(0.84 0.16 84);
+	--space-0: oklch(0.12 0.03 268);
+	--space-1: oklch(0.19 0.06 272);
+
+	--sidebar: oklch(0.17 0.045 270);
+	--sidebar-foreground: oklch(0.94 0.012 250);
+	--sidebar-primary: oklch(0.8 0.13 182);
+	--sidebar-primary-foreground: oklch(0.21 0.05 205);
+	--sidebar-accent: oklch(0.29 0.06 168);
+	--sidebar-accent-foreground: oklch(0.9 0.09 160);
+	--sidebar-border: oklch(1 0 0 / 10%);
+	--sidebar-ring: oklch(0.8 0.13 182);
 }
 
 @theme inline {
 	--breakpoint-3xl: 1920px;
-	--font-heading: var(--font-inter), sans-serif;
-	--font-sans: var(--font-inter), sans-serif;
+	--font-heading: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 	--font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+	--font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+	--color-turquoise: var(--turquoise);
+	--color-green: var(--green);
+	--color-cyan: var(--cyan);
+	--color-violet: var(--violet);
+	--color-pink: var(--pink);
+	--color-gold: var(--gold);
 
 	--color-sidebar-ring: var(--sidebar-ring);
 	--color-sidebar-border: var(--sidebar-border);
@@ -59,6 +133,7 @@
 	--color-input: var(--input);
 	--color-border: var(--border);
 	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
 	--color-accent-foreground: var(--accent-foreground);
 	--color-accent: var(--accent);
 	--color-muted-foreground: var(--muted-foreground);
@@ -80,36 +155,94 @@
 	--radius-2xl: calc(var(--radius) * 1.8);
 	--radius-3xl: calc(var(--radius) * 2.2);
 	--radius-4xl: calc(var(--radius) * 2.6);
+
+	--animate-shimmer: shimmer 9s ease-in-out infinite;
+	--animate-blink: blink 1.06s steps(1) infinite;
+	--animate-float: float 6s ease-in-out infinite;
+
+	@keyframes shimmer {
+		0%,
+		100% {
+			background-position: 0% 50%;
+		}
+		50% {
+			background-position: 100% 50%;
+		}
+	}
+	@keyframes blink {
+		50% {
+			opacity: 0;
+		}
+	}
+	@keyframes float {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-8px);
+		}
+	}
 }
 
-.dark {
-	--background: oklch(0.129 0.014 24.2);
-	--foreground: oklch(0.961 0.003 240);
-	--card: oklch(0.183 0.012 28.4);
-	--card-foreground: oklch(0.961 0.003 240);
-	--popover: oklch(0.165 0.002 240);
-	--popover-foreground: oklch(0.961 0.003 240);
-	--primary: oklch(0.697 0.196 148.5);
-	--primary-foreground: oklch(0.203 0.055 146.2);
-	--secondary: oklch(0.245 0.015 240);
-	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(0.22 0.002 240);
-	--muted-foreground: oklch(0.706 0.011 240);
-	--accent: oklch(0.232 0.011 20.2);
-	--accent-foreground: oklch(0.985 0 0);
-	--destructive: oklch(0.405 0.132 26.4);
-	--destructive-foreground: oklch(0.962 0.035 24.5);
-	--border: oklch(0.245 0.015 240);
-	--input: oklch(0.245 0.015 240);
-	--ring: oklch(0.482 0.134 147.2);
-	--sidebar: oklch(0.183 0.012 28.4);
-	--sidebar-foreground: oklch(0.961 0.003 240);
-	--sidebar-primary: oklch(0.697 0.196 148.5);
-	--sidebar-primary-foreground: oklch(0.203 0.055 146.2);
-	--sidebar-accent: oklch(0.245 0.015 240);
-	--sidebar-accent-foreground: oklch(0.961 0.003 240);
-	--sidebar-border: oklch(0.245 0.015 240);
-	--sidebar-ring: oklch(0.482 0.134 147.2);
+/* Night sky behind every page (SpaceBackground paints stars on top). */
+@utility space-sky {
+	background:
+		radial-gradient(
+			60rem 40rem at 88% -12%,
+			color-mix(in oklch, var(--violet) 24%, transparent),
+			transparent 62%
+		),
+		radial-gradient(
+			52rem 36rem at -12% 108%,
+			color-mix(in oklch, var(--turquoise) 14%, transparent),
+			transparent 62%
+		),
+		radial-gradient(
+			40rem 28rem at 55% 120%,
+			color-mix(in oklch, var(--green) 8%, transparent),
+			transparent 60%
+		),
+		linear-gradient(160deg, var(--space-1), var(--space-0));
+}
+
+/* Frosted card that sits on the sky. */
+@utility glass {
+	background-color: color-mix(in oklch, var(--card) 72%, transparent);
+	border: 1px solid var(--border);
+	backdrop-filter: blur(10px);
+}
+
+/* Name / heading gradient, slowly drifting. */
+@utility text-brand {
+	background-image: linear-gradient(
+		100deg,
+		var(--foreground) 0%,
+		var(--turquoise) 30%,
+		var(--green) 55%,
+		var(--violet) 80%,
+		var(--pink) 100%
+	);
+	background-size: 220% 100%;
+	background-clip: text;
+	color: transparent;
+	animation: var(--animate-shimmer);
+}
+
+/* Faint 40px grid, used behind feature cards. */
+@utility grid-faint {
+	background-image:
+		linear-gradient(
+			to right,
+			color-mix(in oklch, var(--foreground) 4%, transparent) 1px,
+			transparent 1px
+		),
+		linear-gradient(
+			to bottom,
+			color-mix(in oklch, var(--foreground) 4%, transparent) 1px,
+			transparent 1px
+		);
+	background-size: 40px 40px;
 }
 
 @layer base {
@@ -120,96 +253,88 @@
 		@apply font-sans antialiased;
 		scroll-behavior: smooth;
 	}
-
 	body {
 		@apply bg-background text-foreground;
 	}
-
-	/* ⬇️ SHADCN UI TYPOGRAPHY CONFIGURATION ⬇️ */
-
-	h1 {
-		@apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
+	:focus-visible {
+		outline: 2px solid var(--ring);
+		outline-offset: 2px;
 	}
+}
 
-	h2 {
-		@apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0;
-	}
+/* ── Article typography (blog posts only) ───────────────────────────── */
+@layer components {
+	.prose {
+		@apply text-base leading-7 text-foreground/90;
 
-	h3 {
-		@apply scroll-m-20 text-2xl font-semibold tracking-tight;
-	}
-
-	h4 {
-		@apply scroll-m-20 text-xl font-semibold tracking-tight;
-	}
-
-	p {
-		@apply leading-7 not-first:mt-6;
-	}
-
-	blockquote {
-		@apply mt-6 border-l-2 pl-6 italic;
-	}
-
-	ul {
-		@apply my-6 ml-6 list-disc [&>li]:mt-2;
-	}
-
-	code {
-		@apply relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold;
-	}
-
-	/* ⬇️ PROSE TYPOGRAPHY LAYOUT ⬇️ */
-	:where(.prose) {
-		:where(h1, h2, h3, h4, p, figure, blockquote, dl, dd, ul, ol) {
-			margin-top: 1.25em;
-			margin-bottom: 0.5em;
+		:where(h1) {
+			@apply mt-10 scroll-m-20 text-4xl font-extrabold tracking-tight text-foreground;
 		}
-
+		:where(h2) {
+			@apply mt-12 scroll-m-20 border-b border-border pb-2 text-3xl font-semibold tracking-tight text-foreground first:mt-0;
+		}
+		:where(h3) {
+			@apply mt-8 scroll-m-20 text-2xl font-semibold tracking-tight text-foreground;
+		}
+		:where(h4) {
+			@apply mt-6 scroll-m-20 text-xl font-semibold tracking-tight text-foreground;
+		}
+		:where(p) {
+			@apply leading-7 not-first:mt-6;
+		}
+		:where(blockquote) {
+			@apply mt-6 border-l-2 border-turquoise pl-6 text-muted-foreground italic;
+		}
 		:where(ul, ol) {
-			padding-inline-start: 1.5em;
-
-			:where(ul, ol) {
-				margin-top: 0;
-				margin-bottom: 0;
-			}
+			@apply my-6 ml-6 [&>li]:mt-2;
 		}
-
 		:where(ul) {
 			list-style-type: disc;
 		}
-
 		:where(ol) {
 			list-style-type: decimal;
 		}
-
-		:where(li) :where(p:first-child) {
-			margin: 0;
+		:where(li)::marker {
+			color: var(--turquoise);
 		}
-
-		/* Links inside markdown posts */
 		:where(a) {
-			@apply text-primary underline underline-offset-4 font-medium transition-colors hover:text-primary/80;
+			@apply font-medium text-turquoise underline decoration-turquoise/40 underline-offset-4 transition-colors hover:decoration-turquoise;
+		}
+		:where(hr) {
+			@apply my-10 border-border;
+		}
+		:where(img) {
+			@apply rounded-xl border border-border;
+		}
+		:where(table) {
+			@apply my-6 w-full text-sm;
+		}
+		:where(th, td) {
+			@apply border border-border px-3 py-2 text-left;
+		}
+		:where(th) {
+			@apply bg-muted/60 font-semibold;
+		}
+		:where(:not(pre) > code) {
+			@apply rounded-md bg-muted px-[0.35rem] py-[0.15rem] font-mono text-[0.85em] font-medium text-turquoise;
+		}
+		:where(pre) {
+			@apply relative my-6 overflow-x-auto rounded-xl border border-border p-4 font-mono text-sm leading-relaxed;
+			background-color: color-mix(in oklch, var(--space-0) 88%, black) !important;
+		}
+		:where(pre > code) {
+			@apply block w-full bg-transparent p-0 font-normal;
 		}
 	}
+}
 
-	/* ⬇️ PREMIUM CODE BLOCK CONFIGURATION (SHIKI) ⬇️ */
-	pre {
-		@apply relative my-6 overflow-x-auto rounded-lg border border-border bg-zinc-950 p-4 font-mono text-sm leading-relaxed text-zinc-50;
-	}
-
-	code {
-		@apply rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-xs font-semibold text-foreground;
-	}
-
-	/* Isolates code blocks from inline single backtick blocks */
-	pre > code {
-		all: unset;
-		@apply font-mono text-sm block w-full bg-transparent p-0 text-inherit font-normal;
-	}
-
-	/* Soft stylings for tokens generated by Shiki */
-	pre span {
-		@apply bg-transparent;
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
 	}
 }

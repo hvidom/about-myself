@@ -1,47 +1,33 @@
 ---
-// src/components/layouts/Preloader.astro
+// Full-screen loader shown during ClientRouter navigations.
 ---
 
-<div 
-  id="global-preloader" 
+<div
+  id="global-preloader"
   transition:persist
-  class="fixed inset-0 z-150 flex flex-col items-center justify-center bg-background transition-opacity duration-300 pointer-events-none opacity-100"
+  class="pointer-events-none fixed inset-0 z-150 flex flex-col items-center justify-center bg-background opacity-100 transition-opacity duration-300"
 >
   <div class="flex flex-col items-center gap-4">
-    <div class="h-10 w-10 animate-spin rounded-full border-4 border-muted border-t-primary"></div>
-    <p class="text-sm font-medium text-muted-foreground tracking-wider animate-pulse">Loading...</p>
+    <div class="size-10 animate-spin rounded-full border-4 border-muted border-t-turquoise border-r-green" role="status" aria-label="Loading"></div>
+    <p class="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">loading</p>
   </div>
 </div>
 
 <script>
-  // ИСПРАВЛЕНО: Скрипт теперь собирается через компилятор Astro (без is:inline).
-  // Это гарантирует, что слушатели событий навесятся строго ОДИН раз на весь жизненный цикл приложения.
-
-  const showPreloader = () => {
-    const loader = document.getElementById('global-preloader');
-    if (loader) {
-      loader.style.opacity = '1';
-      loader.style.pointerEvents = 'auto';
-    }
+  const setVisible = (visible: boolean) => {
+    const loader = document.getElementById("global-preloader");
+    if (!loader) return;
+    loader.style.opacity = visible ? "1" : "0";
+    loader.style.pointerEvents = visible ? "auto" : "none";
   };
 
-  const hidePreloader = () => {
-    const loader = document.getElementById('global-preloader');
-    if (loader) {
-      loader.style.opacity = '0';
-      loader.style.pointerEvents = 'none';
-    }
-  };
-
-  // 1. Прячем прелоадер при первичной жесткой загрузке HTML
-  if (document.readyState === 'complete') {
-    hidePreloader();
+  if (document.readyState === "complete") {
+    setVisible(false);
   } else {
-    window.addEventListener('load', hidePreloader);
+    window.addEventListener("load", () => setVisible(false));
   }
 
-  // 2. Интеграция с Astro ClientRouter (навешивается один раз)
-  document.addEventListener('astro:before-preparation', showPreloader);
-  document.addEventListener('astro:after-swap', hidePreloader);
-  document.addEventListener('astro:page-load', hidePreloader); // Защита от зависания
+  document.addEventListener("astro:before-preparation", () => setVisible(true));
+  document.addEventListener("astro:after-swap", () => setVisible(false));
+  document.addEventListener("astro:page-load", () => setVisible(false));
 </script>

@@ -1,99 +1,94 @@
 ---
-import { getCollection } from "astro:content";
-import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
+import { Image } from "astro:assets";
 import Footer from "@/components/Footer.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
-import { Image } from "astro:assets";
+import Header from "@/components/Header.astro";
+import { badgeVariants } from "@/components/ui/badge";
+import { cardVariants } from "@/components/ui/card";
+import Layout from "@/layouts/Layout.astro";
+import { publishedPosts } from "@/lib/posts";
+import { cn } from "@/lib/utils";
 
-const posts = (await getCollection("blog")).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+export const prerender = true;
+
+const posts = await publishedPosts();
 ---
 
-<Layout 
-  title="Blog | hvidom"
-  description="Personal blog and technical articles of Hryhorii Ilin (hvidom). Exploring software engineering, data analytics, strategy, and infrastructure."
+<Layout
+  title="Blog"
+  description="Articles by Hryhorii Ilin (hvidom) on full-stack web development, CRM automation, cloud operations and sales systems."
 >
   <Header />
 
-  <main class="max-w-6xl mx-auto px-6 py-16 space-y-12">
-    <!-- Blog Section Header -->
-    <div class="space-y-4">
-      <h1>Writing & Insights</h1>
-      <div class="h-1 w-20 bg-linear-to-r from-primary to-emerald-400 rounded-full"></div>
-      <p>
-        Articles on full-stack web development, CRM automating systems, scalable cloud operations, and strategic sales methodologies.
+  <main id="main" class="mx-auto max-w-6xl space-y-12 px-5 py-16 sm:px-6">
+    <div class="max-w-2xl space-y-3">
+      <p class="font-mono text-sm text-turquoise"><span class="text-violet">~</span> <span class="text-green">$</span> ls ~/blog</p>
+      <h1 class="text-4xl font-black tracking-tight sm:text-5xl"><span class="text-brand">Writing & insights</span></h1>
+      <p class="text-muted-foreground">
+        Articles on full-stack web development, CRM automation, scalable cloud operations and sales methodology.
       </p>
     </div>
 
-    <!-- Posts Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
-      {posts.map((post, index) => {
-        const isFeatured = index === 0;
-        return (
-          <a 
-            href={`/blog/${post.id}/`} 
-            class:list={[
-              "group bg-card/30 hover:bg-card/50 border border-border/60 hover:border-primary/45 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between",
-              isFeatured ? "md:col-span-2 md:flex-row" : ""
-            ]}
-          >
-            {/* Optional Image */}
-            {post.data.heroImage && (
-              <div class:list={[
-                "overflow-hidden bg-muted/20 relative",
-                isFeatured ? "md:w-1/2 aspect-video md:aspect-auto min-h-[240px]" : "aspect-2/1 w-full"
-              ]}>
-                <Image 
-                  width={720} 
-                  height={360} 
-                  src={post.data.heroImage} 
-                  alt="" 
-                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div class="absolute inset-0 bg-linear-to-t from-background/40 to-transparent"></div>
-              </div>
-            )}
+    {
+      posts.length === 0 && (
+        <div class="glass grid-faint rounded-3xl p-10 text-center">
+          <p class="font-mono text-sm text-muted-foreground">
+            <span class="text-green">$</span> ls ~/blog
+            <br />
+            <span class="text-turquoise">total 0</span>, first posts are being written.
+          </p>
+        </div>
+      )
+    }
 
-            {/* Post Content */}
-            <div class:list={[
-              "p-6 flex flex-col justify-between flex-1 gap-6",
-              isFeatured && post.data.heroImage ? "md:w-1/2" : ""
-            ]}>
-              <div class="space-y-4">
-                <div class="flex items-center gap-2.5">
-                  <span class="text-[10px] font-mono text-muted-foreground uppercase">
-                    <FormattedDate date={post.data.pubDate} />
-                  </span>
-                  {post.data.category && (
-                    <>
-                      <span class="text-border text-xs">•</span>
-                      <span class="text-[10px] font-mono text-primary font-bold uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
-                        {post.data.category}
-                      </span>
-                    </>
-                  )}
+    <ul class="grid gap-6 md:grid-cols-2">
+      {
+        posts.map((post, index) => {
+          const featured = index === 0;
+          return (
+            <li class:list={[featured && "md:col-span-2"]}>
+              <a
+                href={`/blog/${post.id}/`}
+                class={cn(
+                  cardVariants({ variant: "glass" }),
+                  "group h-full gap-0 rounded-3xl py-0",
+                  featured && post.data.heroImage && "md:flex-row",
+                )}
+              >
+                {post.data.heroImage && (
+                  <div class:list={["relative overflow-hidden bg-muted/30", featured ? "aspect-video md:aspect-auto md:w-1/2" : "aspect-2/1"]}>
+                    <Image
+                      width={featured ? 960 : 720}
+                      height={featured ? 540 : 360}
+                      src={post.data.heroImage}
+                      alt=""
+                      class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div class="absolute inset-0 bg-linear-to-t from-background/60 to-transparent" />
+                  </div>
+                )}
+                <div class:list={["flex flex-1 flex-col justify-between gap-6 p-6 sm:p-7", featured && post.data.heroImage && "md:w-1/2"]}>
+                  <div class="space-y-3">
+                    <div class="flex flex-wrap items-center gap-2 font-mono text-[11px] text-muted-foreground uppercase">
+                      <FormattedDate date={post.data.pubDate} />
+                      {post.data.category && <span class={cn(badgeVariants({ variant: "turquoise" }), "h-5")}>{post.data.category}</span>}
+                    </div>
+                    <h2 class:list={["leading-tight font-bold text-foreground transition-colors group-hover:text-turquoise", featured ? "text-2xl sm:text-3xl" : "text-xl"]}>
+                      {post.data.title}
+                    </h2>
+                    <p class="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{post.data.description}</p>
+                  </div>
+                  <div class="flex items-center justify-between border-t border-border pt-4 font-mono text-xs text-muted-foreground">
+                    <span>read article</span>
+                    <span class="text-turquoise transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
+                  </div>
                 </div>
-
-                <h2 class="text-xl font-bold leading-tight group-hover:text-primary transition-colors">
-                  {post.data.title}
-                </h2>
-                
-                <p class="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                  {post.data.description}
-                </p>
-              </div>
-
-              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/30 pt-4">
-                <span class="font-medium group-hover:text-foreground transition-colors">Read Article</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-1 size-4"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-              </div>
-            </div>
-          </a>
-        );
-      })}
-    </div>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
   </main>
 
   <Footer />

@@ -1,27 +1,29 @@
 ---
-const today = new Date();
+import { LINKS } from "@/data/profile";
+
+const year = new Date().getFullYear();
 ---
 
-<footer class="border-t border-border/40 bg-[#04040a]/80 backdrop-blur-sm mt-32 py-12 text-center text-xs text-muted-foreground font-mono">
-  <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-    <div class="flex flex-col items-center md:items-start gap-1">
-      <div class="flex items-center gap-1.5">
-        <span class="text-sm font-black tracking-tighter text-foreground">hvidom</span>
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-      </div>
-      <div>&copy; {today.getFullYear()} Hryhorii Ilin. All rights reserved.</div>
-    </div>
-    
-    <div class="flex flex-wrap justify-center gap-6 text-xs">
-      <a href="mailto:devopsick@pm.me" class="hover:text-primary transition-colors">devopsick@pm.me</a>
-      <span class="text-border">|</span>
-      <a href="https://github.com/hvidom" target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors">GitHub</a>
-      <span class="text-border">|</span>
-      <a href="https://www.linkedin.com/in/hryhorii-ilin-952426341" target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors">LinkedIn</a>
-    </div>
+<footer class="relative mt-32 overflow-hidden border-t border-border">
+  <!-- Planet horizon, same as the footer of github.com/hvidom -->
+  <div
+    class="pointer-events-none absolute top-[19rem] left-1/2 aspect-square w-[260%] -translate-x-1/2 rounded-full border-t-2 border-turquoise/50 bg-[radial-gradient(circle_at_50%_0%,color-mix(in_oklch,var(--violet)_22%,transparent),transparent_30%)] shadow-[0_-10px_50px_-12px_var(--turquoise)] sm:w-[180%]"
+    aria-hidden="true"
+  >
+  </div>
 
-    <div class="text-muted-foreground/60">
-      Built with <a href="https://astro.build" target="_blank" class="text-foreground hover:text-primary transition-colors">Astro</a> & <a href="https://tailwindcss.com" target="_blank" class="text-foreground hover:text-primary transition-colors">Tailwind CSS</a>
-    </div>
+  <div class="relative mx-auto flex max-w-6xl flex-col items-center gap-5 px-6 pt-14 pb-56 text-center">
+    <p class="text-brand text-2xl font-black sm:text-3xl">Thanks for flying by</p>
+    <p class="font-mono text-xs text-muted-foreground sm:text-sm">built in Dublin · see you in the commits</p>
+    <nav aria-label="Elsewhere" class="flex flex-wrap justify-center gap-x-6 gap-y-2 font-mono text-xs text-muted-foreground">
+      <a href={LINKS.email} class="transition-colors hover:text-turquoise">{LINKS.emailText}</a>
+      <a href={LINKS.github} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-turquoise">github</a>
+      <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-turquoise">linkedin</a>
+      <a href={LINKS.dailydev} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-turquoise">daily.dev</a>
+      <a href="/rss.xml" class="transition-colors hover:text-turquoise">rss</a>
+    </nav>
+    <p class="font-mono text-[11px] text-muted-foreground/70">
+      © {year} Hryhorii Ilin · Astro · Tailwind CSS · shadcn/ui · Cloudflare Workers
+    </p>
   </div>
 </footer>

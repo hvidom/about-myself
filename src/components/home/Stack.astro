@@ -1,0 +1,181 @@
+---
+// Tech stack with brand logos from simple-icons (named imports keep the bundle tiny).
+import {
+  type SimpleIcon,
+  siAstro,
+  siBiome,
+  siBun,
+  siClaude,
+  siCloudflare,
+  siCloudflareworkers,
+  siCoolify,
+  siCss,
+  siDocker,
+  siDrizzle,
+  siExpress,
+  siGit,
+  siGithub,
+  siGithubactions,
+  siGnubash,
+  siGoogleads,
+  siGoogleanalytics,
+  siGrafana,
+  siHetzner,
+  siHono,
+  siHtml5,
+  siJavascript,
+  siLinux,
+  siMeta,
+  siMongodb,
+  siNextdotjs,
+  siNodedotjs,
+  siNuxt,
+  siOpentelemetry,
+  siPostgresql,
+  siPython,
+  siReact,
+  siRedis,
+  siShadcnui,
+  siSqlite,
+  siStripe,
+  siSvelte,
+  siTailwindcss,
+  siTanstack,
+  siTurborepo,
+  siTypescript,
+  siUbuntu,
+  siVercel,
+  siVite,
+  siVitest,
+  siVuedotjs,
+  siWhatsapp,
+} from "simple-icons";
+import { cn } from "@/lib/utils";
+import SectionHeading from "./SectionHeading.astro";
+
+type Item = SimpleIcon | { title: string; hex: string; path: string };
+
+// Not in simple-icons: simple stand-ins.
+const oracle: Item = {
+  title: "Oracle Cloud",
+  hex: "F80000",
+  path: "M7.2 5.5h9.6a6.5 6.5 0 0 1 0 13H7.2a6.5 6.5 0 0 1 0-13zm.1 2.6a3.9 3.9 0 0 0 0 7.8h9.4a3.9 3.9 0 0 0 0-7.8z",
+};
+const playwright: Item = {
+  title: "Playwright",
+  hex: "2EAD33",
+  path: "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-2 6 6 4-6 4z",
+};
+
+const groups: { label: string; tone: string; items: Item[] }[] = [
+  {
+    label: "Languages",
+    tone: "bg-turquoise",
+    items: [siTypescript, siJavascript, siPython, siGnubash, siHtml5, siCss],
+  },
+  {
+    label: "Frontend",
+    tone: "bg-violet",
+    items: [
+      siReact,
+      siVuedotjs,
+      siSvelte,
+      siAstro,
+      siNextdotjs,
+      siNuxt,
+      siTailwindcss,
+      siShadcnui,
+      siTanstack,
+      siVite,
+    ],
+  },
+  {
+    label: "Backend & data",
+    tone: "bg-green",
+    items: [
+      siBun,
+      siNodedotjs,
+      siHono,
+      siExpress,
+      siPostgresql,
+      siDrizzle,
+      siRedis,
+      siMongodb,
+      siSqlite,
+    ],
+  },
+  {
+    label: "Cloud & DevOps",
+    tone: "bg-gold",
+    items: [
+      siCloudflare,
+      siCloudflareworkers,
+      siDocker,
+      siCoolify,
+      siLinux,
+      siUbuntu,
+      oracle,
+      siHetzner,
+      siVercel,
+      siGithubactions,
+      siGrafana,
+      siOpentelemetry,
+    ],
+  },
+  {
+    label: "AI & APIs",
+    tone: "bg-pink",
+    items: [siClaude, siStripe, siWhatsapp, siMeta, siGoogleanalytics, siGoogleads],
+  },
+  {
+    label: "Tooling",
+    tone: "bg-cyan",
+    items: [siGit, siGithub, siBiome, siVitest, playwright, siTurborepo],
+  },
+];
+
+// Black logos vanish on the night sky; draw them in the foreground colour instead.
+function iconColor(hex: string) {
+  const n = Number.parseInt(hex, 16);
+  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  }) as [number, number, number];
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.06 ? "currentColor" : `#${hex}`;
+}
+---
+
+<section id="stack" aria-labelledby="stack-title" class="scroll-mt-24 space-y-10">
+  <SectionHeading eyebrow="cat package.json" title="Tech stack" id="stack-title">
+    Used in production, not just in tutorials.
+  </SectionHeading>
+
+  <div class="glass space-y-8 rounded-3xl p-6 sm:p-10">
+    {
+      groups.map((group) => (
+        <div class="space-y-3">
+          <h3 class="flex items-center gap-2.5 font-mono text-xs font-bold tracking-[0.18em] text-muted-foreground uppercase">
+            <span class={cn("h-4 w-1 rounded-full", group.tone)} aria-hidden="true" />
+            {group.label}
+          </h3>
+          <ul class="flex flex-wrap gap-2.5">
+            {group.items.map((item) => {
+              const color = iconColor(item.hex);
+              return (
+                <li
+                  class="flex items-center gap-2.5 rounded-full border bg-background/40 py-2 pr-4 pl-3 text-sm text-foreground transition-colors hover:bg-background/70"
+                  style={`border-color: color-mix(in oklch, ${color === "currentColor" ? "var(--foreground)" : color} 30%, transparent)`}
+                >
+                  <svg viewBox="0 0 24 24" class="size-[18px] shrink-0" fill={color} aria-hidden="true">
+                    <path d={item.path} fill-rule="evenodd" />
+                  </svg>
+                  {item.title}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>

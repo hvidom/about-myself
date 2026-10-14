@@ -1,0 +1,101 @@
+---
+import { Image } from "astro:assets";
+import radioking from "@/assets/projects/radioking.webp";
+import verocleaning from "@/assets/projects/verocleaning.webp";
+import { badgeVariants } from "@/components/ui/badge";
+import { cardVariants } from "@/components/ui/card";
+import { CF_METRICS, CF_MODULES, CF_STACK, SITES, TONE } from "@/data/profile";
+import { cn } from "@/lib/utils";
+import SectionHeading from "./SectionHeading.astro";
+
+const shots = { radioking, verocleaning };
+---
+
+<section id="work" aria-labelledby="work-title" class="scroll-mt-24 space-y-10">
+  <SectionHeading eyebrow="ls ~/projects" title="Featured work" id="work-title">
+    The thing I'm proudest of runs a real business every day. The websites around it bring in the leads.
+  </SectionHeading>
+
+  <article class={cn(cardVariants({ variant: "glass" }), "grid-faint relative gap-8 rounded-3xl p-6 sm:p-10")}>
+    <div class="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-violet/20 blur-3xl" aria-hidden="true"></div>
+
+    <div class="relative space-y-4">
+      <div class="flex flex-wrap gap-2">
+        <span class={cn(badgeVariants({ variant: "turquoise" }), "h-7 px-3 font-mono tracking-wider")}>FEATURED PROJECT</span>
+        <span class={cn(badgeVariants({ variant: "green" }), "h-7 gap-1.5 px-3 font-mono tracking-wider")}>
+          <span class="size-1.5 rounded-full bg-green"></span>PRIVATE · LIVE IN PRODUCTION
+        </span>
+      </div>
+      <h3 class="bg-linear-to-r from-foreground via-turquoise to-violet bg-clip-text text-4xl font-black tracking-tight text-transparent sm:text-5xl">
+        Content Factory
+      </h3>
+      <p class="max-w-3xl text-lg text-muted-foreground">
+        The operating system of a car-electronics business in Dublin, in one Bun + TypeScript monorepo.
+      </p>
+    </div>
+
+    <dl class="relative grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      {
+        CF_METRICS.map((metric, i) => (
+          <div class="flex flex-col-reverse rounded-2xl border border-border bg-background/40 px-5 py-4">
+            <dt class="mt-1 text-sm text-muted-foreground">{metric.label}</dt>
+            <dd class={cn("text-3xl font-black", i % 2 ? "text-violet" : "text-turquoise")}>{metric.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <ul class="relative grid gap-3 md:grid-cols-2">
+      {
+        CF_MODULES.map((module) => {
+          const tone = TONE[module.tone];
+          return (
+            <li class="flex items-start gap-4 rounded-2xl border border-border bg-background/40 p-4 transition-colors hover:border-turquoise/40">
+              <span class={cn("mt-1 grid size-9 shrink-0 place-items-center rounded-xl border", tone.bg, tone.border)} aria-hidden="true">
+                <span class={cn("size-2.5 rounded-full", tone.dot)} />
+              </span>
+              <span>
+                <span class="block font-semibold text-foreground">{module.title}</span>
+                <span class="block text-sm text-muted-foreground">{module.text}</span>
+              </span>
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <p class="relative border-t border-border pt-5 font-mono text-xs leading-relaxed text-muted-foreground">{CF_STACK}</p>
+  </article>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    {
+      SITES.map((site) => (
+        <article class={cn(cardVariants({ variant: "glass" }), "group gap-0 rounded-3xl py-0")}>
+          <a href={site.href} target="_blank" rel="noopener noreferrer" class="block overflow-hidden" tabindex="-1" aria-hidden="true">
+            <Image
+              src={shots[site.image]}
+              alt=""
+              width={960}
+              height={639}
+              class="aspect-[960/639] w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            />
+          </a>
+          <div class="space-y-4 p-6">
+            <h3 class="text-xl font-bold">
+              <a href={site.href} target="_blank" rel="noopener noreferrer" class="text-foreground transition-colors hover:text-turquoise">
+                {site.name}
+                <span class="text-turquoise" aria-hidden="true">↗</span>
+              </a>
+            </h3>
+            <p class="text-sm leading-relaxed text-muted-foreground">{site.text}</p>
+            <ul class="flex flex-wrap gap-2" aria-label="Built with">
+              {site.tags.map((tag) => (
+                <li class={badgeVariants({ variant: "chip" })}>{tag}</li>
+              ))}
+            </ul>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>

@@ -4,7 +4,6 @@ import Preloader from "@/components/layouts/Preloader.astro";
 import ScrollToTop from "@/components/layouts/ScrollToTop.astro";
 import SpaceBackground from "@/components/layouts/SpaceBackground.astro";
 import { cn } from "@/lib/utils";
-import { ClientRouter } from "astro:transitions";
 
 type Props = {
   title: string;
@@ -13,27 +12,33 @@ type Props = {
 };
 
 const { title, description, mainClass } = Astro.props;
-Astro.response.headers.set(
-  "Cache-Control",
-  "public, max-age=0, s-maxage=31536000, must-revalidate",
-);
+
+// Prerendered pages are served as static assets; headers only apply to on-demand pages.
+if (!Astro.isPrerendered) {
+  Astro.response.headers.set(
+    "Cache-Control",
+    "public, max-age=0, s-maxage=31536000, must-revalidate",
+  );
+}
 ---
 
-<html lang="en" class="scroll-smooth" data-astro-transition-persist="theme">
+<html lang="en" class="dark scroll-smooth">
   <head>
     <BaseHead title={title} description={description} />
-    <ClientRouter />
   </head>
-  <body class="font-sans min-h-screen bg-background text-foreground relative overflow-x-hidden antialiased selection:bg-primary selection:text-primary-foreground">
+  <body
+    class="relative min-h-screen overflow-x-hidden bg-background font-sans text-foreground antialiased selection:bg-turquoise/40 selection:text-foreground"
+  >
+    <a
+      href="#main"
+      class="sr-only z-[200] rounded-lg bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      >Skip to content</a
+    >
     <Preloader />
-
     <SpaceBackground />
-    <div class="relative z-10 w-full min-h-screen pointer-events-none">
-
-      <main class={cn("pointer-events-auto", mainClass)}>
-        <slot />
-        <ScrollToTop />
-      </main>
+    <div class={cn("relative z-10 min-h-screen w-full", mainClass)}>
+      <slot />
     </div>
+    <ScrollToTop />
   </body>
 </html>

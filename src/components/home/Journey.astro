@@ -1,0 +1,49 @@
+---
+import { badgeVariants } from "@/components/ui/badge";
+import { cardVariants } from "@/components/ui/card";
+import { JOURNEY, TONE } from "@/data/profile";
+import { cn } from "@/lib/utils";
+import SectionHeading from "./SectionHeading.astro";
+---
+
+<section id="journey" aria-labelledby="journey-title" class="scroll-mt-24 space-y-12">
+  <SectionHeading eyebrow="cat ~/journey.log" title="Professional journey" id="journey-title">
+    A track record spanning over 15 years, integrating software architecture, strategic infrastructure, and customer-focused
+    sales leadership.
+  </SectionHeading>
+
+  <ol class="relative ml-3 space-y-8 border-l border-border md:ml-5">
+    {
+      JOURNEY.map((item) => {
+        const tone = TONE[item.tone];
+        return (
+          <li class="group relative pl-8 md:pl-10">
+            <span
+              class={cn(
+                "absolute top-7 -left-[7px] size-3.5 rounded-full ring-4 ring-background transition-transform group-hover:scale-125",
+                tone.dot,
+              )}
+              aria-hidden="true"
+            />
+            <article class={cn(cardVariants({ variant: "glass" }), "gap-3 rounded-2xl px-6 py-6")}>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class={cn("font-mono text-sm font-bold", tone.text)}>{item.period}</span>
+                <span class={cn(badgeVariants({ variant: item.tone === "cyan" ? "turquoise" : item.tone }), "h-6 px-2.5")}>
+                  {item.label}
+                </span>
+              </div>
+              <h3 class="text-xl font-bold text-foreground">{item.role}</h3>
+              <p class="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{item.focus}</p>
+              <p class="text-sm leading-relaxed text-muted-foreground">{item.text}</p>
+              <ul class="flex flex-wrap gap-2 pt-1" aria-label="Skills">
+                {item.tags.map((tag) => (
+                  <li class={badgeVariants({ variant: "chip" })}>{tag}</li>
+                ))}
+              </ul>
+            </article>
+          </li>
+        );
+      })
+    }
+  </ol>
+</section>

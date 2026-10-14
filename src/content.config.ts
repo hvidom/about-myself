@@ -14,6 +14,7 @@ const blog = defineCollection({
 			minutesRead: z.string().optional(),
 			tags: z.array(z.string()).optional(),
 			category: z.string().optional(),
+			draft: z.boolean().default(false),
 		}),
 });
 

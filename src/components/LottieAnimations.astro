@@ -1,23 +1,26 @@
 ---
+// dotLottie player (web component). @dotlottie/player-component is deprecated in favour of
+// @lottiefiles/dotlottie-wc; the element is lazy-loaded on the client only.
 interface Props {
   src: string;
   class?: string;
+  label?: string;
 }
 
-const { src, class: className } = Astro.props;
+const { src, class: className, label } = Astro.props;
 ---
 
-<div class:list={["w-full h-full flex items-center justify-center overflow-hidden", className]}>
-  <dotlottie-player
+<div class:list={["flex h-full w-full items-center justify-center overflow-hidden", className]}>
+  <dotlottie-wc
     src={src}
-    background="transparent"
-    speed="1"
-    loop
     autoplay
+    loop
+    aria-label={label}
+    aria-hidden={label ? undefined : "true"}
     style="width: 100%; height: 100%;"
-  ></dotlottie-player>
+  ></dotlottie-wc>
 </div>
 
 <script>
-  import '@dotlottie/player-component';
+  import "@lottiefiles/dotlottie-wc";
 </script>

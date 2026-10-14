@@ -1,0 +1,71 @@
+---
+import { NEOFETCH, TONE } from "@/data/profile";
+import { astronautSvg } from "@/lib/pixel";
+import SectionHeading from "./SectionHeading.astro";
+
+const astronaut = astronautSvg(10);
+const blocks = [
+  "#1f2937",
+  "#ef4444",
+  "var(--green)",
+  "var(--gold)",
+  "#60a5fa",
+  "var(--violet)",
+  "var(--turquoise)",
+  "#e6edf3",
+];
+---
+
+<section id="whoami" aria-labelledby="whoami-title" class="scroll-mt-24 space-y-10">
+  <SectionHeading eyebrow="whoami" title="The short version" id="whoami-title">
+    Fifteen years across three crafts: servers, code and sales. These days I put all three into one product.
+  </SectionHeading>
+
+  <div class="glass overflow-hidden rounded-2xl font-mono text-[13px] sm:text-sm">
+    <div class="flex items-center gap-2 border-b border-border bg-foreground/[0.03] px-4 py-3">
+      <span class="size-3 rounded-full bg-[#ff5f57]"></span>
+      <span class="size-3 rounded-full bg-[#febc2e]"></span>
+      <span class="size-3 rounded-full bg-[#28c840]"></span>
+      <span class="flex-1 text-center text-xs text-muted-foreground">hvidom@dublin: ~ — zsh</span>
+    </div>
+
+    <div class="space-y-5 p-5 sm:p-7">
+      <p>
+        <span class="text-turquoise">hvidom</span><span class="text-muted-foreground">@</span><span class="text-violet">dublin</span>{" "}
+        <span class="text-muted-foreground">~</span> <span class="text-green">$</span> neofetch
+      </p>
+
+      <div class="grid gap-8 md:grid-cols-[auto_1fr] md:items-start">
+        <div class="mx-auto w-32 sm:w-40 md:mx-0 [&_svg]:h-auto [&_svg]:w-full">
+          <Fragment set:html={astronaut} />
+        </div>
+
+        <div class="min-w-0">
+          <p class="font-bold">
+            <span class="text-turquoise">hvidom</span>@<span class="text-violet">dublin</span>
+          </p>
+          <div class="mt-1 mb-3 h-0.5 w-32 bg-muted-foreground/40"></div>
+          <dl class="grid grid-cols-[6.5rem_1fr] gap-x-3 gap-y-1.5">
+            {
+              NEOFETCH.map(({ key, value, tone }) => (
+                <>
+                  <dt class:list={["font-bold", TONE[tone].text]}>{key}</dt>
+                  <dd class="text-foreground/90">{value}</dd>
+                </>
+              ))
+            }
+          </dl>
+          <div class="mt-4 flex" aria-hidden="true">
+            {blocks.map((color) => <span class="h-4 w-7" style={`background:${color}`} />)}
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <span class="text-turquoise">hvidom</span><span class="text-muted-foreground">@</span><span class="text-violet">dublin</span>{" "}
+        <span class="text-muted-foreground">~</span> <span class="text-green">$</span>
+        <span class="ml-1 inline-block h-4 w-2 animate-blink bg-foreground align-middle" aria-hidden="true"></span>
+      </p>
+    </div>
+  </div>
+</section>

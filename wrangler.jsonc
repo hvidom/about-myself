@@ -1,7 +1,9 @@
 {
-	"compatibility_date": "2026-05-31",
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"compatibility_date": "2026-10-01",
 	"compatibility_flags": ["global_fetch_strictly_public"],
 	"name": "about-myself",
+	"account_id": "f969840f36d3963d6371476f0c6344ae",
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"assets": {
 		"directory": "./dist",

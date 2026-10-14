@@ -1,0 +1,63 @@
+---
+import { Image } from "astro:assets";
+import topReader from "@/assets/badges/daily-dev-top-reader-2026-09-react.png";
+import { LINKS, TELEMETRY } from "@/data/profile";
+import SectionHeading from "./SectionHeading.astro";
+---
+
+<section aria-labelledby="telemetry-title" class="space-y-10">
+  <SectionHeading eyebrow="gh api /users/hvidom" title="GitHub telemetry" id="telemetry-title">
+    Refreshed every night by a GitHub Action on my profile repository, including the little space shooter that clears my
+    contribution graph.
+  </SectionHeading>
+
+  <div class="space-y-6">
+    <a href={LINKS.github} target="_blank" rel="noopener noreferrer" class="block overflow-hidden rounded-3xl transition-transform hover:-translate-y-0.5">
+      <img
+        src={TELEMETRY.dashboard}
+        width="1200"
+        height="488"
+        loading="lazy"
+        decoding="async"
+        class="h-auto w-full"
+        alt="GitHub statistics for @hvidom: contributions, private work, streaks, weekly activity and top languages"
+      />
+    </a>
+
+    <div class="glass overflow-hidden rounded-3xl p-3">
+      <img
+        src={TELEMETRY.shooter}
+        width="860"
+        height="230"
+        loading="lazy"
+        decoding="async"
+        class="h-auto w-full rounded-2xl"
+        alt="An animated spaceship shoots down the squares of my GitHub contribution graph"
+      />
+    </div>
+
+    <ul class="grid gap-5 sm:grid-cols-3" aria-label="Badges and achievements">
+      <li class="glass flex flex-col items-center gap-3 rounded-3xl p-6 text-center">
+        <a href={LINKS.dailydev} target="_blank" rel="noopener noreferrer">
+          <Image src={topReader} alt="daily.dev Top reader badge, React, September 2026" width={180} height={180} class="rounded-2xl" />
+        </a>
+        <p class="font-semibold">daily.dev Top reader</p>
+        <p class="font-mono text-xs text-muted-foreground">React · September 2026</p>
+      </li>
+      <li class="glass flex flex-col items-center gap-3 rounded-3xl p-6 text-center">
+        <a href={LINKS.dailydev} target="_blank" rel="noopener noreferrer">
+          <img src={TELEMETRY.devcard} alt="daily.dev DevCard for @hvidom" width="130" height="183" loading="lazy" class="h-[183px] w-auto" />
+        </a>
+        <p class="font-semibold">daily.dev DevCard</p>
+        <p class="font-mono text-xs text-muted-foreground">live reading stats</p>
+      </li>
+      <li class="glass flex flex-col items-center justify-center gap-3 rounded-3xl p-6 text-center">
+        <a href="https://holopin.io/@frikadellios8" target="_blank" rel="noopener noreferrer">
+          <img src={TELEMETRY.holopin} alt="Holopin board with the Hacktoberfest 2023 participant badge" width="260" height="82" loading="lazy" class="h-auto w-full max-w-[260px] rounded-lg" />
+        </a>
+        <p class="font-semibold">Hacktoberfest 2023</p>
+        <p class="font-mono text-xs text-muted-foreground">participant · via Holopin</p>
+      </li>
+    </ul>
+  </div>
+</section>

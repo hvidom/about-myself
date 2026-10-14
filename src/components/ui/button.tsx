@@ -11,7 +11,6 @@ const buttonVariants = cva(
 			variant: {
 				default:
 					"bg-primary text-primary-foreground shadow-[0_0_24px_-8px_var(--primary)] hover:bg-primary/85",
-				// Turquoise → green, the signature call to action.
 				brand:
 					"bg-linear-to-r from-turquoise to-green text-primary-foreground shadow-[0_0_28px_-6px_var(--turquoise)] hover:brightness-110",
 				green: "bg-green text-primary-foreground hover:bg-green/85",

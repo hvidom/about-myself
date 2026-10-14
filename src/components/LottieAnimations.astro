@@ -1,12 +1,6 @@
 ---
-// dotLottie player (web component). @dotlottie/player-component is deprecated in favour of
-// @lottiefiles/dotlottie-wc; the element is lazy-loaded on the client only.
-// The player is created when its box nears the viewport, with `src` set before it connects:
-// setting `src` on a player that is still initialising is silently ignored.
-// With reduced motion the animation stays on its first frame.
 interface Props {
   src: string;
-  /** Sizing classes for the wrapper; defaults to filling the parent. */
   class?: string;
   label?: string;
 }

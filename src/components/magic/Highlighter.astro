@@ -1,6 +1,4 @@
 ---
-// Hand-drawn marker on a phrase, drawn once when it scrolls into view. Port of Magic UI's
-// Highlighter (rough-notation). Without JS the phrase is plain text.
 import type { Tone } from "@/data/profile";
 
 interface Props {
@@ -24,7 +22,6 @@ const { action = "highlight", tone = "turquoise" } = Astro.props;
   import { annotate } from "rough-notation";
   import type { RoughAnnotationType } from "rough-notation/lib/model";
 
-  // The SVG stroke attribute cannot take var(): read the token and pass the colour itself.
   const colour = (tone: string, alpha: number) => {
     const value = getComputedStyle(document.documentElement).getPropertyValue(`--${tone}`).trim();
     return alpha < 1 ? value.replace(/\)$/, ` / ${alpha})`) : value;

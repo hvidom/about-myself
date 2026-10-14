@@ -1,8 +1,3 @@
-// Cloudflare Pages project "hvidom" (hvidom.pages.dev): a thin edge proxy that lets the
-// is-a.dev subdomain point at the about-myself Worker. is-a.dev can only CNAME to Pages,
-// while the site itself runs as an SSR Worker (Brevo, forms, APIs).
-// Deploy: bun run deploy:proxy (copies this folder to a temp dir: a `pages deploy` from here
-// picks up the root .wrangler/deploy/config.json that every Astro build leaves behind).
 {
 	"$schema": "https://unpkg.com/wrangler@4.151.0/config-schema.json",
 	"name": "hvidom",

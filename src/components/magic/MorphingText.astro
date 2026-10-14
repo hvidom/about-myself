@@ -1,12 +1,7 @@
 ---
-// Words melt into each other: two layers cross-blur and an SVG alpha threshold makes the edges
-// gooey. Port of Magic UI's MorphingText (same 1.5 s morph, a longer rest so each word can be
-// read). Sized by the longest word, so it sits inline in a sentence. It only runs while on screen;
-// with reduced motion, or without JS, the first word stays.
 interface Props {
   texts: string[];
   class?: string;
-  /** Classes for the words themselves, e.g. a gradient (it has to sit on the word layers). */
   wordClass?: string;
 }
 
@@ -69,7 +64,6 @@ const longest = texts.reduce((a, b) => (b.length > a.length ? b : a), "");
       last = now;
       cooldown -= dt;
       if (cooldown > 0) {
-        // Rest on the current word, sharp.
         morphing = 0;
         a.style.filter = "none";
         a.style.opacity = "100%";
@@ -91,7 +85,6 @@ const longest = texts.reduce((a, b) => (b.length > a.length ? b : a), "");
       styles(fraction);
     };
 
-    // Run only while visible.
     new IntersectionObserver(([entry]) => {
       cancelAnimationFrame(frame);
       if (!entry?.isIntersecting) return;

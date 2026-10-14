@@ -9,7 +9,6 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
-  /** Blog posts are articles; everything else is the website. */
   article?: { publishedTime: Date; modifiedTime?: Date | undefined };
 }
 
@@ -25,8 +24,6 @@ const fullTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}
 <meta name="color-scheme" content="dark" />
 <meta name="theme-color" content="#0b1130" />
 <script is:inline>
-  // Black sky before the first paint, and again after ClientRouter swaps <html> attributes.
-  // Mirrors applySky() in src/lib/sky.ts. Anything but "black" means the default blue sky.
   (() => {
     if (window.__sky) return;
     window.__sky = true;

@@ -1,7 +1,3 @@
-// Pixel-art helper for the neofetch astronaut.
-// Output is plain SVG markup, rendered on the server with `set:html`.
-
-/** Draws an ASCII map as SVG rects; characters missing from the palette stay empty. */
 export function sprite(
 	map: readonly string[],
 	palette: Record<string, string>,
@@ -39,7 +35,6 @@ export const ASTRONAUT = [
 	".OWWWWWWWWWWWWO.",
 ] as const;
 
-/** Astronaut sprite as a complete SVG element. */
 export function astronautSvg(px = 12): string {
 	const w = ASTRONAUT[0].length * px;
 	const h = ASTRONAUT.length * px;

@@ -55,8 +55,8 @@ describe("Merlin snippets", () => {
 		for (const file of files) {
 			const code = readFileSync(new URL(file, dir), "utf8");
 			expect(code, file).not.toMatch(/radio\s?king|kommo|dublin|@[\w-]+\.\w+|https?:\/\//i);
-			expect(code, file).not.toMatch(/\+?\d[\d\s-]{8,}\d/); // phone numbers
-			expect(code, file).not.toMatch(/[а-яё]/i); // comments are translated
+			expect(code, file).not.toMatch(/\+?\d[\d\s-]{8,}\d/);
+			expect(code, file).not.toMatch(/[а-яё]/i);
 		}
 	});
 });

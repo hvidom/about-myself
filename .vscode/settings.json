@@ -15,7 +15,6 @@
 	"[markdown]": { "editor.formatOnSave": false },
 	"[mdx]": { "editor.formatOnSave": false },
 
-	// Tailwind v4 is configured in CSS; class lists also live in cva()/cn() calls.
 	"files.associations": { "*.css": "tailwindcss" },
 	"tailwindCSS.experimental.configFile": "src/styles/global.css",
 	"tailwindCSS.classFunctions": ["cva", "cn", "clsx"],

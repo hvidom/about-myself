@@ -1,6 +1,3 @@
-// Shiki theme in the site palette. TextMate themes accept only hex colours, so every token gets a
-// placeholder hex that `colorReplacements` swaps for a CSS variable (the trick Shiki's own
-// css-variables theme uses). The code then follows the tokens: turquoise, green, violet, pink, gold.
 import type { ThemeRegistration } from "shiki";
 
 const C = {

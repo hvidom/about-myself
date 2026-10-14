@@ -1,16 +1,11 @@
 ---
-// Words blur in and rise one after another. Port of Magic UI's TextAnimate ("blurInUp", by word),
-// in CSS. Above the fold it plays on load; with `onView` it waits until it scrolls into view.
-// Screen readers get the sentence once; the animated words are hidden from them.
 import type { HTMLTag } from "astro/types";
 
 interface Props {
   text: string;
   as?: HTMLTag;
   class?: string;
-  /** Read instead of `text`, e.g. without decorative separators. */
   label?: string;
-  /** Words drawn dimmed, such as "·" separators. */
   dim?: string[];
   onView?: boolean;
 }

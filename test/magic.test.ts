@@ -1,5 +1,3 @@
-// Magic UI ports: the source terminal, the sky toggle and the text effects, rendered with the
-// Container API. The motion itself is covered in e2e/home.spec.ts.
 import { readFileSync } from "node:fs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { beforeAll, describe, expect, test } from "vitest";
@@ -13,7 +11,6 @@ import { MERLIN_SNIPPETS } from "@/data/profile";
 import { brandCodeTheme } from "@/lib/code-theme";
 
 let container: AstroContainer;
-// Scoped styles stamp data-astro-cid-* on every element; the assertions are about markup.
 const render = async (...args: Parameters<AstroContainer["renderToString"]>) =>
 	(await container.renderToString(...args)).replace(/ data-astro-cid-\w+(="[^"]*")?/g, "");
 const text = (html: string) =>

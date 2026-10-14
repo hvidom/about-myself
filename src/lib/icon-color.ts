@@ -1,6 +1,3 @@
-// Brand colours from simple-icons, adjusted for the night-sky background.
-
-/** WCAG relative luminance of a "RRGGBB" hex colour (0 = black, 1 = white). */
 export function luminance(hex: string): number {
 	const n = Number.parseInt(hex.replace("#", ""), 16);
 	const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => {
@@ -10,7 +7,6 @@ export function luminance(hex: string): number {
 	return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** Black logos (Next.js, Vercel, shadcn…) vanish on the dark sky: draw them in the text colour. */
 export function iconColor(hex: string): string {
 	return luminance(hex) < 0.06 ? "currentColor" : `#${hex.replace("#", "")}`;
 }

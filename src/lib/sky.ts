@@ -1,5 +1,3 @@
-// Blue (default) or black night sky, stored per browser. BaseHead has an inline copy of `applySky`
-// that runs before the first paint; keep the key, the attribute and the colours in sync with it.
 export type Sky = "blue" | "black";
 
 export const SKY_KEY = "sky";
@@ -17,7 +15,5 @@ export function applySky(sky: Sky, persist = false) {
 	if (!persist) return;
 	try {
 		localStorage.setItem(SKY_KEY, sky);
-	} catch {
-		// Storage can be blocked (private mode, site data off): the sky still switches for this page.
-	}
+	} catch {}
 }

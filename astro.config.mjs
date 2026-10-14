@@ -9,21 +9,16 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
 
-// Vitest loads this file through getViteConfig(); the Cloudflare adapter would try to
-// start workerd inside the test runner, so tests render without it.
 const isVitest = Boolean(process.env.VITEST);
 
-// https://docs.astro.build/en/reference/configuration-reference/
 export default defineConfig({
 	site: "https://about-myself.devopsick.workers.dev",
 	prefetch: {
 		prefetchAll: true,
 	},
-	// A config redirect (not a page calling Astro.redirect) also keeps /about out of the sitemap.
 	redirects: {
 		"/about": { status: 301, destination: "/#whoami" },
 	},
-	// MDX extends this config, so blog posts (.mdx) get the same processor and Shiki theme.
 	markdown: {
 		processor: unified({
 			remarkPlugins: [remarkReadingTime],
@@ -50,7 +45,6 @@ export default defineConfig({
 			},
 		},
 		{
-			// Headings only: a single 400 weight, Latin + Cyrillic.
 			provider: fontProviders.fontsource(),
 			name: "Days One",
 			cssVariable: "--font-days-one",

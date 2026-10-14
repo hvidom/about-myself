@@ -1,5 +1,3 @@
-# Static assets and prerendered pages (Workers static assets). The adapter adds the
-# immutable Cache-Control rule for /_astro/* above this one at build time.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

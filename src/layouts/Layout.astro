@@ -15,13 +15,8 @@ type Props = {
 
 const { title, description, image, article, mainClass } = Astro.props;
 
-// Prerendered pages are served as static assets; headers only apply to on-demand pages.
 if (!Astro.isPrerendered) {
-  Astro.response.headers.set(
-    "Cache-Control",
-    // Short shared cache: HTML points at hashed /_astro files that a later deploy replaces.
-    "public, max-age=0, s-maxage=300, must-revalidate",
-  );
+  Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=300, must-revalidate");
 }
 ---
 

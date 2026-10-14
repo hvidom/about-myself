@@ -1,6 +1,3 @@
-// Advanced routing entrypoint (stable since Astro 7): Astro looks for src/fetch.ts.
-// Same order as Astro's default pipeline, with Hono's request logger in front.
-// https://docs.astro.build/en/guides/routing/#advanced-routing
 import { actions, i18n, middleware, pages, redirects, sessions, trailingSlash } from "astro/hono";
 import { Hono } from "hono";
 import { logger } from "hono/logger";

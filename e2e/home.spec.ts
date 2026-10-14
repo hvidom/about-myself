@@ -35,7 +35,6 @@ test.describe("home", () => {
 				),
 			)
 			.toBe(true);
-		// Below the fold nothing is fetched until it is scrolled near.
 		await expect(page.locator('[data-lottie="/animations/hand.lottie"] dotlottie-wc')).toHaveCount(
 			0,
 		);
@@ -112,7 +111,6 @@ test.describe("home", () => {
 		await page.goto("/");
 		const terminal = page.locator("[data-source]");
 		const typed = page.getByRole("tabpanel").locator("[data-type]");
-		// Blank until it is on screen, like Magic UI's startOnView.
 		await expect(typed).toHaveText("");
 		await terminal.scrollIntoViewIfNeeded();
 		await expect(typed).toHaveText("cat packages/types/src/merlin-skills.ts");
@@ -150,7 +148,6 @@ test.describe("home", () => {
 			"true",
 		);
 
-		// ClientRouter swaps <html> attributes on navigation; the sky must survive it.
 		await page
 			.getByRole("navigation", { name: "Main" })
 			.getByRole("link", { name: "blog" })

@@ -1,4 +1,3 @@
-// .astro components rendered with the Container API.
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { beforeAll, describe, expect, test } from "vitest";
 import Hero from "@/components/home/Hero.astro";

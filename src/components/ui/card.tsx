@@ -8,7 +8,6 @@ const cardVariants = cva(
 		variants: {
 			variant: {
 				default: "bg-card shadow-md ring-foreground/5 dark:ring-foreground/10",
-				// Frosted card for the night-sky background; the border lights up turquoise on hover.
 				glass:
 					"bg-card/60 ring-border backdrop-blur-md transition-[box-shadow] hover:ring-turquoise/40 hover:shadow-[0_0_40px_-16px_var(--turquoise)]",
 			},

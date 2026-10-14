@@ -1,7 +1,4 @@
 ---
-// Merlin, the AI layer of Content Factory: a short slide deck (scroll-snap, swipeable without JS)
-// and real code from the private repo in a terminal with tabs, highlighted at build time. Each tab
-// types its `cat` command and streams the file in, like Magic UI's Terminal.
 import { Code } from "astro:components";
 import Highlighter from "@/components/magic/Highlighter.astro";
 import { cardVariants } from "@/components/ui/card";
@@ -148,7 +145,6 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
           ))
         }
       </div>
-      {/* Every panel sits in the same grid cell, so the window is as tall as the longest file. */}
       <div class="grid grid-cols-1 px-4 py-3 text-xs leading-normal sm:px-5 sm:py-4">
         {
           MERLIN_SNIPPETS.map((snippet, i) => {
@@ -186,7 +182,6 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
 </section>
 
 <script>
-  // Deck: buttons, dots and the counter follow the scroll position. Tabs: click or arrow keys.
   function deck(root: HTMLElement) {
     if (root.dataset.ready) return;
     root.dataset.ready = "1";
@@ -198,14 +193,10 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
     if (!track || !prev || !next || !count) return;
     const slides = track.children.length;
     const pad = (n: number) => String(n).padStart(2, "0");
-    // `|| 1`: a deck that is not laid out yet (inside a hidden parent) has no width.
     const index = () => Math.round(track.scrollLeft / (track.clientWidth || 1));
-    // Where the deck is heading. Quick clicks and key repeats step from here, not from a scroll
-    // position that is still animating.
     let target = 0;
     let shown = 0;
     let settle = 0;
-    // The counter is a live region: write it only when the slide really changes.
     const sync = (i: number) => {
       if (i === shown) return;
       shown = i;
@@ -223,7 +214,6 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
     prev.addEventListener("click", () => go(target - 1));
     next.addEventListener("click", () => go(target + 1));
     dots.forEach((dot, d) => dot.addEventListener("click", () => go(d)));
-    // Swipes, snapping and resizes: settle on the slide once the scroll stops.
     track.addEventListener(
       "scroll",
       () => {
@@ -243,8 +233,6 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
     });
   }
 
-  // Source terminal: the active tab types its `cat` command, then the file streams in line by line.
-  // Without JS (or with reduced motion) every line is simply there.
   const TYPE_MS = 28;
   const LINE_MS = 32;
 
@@ -323,7 +311,6 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
     });
 
     if (!animate) return;
-    // Like Magic UI's startOnView: the first tab waits, blank, until the terminal is on screen.
     const first = list.find((tab) => tab.getAttribute("aria-selected") === "true");
     const firstPanel = first && panelOf(first);
     if (!firstPanel) return;
@@ -351,7 +338,6 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
 </script>
 
 <style>
-  /* Lines of the source terminal fade in from above while a tab plays (see play() above). */
   [data-source-panel] :global(.line) {
     display: inline-block;
   }

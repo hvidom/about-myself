@@ -1,10 +1,8 @@
-/* Scrollbars and text selection, site-wide. */
 html {
 	scrollbar-width: thin;
 	scrollbar-color: var(--color-primary) transparent;
 }
 
-/* Safari only: Chromium 121+ follows scrollbar-color above and ignores these. */
 *::-webkit-scrollbar {
 	width: 10px;
 	height: 6px;
@@ -17,7 +15,6 @@ html {
 	border-radius: 10px;
 }
 
-/* Scrollers driven by buttons (the Merlin deck, code tabs) hide their bar. */
 .hide-scrollbar {
 	scrollbar-width: none;
 }

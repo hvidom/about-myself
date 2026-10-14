@@ -1,7 +1,4 @@
 ---
-// A band in the brand colours sweeps across the text once, the first time it scrolls into view,
-// and leaves it in the normal text colour. Port of Magic UI's Dia Text Reveal, in CSS.
-// Without JS, or with reduced motion, the text is simply there.
 interface Props {
   text: string;
 }
@@ -14,7 +11,6 @@ const { text } = Astro.props;
 <style>
   .dia-text[data-dia="armed"],
   .dia-text[data-dia="play"] {
-    /* 300% wide: the first third is the text colour, the middle third the band, the last transparent. */
     background-image: linear-gradient(
       90deg,
       currentColor 0% 36%,

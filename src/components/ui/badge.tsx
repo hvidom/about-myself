@@ -20,7 +20,6 @@ const badgeVariants = cva(
 				violet: "border-violet/30 bg-violet/10 text-violet",
 				pink: "border-pink/30 bg-pink/10 text-pink",
 				gold: "border-gold/30 bg-gold/10 text-gold",
-				// Monospace tag chip for stacks and categories.
 				chip: "h-auto rounded-md border-border bg-muted/50 px-2 py-0.5 font-mono text-[11px] text-muted-foreground",
 			},
 		},

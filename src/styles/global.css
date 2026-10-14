@@ -4,11 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Design tokens (shadcn/ui).
- * Palette shared with the github.com/hvidom artwork: deep-space navy, turquoise as the
- * primary, green as the accent, violet / pink / gold for details.
- */
 :root {
 	--background: oklch(0.985 0.006 200);
 	--foreground: oklch(0.21 0.035 262);
@@ -37,7 +32,6 @@
 	--chart-4: oklch(0.52 0.2 292);
 	--chart-5: oklch(0.58 0.2 350);
 
-	/* Brand accents (text-turquoise, bg-green/10, …) */
 	--turquoise: oklch(0.52 0.1 186);
 	--green: oklch(0.56 0.15 150);
 	--cyan: oklch(0.55 0.12 225);
@@ -103,7 +97,6 @@
 	--sidebar-ring: oklch(0.8 0.13 182);
 }
 
-/* Black sky, switched by SkyToggle (html[data-sky="black"]): neutral surfaces, dimmer glows. */
 html[data-sky="black"] {
 	--background: oklch(0.1 0 0);
 	--card: oklch(0.17 0.008 270);
@@ -118,7 +111,6 @@ html[data-sky="black"] {
 	--glow-green: 3%;
 }
 
-/* The sky toggle grows the new sky as a circle; only the clip-path animation should run. */
 html.sky-switching::view-transition-old(root),
 html.sky-switching::view-transition-new(root) {
 	animation: none;
@@ -207,7 +199,6 @@ html.sky-switching::view-transition-new(root) {
 	}
 }
 
-/* Night sky behind every page (SpaceBackground paints stars on top). */
 @utility space-sky {
 	background:
 		radial-gradient(
@@ -228,14 +219,12 @@ html.sky-switching::view-transition-new(root) {
 		linear-gradient(160deg, var(--space-1), var(--space-0));
 }
 
-/* Frosted card that sits on the sky. */
 @utility glass {
 	background-color: color-mix(in oklch, var(--card) 72%, transparent);
 	border: 1px solid var(--border);
 	backdrop-filter: blur(10px);
 }
 
-/* Name / heading gradient, slowly drifting. */
 @utility text-brand {
 	background-image: linear-gradient(
 		100deg,
@@ -251,7 +240,6 @@ html.sky-switching::view-transition-new(root) {
 	animation: var(--animate-shimmer);
 }
 
-/* Faint 40px grid, used behind feature cards. */
 @utility grid-faint {
 	background-image:
 		linear-gradient(
@@ -278,7 +266,6 @@ html.sky-switching::view-transition-new(root) {
 	body {
 		@apply bg-background text-foreground;
 	}
-	/* Days One has one weight: no faux bold for font-black / font-bold headings. */
 	h1,
 	h2,
 	h3,
@@ -292,7 +279,6 @@ html.sky-switching::view-transition-new(root) {
 	}
 }
 
-/* ── Article typography (blog posts only) ───────────────────────────── */
 @layer components {
 	.prose {
 		@apply text-base leading-7 text-foreground/90;
@@ -350,7 +336,6 @@ html.sky-switching::view-transition-new(root) {
 		}
 		:where(pre) {
 			@apply relative my-6 overflow-x-auto rounded-xl border border-border p-4 font-mono text-sm leading-relaxed;
-			/* Dark in both themes: the Shiki theme (github-dark-dimmed) has light text. */
 			/* biome-ignore lint/complexity/noImportantStyles: Shiki writes an inline background on <pre>. */
 			background-color: oklch(0.11 0.027 268) !important;
 		}
@@ -360,18 +345,15 @@ html.sky-switching::view-transition-new(root) {
 	}
 }
 
-/* github-dark-dimmed paints comments #768390: 3.9:1 on its own background, below WCAG AA. */
 .astro-code span[style*="#768390" i] {
 	/* biome-ignore lint/complexity/noImportantStyles: Shiki writes the colour inline. */
 	color: #909dab !important;
 }
 
-/* ClientRouter restores the scroll position on back/forward with scrollTo(): jump, don't glide. */
 html[data-astro-transition] {
 	scroll-behavior: auto;
 }
 
-/* Reduced motion must beat every component animation, hence !important. */
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,

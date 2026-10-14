@@ -1,6 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// E2E against the real build running in workerd (wrangler dev --local), like production.
 const PORT = 4330;
 
 export default defineConfig({

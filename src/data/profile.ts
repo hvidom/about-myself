@@ -1,5 +1,3 @@
-// Content of the home page. Text lives here; components only lay it out.
-
 export const PHRASES = [
 	"shipping TypeScript from DB to UI",
 	"building CRMs that actually sell",
@@ -137,7 +135,6 @@ export const SITES = [
 	},
 ] as const;
 
-// Merlin, the AI layer of Content Factory. Counts come from the private repo (tests: vitest run).
 export const MERLIN_STATS = [
 	{ value: "11", label: "chat tools" },
 	{ value: "19", label: "skill steps" },
@@ -159,7 +156,6 @@ export const MERLIN_TOOLS = [
 	"update_skill_instructions",
 ];
 
-// The skill editor's palette, grouped as in the app.
 export const MERLIN_BLOCKS: { group: string; tone: Tone; steps: string[] }[] = [
 	{
 		group: "Flow",
@@ -272,7 +268,6 @@ export const MERLIN_SLIDES: {
 	},
 ];
 
-// Real code from the private repo; comments translated, nothing personal. Files: ./merlin-snippets.
 export const MERLIN_SNIPPETS: { id: string; title: string; path: string; note: string }[] = [
 	{
 		id: "step-ports",
@@ -306,7 +301,6 @@ export const MERLIN_SNIPPETS: { id: string; title: string; path: string; note: s
 	},
 ];
 
-// What I work on. Areas of expertise, not a price list.
 export const EXPERTISE: {
 	code: string;
 	title: string;
@@ -365,7 +359,6 @@ export const LINKS = {
 	emailText: "devopsick@pm.me",
 };
 
-// Generated nightly by github.com/hvidom/hvidom (.github/workflows/profile.yml).
 export const TELEMETRY = {
 	dashboard: "https://raw.githubusercontent.com/hvidom/hvidom/main/assets/generated/dashboard.svg",
 	shooter:
@@ -374,7 +367,6 @@ export const TELEMETRY = {
 	holopin: "https://holopin.me/frikadellios8",
 };
 
-/** Tailwind classes per tone (kept literal so Tailwind can see them). */
 export const TONE: Record<Tone, { text: string; bg: string; border: string; dot: string }> = {
 	turquoise: {
 		text: "text-turquoise",

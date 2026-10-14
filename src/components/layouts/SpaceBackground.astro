@@ -21,15 +21,14 @@ const { class: className } = Astro.props;
 </div>
 
 <script>
-  // --- TYPES & CONFIGURATION ---
   interface Star {
     x: number;
     y: number;
     radius: number;
-    baseRadius: number; // For pulsing scaling calculations
+    baseRadius: number;
     opacity: number;
     twinkleSpeed: number;
-    isPulsing: boolean; // 20% of stars will dramatically grow and shrink
+    isPulsing: boolean;
     pulseSpeed: number;
   }
 
@@ -44,19 +43,17 @@ const { class: className } = Astro.props;
     element: SVGElement | null;
   }
 
-  const STAR_DENSITY = 0.00018; // Increased slightly for richer depth
+  const STAR_DENSITY = 0.00018;
   const MIN_TWINKLE = 0.4;
   const MAX_TWINKLE = 1.2;
   
-  // Comet Engine configurations
-  const MAX_CONCURRENT_COMETS = 4; // Allows multiple comets on screen at once
-  const COMET_SPAWN_CHANCE = 0.015; // Evaluated per frame to make spawns organic
+  const MAX_CONCURRENT_COMETS = 4;
+  const COMET_SPAWN_CHANCE = 0.015;
   const SHOOTING_MIN_SPEED = 12;
   const SHOOTING_MAX_SPEED = 28;
   const STAR_WIDTH = 12;
   const STAR_HEIGHT = 1.2;
 
-  // --- SETUP NATIVE DOM REFERENCES ---
   const canvas = document.getElementById('stars-canvas') as HTMLCanvasElement | null;
   const cometGroup = document.getElementById('comet-group') as SVGElement | null;
   
@@ -65,15 +62,13 @@ const { class: className } = Astro.props;
     let stars: Star[] = [];
     let activeComets: Comet[] = [];
 
-    // --- GENERATE STARS WITH PULSING ENGINE ---
-    // Stars for the horizontal band [top, bottom) of the viewport.
     function makeStars(width: number, top: number, bottom: number): Star[] {
       const area = width * (bottom - top);
       const numStars = Math.floor(area * STAR_DENSITY);
 
       return Array.from({ length: numStars }, () => {
         const baseRadius = Math.random() * 0.5 + 0.4;
-        const isPulsing = Math.random() < 0.20; // 20% become pulsing variant stars
+        const isPulsing = Math.random() < 0.20;
 
         return {
           x: Math.random() * width,
@@ -88,8 +83,6 @@ const { class: className } = Astro.props;
       });
     }
 
-    // Mobile toolbars change only the height while you scroll: keep the stars where they are
-    // and fill in the new band, so the sky never reshuffles under the page.
     let starsWidth = 0;
     let starsHeight = 0;
     function resize() {
@@ -107,7 +100,6 @@ const { class: className } = Astro.props;
       }
     }
 
-    // --- COMET GENERATION UTILITIES ---
     function getRandomStartPoint() {
       const side = Math.floor(Math.random() * 4);
       const offsetWidth = Math.random() * window.innerWidth;
@@ -148,19 +140,15 @@ const { class: className } = Astro.props;
       });
     }
 
-    // --- TICK ANIMATION LOOP ---
     function tick() {
       const now = Date.now();
       ctx.clearRect(0, 0, canvas!.width, canvas!.height);
       
-      // 1. Process and Draw Background Stars
       for (const star of stars) {
         ctx.beginPath();
         
-        // Handle standard twinkle (opacity)
         star.opacity = 0.4 + Math.abs(Math.sin((now * 0.001) / star.twinkleSpeed) * 0.6);
         
-        // Handle Pulse Star Effect (radii breath scaling)
         if (star.isPulsing) {
           const pulseFactor = 1 + Math.sin(now * star.pulseSpeed) * 0.6; 
           star.radius = star.baseRadius * pulseFactor;
@@ -171,12 +159,10 @@ const { class: className } = Astro.props;
         ctx.fill();
       }
 
-      // 2. Organic Multi-Comet Spawner Check
       if (Math.random() < COMET_SPAWN_CHANCE) {
         spawnComet();
       }
 
-      // 3. Update and Render Active Comets
       const buffer = 100;
       activeComets = activeComets.filter((comet) => {
         const rad = (comet.angle * Math.PI) / 180;
@@ -185,14 +171,13 @@ const { class: className } = Astro.props;
         comet.distance += comet.speed;
         comet.scale = 1 + comet.distance / 120;
 
-        // Boundary Cleanups
         if (
           comet.x < -buffer || 
           comet.x > window.innerWidth + buffer || 
           comet.y < -buffer || 
           comet.y > window.innerHeight + buffer
         ) {
-          comet.element?.remove(); // Strip out dead nodes from DOM cleanly
+          comet.element?.remove();
           return false;
         }
 
@@ -213,7 +198,6 @@ const { class: className } = Astro.props;
       requestAnimationFrame(tick);
     }
 
-    // --- INITIALIZE SYSTEM ---
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.addEventListener('resize', () => {
       resize();

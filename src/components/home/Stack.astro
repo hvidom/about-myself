@@ -50,6 +50,7 @@ import {
   siVuedotjs,
   siWhatsapp,
 } from "simple-icons";
+import { iconColor } from "@/lib/icon-color";
 import { cn } from "@/lib/utils";
 import SectionHeading from "./SectionHeading.astro";
 
@@ -133,16 +134,6 @@ const groups: { label: string; tone: string; items: Item[] }[] = [
     items: [siGit, siGithub, siBiome, siVitest, playwright, siTurborepo],
   },
 ];
-
-// Black logos vanish on the night sky; draw them in the foreground colour instead.
-function iconColor(hex: string) {
-  const n = Number.parseInt(hex, 16);
-  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => {
-    const c = v / 255;
-    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  }) as [number, number, number];
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.06 ? "currentColor" : `#${hex}`;
-}
 ---
 
 <section id="stack" aria-labelledby="stack-title" class="scroll-mt-24 space-y-10">

@@ -31,7 +31,18 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["src/**/*", "*.json", "*.js"]
+		"includes": [
+			"src/**/*",
+			"test/**/*",
+			"e2e/**/*",
+			"scripts/**/*",
+			"proxy/**/*",
+			"*.json",
+			"*.js",
+			"*.mjs",
+			"*.ts",
+			"!worker-configuration.d.ts"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -42,7 +53,7 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true,
+			"preset": "recommended",
 			"correctness": {
 				"noUnusedVariables": "warn"
 			},

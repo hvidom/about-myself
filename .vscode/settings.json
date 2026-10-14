@@ -1,0 +1,38 @@
+{
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "biomejs.biome",
+	"editor.codeActionsOnSave": {
+		"source.organizeImports.biome": "explicit",
+		"source.fixAll.biome": "explicit"
+	},
+	"[astro]": { "editor.defaultFormatter": "biomejs.biome" },
+	"[typescript]": { "editor.defaultFormatter": "biomejs.biome" },
+	"[typescriptreact]": { "editor.defaultFormatter": "biomejs.biome" },
+	"[javascript]": { "editor.defaultFormatter": "biomejs.biome" },
+	"[json]": { "editor.defaultFormatter": "biomejs.biome" },
+	"[jsonc]": { "editor.defaultFormatter": "biomejs.biome" },
+	"[css]": { "editor.defaultFormatter": "biomejs.biome" },
+	"[markdown]": { "editor.formatOnSave": false },
+	"[mdx]": { "editor.formatOnSave": false },
+
+	// Tailwind v4 is configured in CSS; class lists also live in cva()/cn() calls.
+	"files.associations": { "*.css": "tailwindcss" },
+	"tailwindCSS.experimental.configFile": "src/styles/global.css",
+	"tailwindCSS.classFunctions": ["cva", "cn", "clsx"],
+	"tailwindCSS.includeLanguages": { "astro": "html" },
+
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"vitest.commandLine": "bunx vitest",
+	"playwright.reuseBrowser": true,
+
+	"files.exclude": { "**/.astro": true, "**/.wrangler": true },
+	"search.exclude": {
+		"**/dist": true,
+		"**/.wrangler": true,
+		"**/.astro": true,
+		"bun.lock": true,
+		"worker-configuration.d.ts": true,
+		"test-results": true,
+		"playwright-report": true
+	}
+}

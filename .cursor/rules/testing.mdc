@@ -1,0 +1,18 @@
+---
+description: Writing and running tests (Vitest unit/component, Playwright e2e)
+globs: test/**/*,e2e/**/*,vitest.config.ts,playwright.config.ts
+alwaysApply: false
+---
+
+- Unit and component tests: `test/*.test.ts`, run with `bun run test`. Vitest uses Astro's
+  `getViteConfig`, so `@/` aliases and `.astro` imports work.
+- Render `.astro` components with the Container API:
+  `const c = await experimental_AstroContainer.create(); await c.renderToString(Comp, { props, slots })`.
+  Assert on text with tags stripped when checking copy and spacing.
+- Mock `astro:content` with `vi.mock` (see `test/posts.test.ts`); do not read real collections.
+- Pure logic (`src/lib`, `src/data`) gets plain unit tests; keep generators deterministic.
+- E2E: `e2e/*.spec.ts`, run with `bun run e2e` (builds, then `wrangler dev --local` on :4330;
+  projects `desktop` and `mobile`). Use role/text locators, `trackErrors()` and
+  `expectNoHorizontalScroll()` from `e2e/helpers.ts`. Do not assert on remote images (GitHub raw,
+  daily.dev, Holopin); they may be slow.
+- First run on a new machine: `bun run e2e:install` downloads Chromium for the installed Playwright.

@@ -1,0 +1,20 @@
+---
+description: UI work on the site (Astro components, shadcn/ui, Tailwind tokens, motion)
+globs: src/components/**/*,src/layouts/**/*,src/pages/**/*,src/styles/**/*
+alwaysApply: false
+---
+
+- Dark night-sky design. Surfaces: `glass` (or `cardVariants({ variant: "glass" })`) on top of `space-sky`.
+- Colours only through tokens: primary turquoise (`text-turquoise`, `bg-primary`), accent green,
+  details violet / pink / gold / cyan. New tone? Add it to `TONE` in `src/data/profile.ts`.
+- shadcn/ui lives in `src/components/ui`. Brand variants: Button `brand | green | outline | ghost`,
+  Badge `turquoise | green | violet | pink | gold | chip`, Card `glass`. Extend variants there
+  instead of repeating long class strings.
+- In `.astro`, apply `buttonVariants({ variant, size })` to `<a>`/`<button>`; keep zero client JS
+  unless a section needs it (then a small `<script>` listening to `astro:page-load`).
+- Section headers use `SectionHeading` (mono "~ $ command" eyebrow + h2). One `h1` per page.
+- Motion: transform/opacity only, respect `prefers-reduced-motion` (global rule in global.css,
+  generated SVG has its own media query). Decorative SVG gets `aria-hidden="true"`.
+- Whitespace: Astro 7 trims line-break whitespace between inline tags. Use `{" "}`.
+- External links: `target="_blank" rel="noopener noreferrer"`. Images: `astro:assets` `<Image>` for
+  local files, explicit `width`/`height` for remote ones.

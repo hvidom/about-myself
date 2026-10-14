@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    env:
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+
+      - run: bun install --frozen-lockfile
+
+      - name: Biome
+        run: bunx --bun @biomejs/biome ci
+
+      - name: Types
+        run: bun run check:types
+
+      - name: Unit and component tests
+        run: bun run test
+
+      - name: Playwright browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: E2E
+        run: bun run e2e
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7

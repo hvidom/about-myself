@@ -9,6 +9,10 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
 
+// Vitest loads this file through getViteConfig(); the Cloudflare adapter would try to
+// start workerd inside the test runner, so tests render without it.
+const isVitest = Boolean(process.env.VITEST);
+
 // https://docs.astro.build/en/reference/configuration-reference/
 export default defineConfig({
 	site: "https://about-myself.devopsick.workers.dev",
@@ -51,9 +55,11 @@ export default defineConfig({
 			fallbacks: ["monospace"],
 		},
 	],
-	adapter: cloudflare({
-		imageService: "compile",
-	}),
+	adapter: isVitest
+		? undefined
+		: cloudflare({
+				imageService: "compile",
+			}),
 	output: "server",
 	server: {
 		port: 4321,

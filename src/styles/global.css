@@ -320,6 +320,7 @@
 		}
 		:where(pre) {
 			@apply relative my-6 overflow-x-auto rounded-xl border border-border p-4 font-mono text-sm leading-relaxed;
+			/* biome-ignore lint/complexity/noImportantStyles: Shiki writes an inline background on <pre>. */
 			background-color: color-mix(in oklch, var(--space-0) 88%, black) !important;
 		}
 		:where(pre > code) {
@@ -328,13 +329,16 @@
 	}
 }
 
+/* Reduced motion must beat every component animation, hence !important. */
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
 	*::after {
+		/* biome-ignore-start lint/complexity/noImportantStyles: user preference overrides all motion */
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
 		scroll-behavior: auto !important;
+		/* biome-ignore-end lint/complexity/noImportantStyles: user preference overrides all motion */
 	}
 }

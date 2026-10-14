@@ -106,6 +106,63 @@ test.describe("home", () => {
 		await expect(page.getByRole("tabpanel")).toContainText("intentNode");
 	});
 
+	test("source terminal types the command, then streams the file, at a fixed size", async ({
+		page,
+	}) => {
+		await page.goto("/");
+		const terminal = page.locator("[data-source]");
+		const typed = page.getByRole("tabpanel").locator("[data-type]");
+		// Blank until it is on screen, like Magic UI's startOnView.
+		await expect(typed).toHaveText("");
+		await terminal.scrollIntoViewIfNeeded();
+		await expect(typed).toHaveText("cat packages/types/src/merlin-skills.ts");
+		await expect(page.getByRole("tabpanel")).not.toHaveAttribute("data-playing", /.*/, {
+			timeout: 10_000,
+		});
+		const height = (await terminal.boundingBox())?.height;
+
+		await page.getByRole("tab", { name: "Run engine" }).click();
+		await expect(page.getByRole("tabpanel")).toHaveAttribute("data-playing", "1");
+		await expect(page.getByRole("tabpanel")).not.toHaveAttribute("data-playing", /.*/, {
+			timeout: 10_000,
+		});
+		await expect(page.getByRole("tabpanel").locator("[data-type]")).toHaveText(
+			"cat apps/api/src/lib/merlin-skills.ts",
+		);
+		expect((await terminal.boundingBox())?.height).toBe(height);
+	});
+
+	test("the sky toggle switches to the black sky and remembers it", async ({ page }) => {
+		const errors = trackErrors(page);
+		await page.goto("/");
+		const html = page.locator("html");
+		const toggle = page.getByRole("button", { name: "Black sky" });
+		await expect(toggle).toHaveAttribute("aria-pressed", "false");
+		await toggle.click();
+		await expect(html).toHaveAttribute("data-sky", "black");
+		await expect(toggle).toHaveAttribute("aria-pressed", "true");
+		await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#050505");
+
+		await page.reload();
+		await expect(html).toHaveAttribute("data-sky", "black");
+		await expect(page.getByRole("button", { name: "Black sky" })).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		);
+
+		// ClientRouter swaps <html> attributes on navigation; the sky must survive it.
+		await page
+			.getByRole("navigation", { name: "Main" })
+			.getByRole("link", { name: "blog" })
+			.click();
+		await expect(page).toHaveURL(/\/blog\/$/);
+		await expect(html).toHaveAttribute("data-sky", "black");
+
+		await page.getByRole("button", { name: "Black sky" }).click();
+		await expect(html).not.toHaveAttribute("data-sky", /.*/);
+		expect(errors).toEqual([]);
+	});
+
 	test("terminal prompts keep their spaces", async ({ page }) => {
 		await page.goto("/");
 		await expect(page.locator("#whoami")).toContainText("~ $ whoami");

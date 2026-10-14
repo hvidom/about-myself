@@ -3,6 +3,7 @@
 // and real code from the private repo in a terminal with tabs, highlighted at build time. Each tab
 // types its `cat` command and streams the file in, like Magic UI's Terminal.
 import { Code } from "astro:components";
+import Highlighter from "@/components/magic/Highlighter.astro";
 import { cardVariants } from "@/components/ui/card";
 import { MERLIN_SLIDES, MERLIN_SNIPPETS, MERLIN_STATS, TONE } from "@/data/profile";
 import { brandCodeTheme } from "@/lib/code-theme";
@@ -25,8 +26,8 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
 
 <section id="merlin" aria-labelledby="merlin-title" class="scroll-mt-24 space-y-10">
   <SectionHeading eyebrow="merlin --help" title="Meet Merlin" id="merlin-title" animation="/animations/like.lottie">
-    The AI layer of Content Factory: a teammate in the chat, automations on a canvas and a night shift for
-    customers. A short deck, then the code.
+    The AI layer of Content Factory: a teammate in the chat, automations on a canvas and{" "}
+    <Highlighter action="underline" tone="pink">a night shift for customers</Highlighter>. A short deck, then the code.
   </SectionHeading>
 
   <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -122,7 +123,7 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
     </div>
 
     <div class="glass overflow-hidden rounded-2xl font-mono" data-tabs data-source>
-      <div class="flex items-center gap-2 border-b border-border bg-foreground/[0.03] px-4 py-3">
+      <div class="flex items-center gap-2 border-b border-border bg-foreground/[0.03] px-4 py-2.5">
         <span class="size-3 shrink-0 rounded-full bg-[#ff5f57]" aria-hidden="true"></span>
         <span class="size-3 shrink-0 rounded-full bg-[#febc2e]" aria-hidden="true"></span>
         <span class="size-3 shrink-0 rounded-full bg-[#28c840]" aria-hidden="true"></span>
@@ -139,7 +140,7 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
               aria-controls={`snippet-${snippet.id}`}
               aria-selected={i === 0 ? "true" : "false"}
               tabindex={i === 0 ? 0 : -1}
-              class="group flex shrink-0 items-center gap-2 border-r border-border px-4 py-2.5 text-xs whitespace-nowrap text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground aria-selected:bg-foreground/[0.06] aria-selected:text-foreground"
+              class="group flex shrink-0 items-center gap-2 border-r border-border px-3.5 py-2 text-xs whitespace-nowrap text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground aria-selected:bg-foreground/[0.06] aria-selected:text-foreground"
             >
               <span class="size-1.5 rounded-full bg-muted-foreground/40 transition-colors group-aria-selected:bg-turquoise group-aria-selected:shadow-[0_0_8px_var(--turquoise)]" aria-hidden="true" />
               {snippet.title}
@@ -148,7 +149,7 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
         }
       </div>
       {/* Every panel sits in the same grid cell, so the window is as tall as the longest file. */}
-      <div class="grid grid-cols-1 p-4 text-xs leading-relaxed sm:p-6 sm:text-[13px]">
+      <div class="grid grid-cols-1 px-4 py-3 text-xs leading-normal sm:px-5 sm:py-4">
         {
           MERLIN_SNIPPETS.map((snippet, i) => {
             const code = source(snippet.id);
@@ -158,7 +159,7 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
                 role="tabpanel"
                 id={`snippet-${snippet.id}`}
                 aria-labelledby={`snippet-tab-${snippet.id}`}
-                class:list={["col-start-1 row-start-1 min-w-0 space-y-3", i !== 0 && "invisible"]}
+                class:list={["col-start-1 row-start-1 min-w-0 space-y-2", i !== 0 && "invisible"]}
                 inert={i !== 0}
                 data-source-panel
               >
@@ -168,7 +169,7 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
                   <span class="sr-only">{command}</span><span aria-hidden="true" data-type={command}>{command}</span><span class="ml-0.5 hidden h-[1.1em] w-2 animate-blink bg-turquoise align-text-bottom" aria-hidden="true" data-caret />
                 </p>
                 <p class="text-muted-foreground italic" data-line># {snippet.note}</p>
-                <Code code={code} lang="ts" theme={brandCodeTheme} class="py-1" />
+                <Code code={code} lang="ts" theme={brandCodeTheme} class="py-0.5" />
                 <p class="text-green" data-line>✔ {code.split("\n").length} lines of TypeScript</p>
                 <p data-line>
                   <span class="text-turquoise">hvidom</span><span class="text-muted-foreground">@</span><span class="text-violet">dublin</span>{" "}

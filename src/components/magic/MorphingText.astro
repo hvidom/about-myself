@@ -1,0 +1,106 @@
+---
+// Words melt into each other: two layers cross-blur and an SVG alpha threshold makes the edges
+// gooey. Port of Magic UI's MorphingText (same 1.5 s morph, a longer rest so each word can be
+// read). Sized by the longest word, so it sits inline in a sentence. It only runs while on screen;
+// with reduced motion, or without JS, the first word stays.
+interface Props {
+  texts: string[];
+  class?: string;
+  /** Classes for the words themselves, e.g. a gradient (it has to sit on the word layers). */
+  wordClass?: string;
+}
+
+const { texts, class: className, wordClass } = Astro.props;
+const longest = texts.reduce((a, b) => (b.length > a.length ? b : a), "");
+---
+
+<span class:list={["morphing-text relative inline-block", className]} aria-hidden="true" data-morph={JSON.stringify(texts)}>
+  <span class="invisible">{longest}</span>
+  <span class:list={["absolute inset-x-0 top-0", wordClass]} data-morph-a>{texts[0]}</span>
+  <span class:list={["absolute inset-x-0 top-0 opacity-0", wordClass]} data-morph-b>{texts[1] ?? texts[0]}</span>
+  <svg class="absolute size-0" aria-hidden="true">
+    <defs>
+      <filter id="morph-threshold">
+        <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 255 -140"></feColorMatrix>
+      </filter>
+    </defs>
+  </svg>
+</span>
+
+<style>
+  .morphing-text {
+    filter: url(#morph-threshold) blur(0.6px);
+  }
+</style>
+
+<script>
+  const MORPH_S = 1.5;
+  const REST_S = 2;
+
+  function morph(root: HTMLElement) {
+    if (root.dataset.ready) return;
+    root.dataset.ready = "1";
+    const texts: string[] = JSON.parse(root.dataset.morph ?? "[]");
+    const a = root.querySelector<HTMLElement>("[data-morph-a]");
+    const b = root.querySelector<HTMLElement>("[data-morph-b]");
+    if (!a || !b || texts.length < 2) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let index = 0;
+    let morphing = 0;
+    let cooldown = REST_S;
+    let last = performance.now();
+    let frame = 0;
+
+    const styles = (fraction: number) => {
+      b.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`;
+      b.style.opacity = `${fraction ** 0.4 * 100}%`;
+      const inverted = 1 - fraction;
+      a.style.filter = `blur(${Math.min(8 / inverted - 8, 100)}px)`;
+      a.style.opacity = `${inverted ** 0.4 * 100}%`;
+      a.textContent = texts[index % texts.length] ?? "";
+      b.textContent = texts[(index + 1) % texts.length] ?? "";
+    };
+
+    const tick = (now: number) => {
+      if (!root.isConnected) return;
+      frame = requestAnimationFrame(tick);
+      const dt = Math.min((now - last) / 1000, 0.1);
+      last = now;
+      cooldown -= dt;
+      if (cooldown > 0) {
+        // Rest on the current word, sharp.
+        morphing = 0;
+        a.style.filter = "none";
+        a.style.opacity = "100%";
+        b.style.filter = "none";
+        b.style.opacity = "0%";
+        return;
+      }
+      morphing += dt;
+      const fraction = morphing / MORPH_S;
+      if (fraction >= 1) {
+        cooldown = REST_S;
+        index++;
+        a.textContent = texts[index % texts.length] ?? "";
+        a.style.filter = "none";
+        a.style.opacity = "100%";
+        b.style.opacity = "0%";
+        return;
+      }
+      styles(fraction);
+    };
+
+    // Run only while visible.
+    new IntersectionObserver(([entry]) => {
+      cancelAnimationFrame(frame);
+      if (!entry?.isIntersecting) return;
+      last = performance.now();
+      frame = requestAnimationFrame(tick);
+    }).observe(root);
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    document.querySelectorAll<HTMLElement>("[data-morph]").forEach(morph);
+  });
+</script>

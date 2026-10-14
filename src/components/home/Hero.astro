@@ -1,5 +1,6 @@
 ---
 import LottieAnimation from "@/components/LottieAnimations.astro";
+import TextAnimate from "@/components/magic/TextAnimate.astro";
 import { badgeVariants } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { HERO_STACK, LINKS, PHRASES } from "@/data/profile";
@@ -34,10 +35,12 @@ import { HERO_STACK, LINKS, PHRASES } from "@/data/profile";
       Hryhorii Ilin
     </h1>
 
-    <p class="text-lg text-muted-foreground sm:text-xl">
-      Full-stack developer{" "}<span class="text-foreground/40" aria-hidden="true">·</span>{" "}infrastructure tinkerer{" "}
-      <span class="text-foreground/40" aria-hidden="true">·</span>{" "}ex-sales director
-    </p>
+    <TextAnimate
+      class="text-lg text-muted-foreground sm:text-xl"
+      text="Full-stack developer · infrastructure tinkerer · ex-sales director"
+      label="Full-stack developer, infrastructure tinkerer, ex-sales director"
+      dim={["·"]}
+    />
 
     <div
       class="glass flex h-12 max-w-xl items-center gap-2.5 overflow-hidden rounded-xl px-4 font-mono text-[15px]"

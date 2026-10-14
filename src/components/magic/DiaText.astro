@@ -1,0 +1,63 @@
+---
+// A band in the brand colours sweeps across the text once, the first time it scrolls into view,
+// and leaves it in the normal text colour. Port of Magic UI's Dia Text Reveal, in CSS.
+// Without JS, or with reduced motion, the text is simply there.
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+---
+
+<span class="dia-text" data-dia>{text}</span>
+
+<style>
+  .dia-text[data-dia="armed"],
+  .dia-text[data-dia="play"] {
+    /* 300% wide: the first third is the text colour, the middle third the band, the last transparent. */
+    background-image: linear-gradient(
+      90deg,
+      currentColor 0% 36%,
+      var(--turquoise) 42%,
+      var(--green) 48%,
+      var(--cyan) 53%,
+      var(--violet) 58%,
+      var(--pink) 62%,
+      transparent 65% 100%
+    );
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .dia-text[data-dia="play"] {
+    animation: dia-sweep 1.5s ease-in-out forwards;
+  }
+  @keyframes dia-sweep {
+    to {
+      background-position: 0 0;
+    }
+  }
+</style>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        observer.unobserve(entry.target);
+        (entry.target as HTMLElement).dataset.dia = "play";
+      }
+    },
+    { rootMargin: "0px 0px -10% 0px" },
+  );
+
+  document.addEventListener("astro:page-load", () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    for (const el of document.querySelectorAll<HTMLElement>('[data-dia=""]')) {
+      el.dataset.dia = "armed";
+      observer.observe(el);
+    }
+  });
+</script>

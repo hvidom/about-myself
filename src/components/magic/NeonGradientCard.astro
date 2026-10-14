@@ -1,0 +1,43 @@
+---
+// A card with a neon gradient rim and a soft glow that drifts between two colours. Port of Magic UI's
+// NeonGradientCard in CSS (no size measuring): the rim and the glow are pseudo-elements behind
+// the slot, which should be an opaque card with the same radius.
+interface Props {
+  class?: string;
+  /** Rim colours, as CSS colours or tokens. */
+  from?: string;
+  to?: string;
+}
+
+const { class: className, from = "var(--pink)", to = "var(--turquoise)" } = Astro.props;
+---
+
+<div class:list={["neon-card relative isolate rounded-3xl", className]} style={`--neon-from: ${from}; --neon-to: ${to};`}>
+  <slot />
+</div>
+
+<style>
+  .neon-card::before,
+  .neon-card::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    z-index: -1;
+    border-radius: calc(1.5rem + 2px);
+    background-image: linear-gradient(0deg, var(--neon-from), var(--neon-to));
+    background-size: 100% 200%;
+    animation: neon-drift 3s ease-in-out infinite alternate;
+  }
+  .neon-card::after {
+    filter: blur(48px);
+    opacity: 0.45;
+  }
+  @keyframes neon-drift {
+    from {
+      background-position: top center;
+    }
+    to {
+      background-position: bottom center;
+    }
+  }
+</style>

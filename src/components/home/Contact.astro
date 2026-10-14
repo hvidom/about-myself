@@ -1,20 +1,29 @@
 ---
 import LottieAnimation from "@/components/LottieAnimations.astro";
+import MorphingText from "@/components/magic/MorphingText.astro";
+import NeonGradientCard from "@/components/magic/NeonGradientCard.astro";
+import TextAnimate from "@/components/magic/TextAnimate.astro";
 import { buttonVariants } from "@/components/ui/button";
 import { LINKS } from "@/data/profile";
 ---
 
-<section aria-labelledby="contact-title" class="glass grid-faint relative overflow-hidden rounded-3xl">
+<NeonGradientCard>
+<section aria-labelledby="contact-title" class="grid-faint relative overflow-hidden rounded-3xl bg-card">
   <div class="pointer-events-none absolute -bottom-32 -left-24 size-80 rounded-full bg-turquoise/15 blur-3xl" aria-hidden="true"></div>
   <div class="pointer-events-none absolute -top-24 right-10 size-64 rounded-full bg-green/10 blur-3xl" aria-hidden="true"></div>
 
   <div class="relative grid items-center gap-6 p-8 sm:p-12 md:grid-cols-[1fr_auto]">
     <div class="space-y-5">
       <p class="font-mono text-sm text-turquoise"><span class="text-violet">~</span> <span class="text-green">$</span> ping hvidom</p>
-      <h2 id="contact-title" class="text-3xl font-extrabold tracking-tight sm:text-4xl">Let’s build something that ships.</h2>
-      <p class="max-w-xl text-muted-foreground">
-        Open-source ideas, a tricky integration, or a chat about sales systems: my inbox is open.
-      </p>
+      <h2 id="contact-title" class="text-3xl font-extrabold tracking-tight sm:text-4xl">
+        <span class="sr-only">Let’s build something that ships, scales and sells.</span>
+        <span aria-hidden="true">Let’s build something that</span>{" "}<MorphingText texts={["ships.", "scales.", "sells."]} wordClass="text-brand" />
+      </h2>
+      <TextAnimate
+        onView
+        class="max-w-xl text-muted-foreground"
+        text="Open-source ideas, a tricky integration, or a chat about sales systems: my inbox is open."
+      />
       <div class="flex flex-wrap gap-3">
         <a href={LINKS.email} class={buttonVariants({ variant: "brand", size: "xl" })}>{LINKS.emailText}</a>
         <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" class={buttonVariants({ variant: "outline", size: "xl" })}>LinkedIn</a>
@@ -26,3 +35,4 @@ import { LINKS } from "@/data/profile";
     </div>
   </div>
 </section>
+</NeonGradientCard>

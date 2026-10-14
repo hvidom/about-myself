@@ -1,0 +1,62 @@
+---
+// Hand-drawn marker on a phrase, drawn once when it scrolls into view. Port of Magic UI's
+// Highlighter (rough-notation). Without JS the phrase is plain text.
+import type { Tone } from "@/data/profile";
+
+interface Props {
+  action?:
+    | "highlight"
+    | "underline"
+    | "box"
+    | "circle"
+    | "bracket"
+    | "strike-through"
+    | "crossed-off";
+  tone?: Tone;
+}
+
+const { action = "highlight", tone = "turquoise" } = Astro.props;
+---
+
+<span data-highlight={action} data-tone={tone}><slot /></span>
+
+<script>
+  import { annotate } from "rough-notation";
+  import type { RoughAnnotationType } from "rough-notation/lib/model";
+
+  // The SVG stroke attribute cannot take var(): read the token and pass the colour itself.
+  const colour = (tone: string, alpha: number) => {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(`--${tone}`).trim();
+    return alpha < 1 ? value.replace(/\)$/, ` / ${alpha})`) : value;
+  };
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
+        observer.unobserve(el);
+        const type = el.dataset.highlight as RoughAnnotationType;
+        annotate(el, {
+          type,
+          color: colour(el.dataset.tone ?? "turquoise", type === "highlight" ? 0.35 : 1),
+          strokeWidth: 1.5,
+          animationDuration: 600,
+          iterations: 2,
+          padding: 2,
+          multiline: true,
+          animate: !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+        }).show();
+      }
+    },
+    { rootMargin: "0px 0px -15% 0px" },
+  );
+
+  document.addEventListener("astro:page-load", () => {
+    for (const el of document.querySelectorAll<HTMLElement>("[data-highlight]")) {
+      if (el.dataset.ready) continue;
+      el.dataset.ready = "1";
+      observer.observe(el);
+    }
+  });
+</script>

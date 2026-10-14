@@ -1,4 +1,5 @@
 ---
+import Highlighter from "@/components/magic/Highlighter.astro";
 import { badgeVariants } from "@/components/ui/badge";
 import { cardVariants } from "@/components/ui/card";
 import { JOURNEY, TONE } from "@/data/profile";
@@ -8,7 +9,7 @@ import SectionHeading from "./SectionHeading.astro";
 
 <section id="journey" aria-labelledby="journey-title" class="scroll-mt-24 space-y-12">
   <SectionHeading eyebrow="cat ~/journey.log" title="Professional journey" id="journey-title" animation="/animations/scating.lottie">
-    A track record spanning over 15 years, integrating software architecture, strategic infrastructure, and customer-focused
+    A track record spanning <Highlighter tone="gold">over 15 years</Highlighter>, integrating software architecture, strategic infrastructure, and customer-focused
     sales leadership.
   </SectionHeading>
 

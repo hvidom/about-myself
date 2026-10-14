@@ -1,0 +1,77 @@
+---
+// Words blur in and rise one after another. Port of Magic UI's TextAnimate ("blurInUp", by word),
+// in CSS. Above the fold it plays on load; with `onView` it waits until it scrolls into view.
+// Screen readers get the sentence once; the animated words are hidden from them.
+import type { HTMLTag } from "astro/types";
+
+interface Props {
+  text: string;
+  as?: HTMLTag;
+  class?: string;
+  /** Read instead of `text`, e.g. without decorative separators. */
+  label?: string;
+  /** Words drawn dimmed, such as "·" separators. */
+  dim?: string[];
+  onView?: boolean;
+}
+
+const { text, as: Tag = "p", class: className, label, dim = [], onView = false } = Astro.props;
+const words = text.split(/\s+/).filter(Boolean);
+---
+
+<Tag class={className} data-text-animate={onView ? "view" : "load"}>
+  <span class="sr-only">{label ?? text}</span>
+  <span aria-hidden="true">
+    {
+      words.map((word, i) => (
+        <>
+          <span class:list={["text-animate-word", dim.includes(word) && "text-foreground/40"]} style={`--i: ${i}`}>
+            {word}
+          </span>{" "}
+        </>
+      ))
+    }
+  </span>
+</Tag>
+
+<style>
+  .text-animate-word {
+    display: inline-block;
+  }
+  [data-text-animate="load"] .text-animate-word,
+  [data-text-animate="play"] .text-animate-word {
+    animation: blur-in-up 0.45s ease-out both;
+    animation-delay: calc(var(--i) * 60ms);
+  }
+  [data-text-animate="armed"] .text-animate-word {
+    opacity: 0;
+  }
+  @keyframes blur-in-up {
+    from {
+      opacity: 0;
+      filter: blur(10px);
+      transform: translateY(20px);
+    }
+  }
+</style>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        observer.unobserve(entry.target);
+        (entry.target as HTMLElement).dataset.textAnimate = "play";
+      }
+    },
+    { rootMargin: "0px 0px -10% 0px" },
+  );
+
+  document.addEventListener("astro:page-load", () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    for (const el of document.querySelectorAll<HTMLElement>('[data-text-animate="view"]')) {
+      el.dataset.textAnimate = "armed";
+      observer.observe(el);
+    }
+  });
+</script>

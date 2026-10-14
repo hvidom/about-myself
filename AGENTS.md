@@ -24,6 +24,10 @@ Deploying or pushing is the owner's call: do not run `deploy`, `git push` or cre
 
 - `src/data/profile.ts`: all home-page text. Change copy here, not in components.
 - `src/components/home/*`: home sections. `src/components/ui/*`: shadcn components with brand variants.
+- `src/components/magic/*`: Magic UI ports in Astro + CSS (no React/motion): SkyToggle (blue/black sky,
+  `html[data-sky]`, applied before paint by an inline script in BaseHead), DiaText (section titles),
+  TextAnimate, MorphingText, Highlighter (rough-notation), NeonGradientCard. All respect reduced motion.
+- `src/lib/code-theme.ts`: Shiki theme in site tokens (hex placeholders + `colorReplacements` to CSS vars).
 - `src/styles/global.css`: shadcn tokens plus `--turquoise --green --cyan --violet --pink --gold`,
   utilities `glass`, `space-sky`, `text-brand`, `grid-faint`; `.prose` styles blog posts only.
 - `src/lib/pixel.ts`: generated pixel-art SVG (deterministic). Lottie files live in `public/animations/`

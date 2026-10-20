@@ -118,6 +118,7 @@ test.describe("home", () => {
 			timeout: 10_000,
 		});
 		const height = (await terminal.boundingBox())?.height;
+		expect(height).toBeLessThan(560);
 
 		await page.getByRole("tab", { name: "Run engine" }).click();
 		await expect(page.getByRole("tabpanel")).toHaveAttribute("data-playing", "1");

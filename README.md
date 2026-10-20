@@ -3,7 +3,7 @@
 Personal site of Hryhorii Ilin (@hvidom): journey, projects, tech stack and writing.
 Same night-sky design as [github.com/hvidom](https://github.com/hvidom).
 
-**Live:** https://about-myself.devopsick.workers.dev · https://hvidom.pages.dev · `hvidom.is-a.dev` (pending)
+**Live:** https://hvidom.is-a.dev (also https://hvidom.pages.dev and https://about-myself.devopsick.workers.dev, canonical points to is-a.dev)
 
 ## Stack
 

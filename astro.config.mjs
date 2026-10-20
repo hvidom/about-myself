@@ -12,7 +12,7 @@ import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
 const isVitest = Boolean(process.env.VITEST);
 
 export default defineConfig({
-	site: "https://about-myself.devopsick.workers.dev",
+	site: "https://hvidom.is-a.dev",
 	prefetch: {
 		prefetchAll: true,
 	},

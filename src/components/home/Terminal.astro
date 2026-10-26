@@ -1,6 +1,7 @@
 ---
 import LottieAnimation from "@/components/LottieAnimations.astro";
 import Highlighter from "@/components/magic/Highlighter.astro";
+import { fileOf } from "@/data/dossier";
 import { NEOFETCH, TONE } from "@/data/profile";
 import SectionHeading from "./SectionHeading.astro";
 
@@ -17,7 +18,7 @@ const blocks = [
 ---
 
 <section id="whoami" aria-labelledby="whoami-title" class="scroll-mt-24 space-y-10">
-  <SectionHeading eyebrow="whoami" title="The short version" id="whoami-title">
+  <SectionHeading file={fileOf("#whoami")} eyebrow="whoami" title="The short version" id="whoami-title">
     Fifteen years across three crafts: <Highlighter action="underline" tone="turquoise">servers, code and sales</Highlighter>. These days I put all three into <Highlighter tone="green">one product</Highlighter>.
   </SectionHeading>
 

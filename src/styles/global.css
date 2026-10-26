@@ -219,6 +219,21 @@ html.sky-switching::view-transition-new(root) {
 		linear-gradient(160deg, var(--space-1), var(--space-0));
 }
 
+@utility beam-pulse {
+	fill: none;
+	stroke-linecap: round;
+	stroke-dasharray: 0.14 2;
+	stroke-dashoffset: 0.14;
+	animation: beam-run var(--beam-duration, 3.2s) cubic-bezier(0.45, 0, 0.25, 1)
+		var(--beam-delay, 0s) infinite;
+}
+
+@keyframes beam-run {
+	to {
+		stroke-dashoffset: -1;
+	}
+}
+
 @utility glass {
 	background-color: color-mix(in oklch, var(--card) 72%, transparent);
 	border: 1px solid var(--border);
@@ -322,8 +337,17 @@ html.sky-switching::view-transition-new(root) {
 		:where(img) {
 			@apply rounded-xl border border-border;
 		}
+		:where(.table-wrap) {
+			@apply my-6 overflow-x-auto rounded-xl;
+		}
 		:where(table) {
 			@apply my-6 w-full text-sm;
+		}
+		:where(.table-wrap > table) {
+			@apply my-0;
+		}
+		:where(.table-wrap > table:has(th:nth-child(4))) {
+			@apply min-w-[36rem];
 		}
 		:where(th, td) {
 			@apply border border-border px-3 py-2 text-left;

@@ -7,6 +7,7 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
+import { rehypeTableWrap } from "./src/utils/rehype-table-wrap.mjs";
 import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
 
 const isVitest = Boolean(process.env.VITEST);
@@ -22,6 +23,7 @@ export default defineConfig({
 	markdown: {
 		processor: unified({
 			remarkPlugins: [remarkReadingTime],
+			rehypePlugins: [rehypeTableWrap],
 		}),
 		shikiConfig: {
 			theme: "github-dark-dimmed",

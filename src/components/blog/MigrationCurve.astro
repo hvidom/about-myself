@@ -1,0 +1,73 @@
+---
+const points = [
+  { label: "−1 mo", value: 100 },
+  { label: "Launch", value: 100 },
+  { label: "+1", value: 82 },
+  { label: "+2", value: 88 },
+  { label: "+3", value: 95 },
+  { label: "+4", value: 105 },
+  { label: "+5", value: 116 },
+  { label: "+6", value: 130 },
+];
+const LEFT = 48;
+const RIGHT = 700;
+const TOP = 24;
+const BOTTOM = 232;
+const MIN = 70;
+const MAX = 130;
+const ticks = [70, 85, 100, 115, 130];
+const px = (i: number) => LEFT + (i * (RIGHT - LEFT)) / (points.length - 1);
+const py = (v: number) => BOTTOM - ((v - MIN) / (MAX - MIN)) * (BOTTOM - TOP);
+const line = points
+  .map((p, i) => `${i ? "L" : "M"}${px(i).toFixed(1)} ${py(p.value).toFixed(1)}`)
+  .join(" ");
+const area = `${line} L${px(points.length - 1).toFixed(1)} ${BOTTOM} L${LEFT} ${BOTTOM} Z`;
+const trough = points.reduce((lo, p, i) => (p.value < points[lo]!.value ? i : lo), 0);
+const last = points.length - 1;
+---
+
+<svg viewBox="0 0 720 268" class="block h-auto w-full" role="img" aria-labelledby="mig-title mig-desc">
+  <title id="mig-title">Illustrative organic traffic through the migration, indexed to 100</title>
+  <desc id="mig-desc">
+    {points.map((p) => `${p.label}: ${p.value}`).join(", ")}. Traffic dips to 82 one month after launch, returns to the
+    baseline by month four and reaches 130 by month six.
+  </desc>
+
+  {
+    ticks.map((t) => (
+      <g>
+        <line x1={LEFT} x2={RIGHT} y1={py(t)} y2={py(t)} class:list={[t === 100 ? "stroke-muted-foreground/60" : "stroke-border"]} stroke-width="1" />
+        <text x={LEFT - 10} y={py(t) + 4} text-anchor="end" class="fill-muted-foreground font-mono text-[11px] tabular-nums">{t}</text>
+      </g>
+    ))
+  }
+
+  <line x1={px(1)} x2={px(1)} y1={TOP - 8} y2={BOTTOM} class="stroke-gold/70" stroke-width="1.5" />
+  <text x={px(1) + 6} y={TOP} class="fill-gold font-mono text-[11px]">cutover</text>
+
+  <path d={area} class="fill-turquoise/10" />
+  <path d={line} class="fill-none stroke-turquoise" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+
+  {
+    points.map((p, i) => (
+      <circle cx={px(i)} cy={py(p.value)} r={i === last ? 5 : 4} class="fill-turquoise stroke-background" stroke-width="2">
+        <title>{`${p.label}: ${p.value}`}</title>
+      </circle>
+    ))
+  }
+
+  <text x={px(trough)} y={py(points[trough]!.value) + 22} text-anchor="middle" class="fill-foreground text-[11.5px] font-semibold">
+    trough −18%
+  </text>
+  <text x={px(last) - 10} y={py(points[last]!.value) + 4} text-anchor="end" class="fill-foreground text-[11.5px] font-semibold">
+    130
+  </text>
+
+  {
+    points.map((p, i) => (
+      <text x={px(i)} y={BOTTOM + 22} text-anchor="middle" class="fill-muted-foreground font-mono text-[11px]">
+        {p.label}
+      </text>
+    ))
+  }
+</svg>

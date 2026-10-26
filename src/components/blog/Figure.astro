@@ -1,0 +1,21 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  note?: string;
+  wide?: boolean;
+}
+
+const { title, subtitle, note, wide = false } = Astro.props;
+---
+
+<figure class="glass my-10 rounded-2xl p-5 sm:p-6">
+  <figcaption>
+    <span class="block font-heading text-base text-foreground">{title}</span>
+    {subtitle && <span class="mt-1 block text-sm leading-relaxed text-muted-foreground">{subtitle}</span>}
+  </figcaption>
+  <div class:list={["mt-5", wide && "overflow-x-auto pb-1"]} tabindex={wide ? 0 : undefined} role={wide ? "region" : undefined} aria-label={wide ? title : undefined}>
+    <slot />
+  </div>
+  {note && <p class="mt-4 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">{note}</p>}
+</figure>

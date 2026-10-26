@@ -1,11 +1,14 @@
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { beforeAll, describe, expect, test } from "vitest";
+import ClassificationBanner from "@/components/ClassificationBanner.astro";
+import Decoder from "@/components/home/Decoder.astro";
 import Hero from "@/components/home/Hero.astro";
 import SectionHeading from "@/components/home/SectionHeading.astro";
 import Terminal from "@/components/home/Terminal.astro";
 import { badgeVariants } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cardVariants } from "@/components/ui/card";
+import { DOM_TREE, FILE_ID } from "@/data/dossier";
 import { NEOFETCH, PHRASES } from "@/data/profile";
 
 let container: AstroContainer;
@@ -37,6 +40,18 @@ describe("SectionHeading", () => {
 		});
 		expect(plain).not.toContain("data-lottie");
 		expect(animated).toContain('data-lottie="/animations/dj.lottie"');
+	});
+
+	test("shows the dossier file number only when given", async () => {
+		const plain = await container.renderToString(SectionHeading, {
+			props: { eyebrow: "whoami", title: "T" },
+		});
+		const filed = await container.renderToString(SectionHeading, {
+			props: { eyebrow: "whoami", title: "T", file: "01" },
+		});
+		expect(text(plain)).not.toContain("File");
+		expect(text(filed)).toMatch(/^~ \$ whoami/);
+		expect(text(filed)).toContain("File 01");
 	});
 
 	test("renders the lead paragraph only when given", async () => {
@@ -77,10 +92,60 @@ describe("Hero", () => {
 
 	test("screen readers get every phrase, the animated copy is hidden", async () => {
 		const html = await container.renderToString(Hero);
-		expect(html).toContain(
-			`<span class="sr-only">${PHRASES.join(". ").replaceAll("&", "&amp;")}</span>`,
+		const srOnly = [...html.matchAll(/<span class="sr-only"[^>]*>([^<]*)<\/span>/g)].map(
+			(m) => m[1],
 		);
-		expect(html).toMatch(/aria-hidden="true" data-typewriter-text/);
+		expect(srOnly).toContain(PHRASES.join(". ").replaceAll("&", "&amp;"));
+		expect(html).toMatch(
+			/<span class="typing-box" aria-hidden="true"[^>]*>[\s\S]*?data-typing-text/,
+		);
+		expect(html).toMatch(/data-typewriter[^>]*>[\s\S]*?data-loop/);
+	});
+});
+
+describe("Hero dossier", () => {
+	test("files the subject under its number and spells out HVIDOM for screen readers", async () => {
+		const html = await container.renderToString(Hero);
+		const plain = text(html);
+		expect(html).toMatch(new RegExp(`<dt[^>]*>File</dt>\\s*<dd[^>]*>${FILE_ID}</dd>`));
+		expect(plain).toContain("hvidom stands for Hryhorii Victorovich Ilin, Document Object Model.");
+		expect(plain.indexOf(FILE_ID)).toBeLessThan(plain.indexOf("Based in Dublin, Ireland"));
+	});
+
+	test("the redacted middle name is still in the markup, the stamp is decorative", async () => {
+		const html = await container.renderToString(Hero);
+		expect(html).toMatch(/data-redacted=""[^>]*>Victorovich<\/span>/);
+		expect(html).toMatch(/class="stamp[^"]*"[^>]*aria-hidden="true"/);
+	});
+});
+
+describe("Decoder", () => {
+	test("one h2 and a link to every node of the document tree", async () => {
+		const html = await container.renderToString(Decoder);
+		expect(html.match(/<h2/g)).toHaveLength(1);
+		for (const node of DOM_TREE) {
+			expect(html).toContain(`href="${node.href}"`);
+			expect(html).toContain(`aria-label="${node.tag}: ${node.label}"`);
+		}
+	});
+
+	test("screen readers get each word once; the scrambling copy is hidden", async () => {
+		const html = await container.renderToString(Decoder);
+		expect(html).toContain('<span class="sr-only">Victorovich, patronymic</span>');
+		expect(html).toMatch(
+			/<span class="min-w-0" aria-hidden="true">\s*<span[^>]*data-decrypt="Victorovich"/,
+		);
+		expect(text(html)).toContain("Hryhorii Victorovich Ilin · Document Object Model");
+	});
+});
+
+describe("ClassificationBanner", () => {
+	test("reads as a note: formerly top secret, now declassified", async () => {
+		const html = await container.renderToString(ClassificationBanner);
+		expect(html).toContain('role="note"');
+		expect(text(html)).toMatch(
+			/^formerly TOP SECRET \/\/ HVIDOM \/\/ DECLASSIFIED FOR PUBLIC RELEASE/,
+		);
 	});
 });
 

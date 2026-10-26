@@ -1,0 +1,26 @@
+---
+import { BANNER } from "@/data/dossier";
+import { cn } from "@/lib/utils";
+
+interface Props {
+  class?: string;
+  label?: string;
+}
+
+const { class: className, label = "Classification" } = Astro.props;
+---
+
+<div
+  role="note"
+  aria-label={label}
+  class={cn(
+    "flex h-7 items-center justify-center gap-2 border-gold/25 bg-gold/10 px-4 font-mono text-[10px] font-semibold tracking-[0.28em] text-gold uppercase sm:text-[11px]",
+    className,
+  )}
+>
+  <span class="sr-only">formerly</span>{" "}
+  <s class="decoration-pink decoration-2 opacity-70">{BANNER.struck}</s>{" "}
+  <span aria-hidden="true">//</span>{" "}
+  <span class="hidden sm:inline">{BANNER.full}</span>
+  <span class="sm:hidden">{BANNER.short}</span>
+</div>

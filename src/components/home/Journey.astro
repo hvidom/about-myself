@@ -1,21 +1,24 @@
 ---
+import AnimatedBeam from "@/components/magic/AnimatedBeam.astro";
 import Highlighter from "@/components/magic/Highlighter.astro";
 import { badgeVariants } from "@/components/ui/badge";
 import { cardVariants } from "@/components/ui/card";
+import { fileOf } from "@/data/dossier";
 import { JOURNEY, TONE } from "@/data/profile";
 import { cn } from "@/lib/utils";
 import SectionHeading from "./SectionHeading.astro";
 ---
 
 <section id="journey" aria-labelledby="journey-title" class="scroll-mt-24 space-y-12">
-  <SectionHeading eyebrow="cat ~/journey.log" title="Professional journey" id="journey-title" animation="/animations/scating.lottie">
+  <SectionHeading file={fileOf("#journey")} eyebrow="cat ~/journey.log" title="Professional journey" id="journey-title" animation="/animations/scating.lottie">
     A track record spanning <Highlighter tone="gold">over 15 years</Highlighter>, integrating software architecture, strategic infrastructure, and customer-focused
     sales leadership.
   </SectionHeading>
 
+  <div class="relative" data-beam-root>
   <ol class="relative ml-3 space-y-8 border-l border-border md:ml-5">
     {
-      JOURNEY.map((item) => {
+      JOURNEY.map((item, i) => {
         const tone = TONE[item.tone];
         return (
           <li class="group relative pl-8 md:pl-10">
@@ -25,6 +28,7 @@ import SectionHeading from "./SectionHeading.astro";
                 tone.dot,
               )}
               aria-hidden="true"
+              data-beam-node={i === 0 ? "journey-start" : i === JOURNEY.length - 1 ? "journey-end" : undefined}
             />
             <article class={cn(cardVariants({ variant: "glass" }), "gap-3 rounded-2xl px-6 py-6")}>
               <div class="flex flex-wrap items-center justify-between gap-2">
@@ -47,4 +51,6 @@ import SectionHeading from "./SectionHeading.astro";
       })
     }
   </ol>
+  <AnimatedBeam from="journey-start" to="journey-end" track={false} start="pink" stop="turquoise" duration={5.5} />
+  </div>
 </section>

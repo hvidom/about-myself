@@ -1,0 +1,337 @@
+---
+title: 'Off WordPress, onto an owned stack: the Radio King platform brief'
+description: 'How a Dublin car-audio installer moves its site to Astro on Cloudflare and its operations to a self-hosted admin.'
+pubDate: 2026-10-26
+heroImage: '../../assets/blog/radio-king-platform-brief.jpg'
+category: 'Case study'
+releaseNote: 'the plan has shipped, and a shipped plan is just a deploy log with ambition. Credentials, customer data and the coffee budget remain redacted.'
+tags: ['Astro', 'Cloudflare', 'Self-hosting', 'SEO migration', 'CRM', 'Architecture']
+---
+
+import ArchitectureDiagram from '@/components/blog/ArchitectureDiagram.astro';
+import Callout from '@/components/blog/Callout.astro';
+import Figure from '@/components/blog/Figure.astro';
+import HostingCost from '@/components/blog/HostingCost.astro';
+import MarketingLoop from '@/components/blog/MarketingLoop.astro';
+import MigrationCurve from '@/components/blog/MigrationCurve.astro';
+import StatGrid from '@/components/blog/StatGrid.astro';
+import Redacted from '@/components/magic/Redacted.astro';
+
+On 14 August 2026 I put a project brief in front of the management of [Radio King](https://radioking.ie), a car-audio and electronics installer in Dublin. They fit Apple CarPlay and Android Auto, reverse cameras, dash cams, parking sensors and subwoofers, convert Japanese import dashboards to English, and sell parts through an online shop. At the time they had a 4.8★ rating across 887 Google reviews, and all of it ran on WordPress.
+
+The brief asked for one decision: stop renting the company's digital presence and start owning it. The original was marked <Redacted>confidential, for management</Redacted>. Plans stay secret right up until they ship; after that they are just history with better formatting. This one shipped, so here is the declassified edition, file one in this archive: the same plan and the same numbers, rewritten for engineers and owners weighing a similar move.
+
+<StatGrid
+  stats={[
+    { value: '€0', label: 'monthly hosting for the website and the admin', tone: 'turquoise' },
+    { value: '1:1', label: 'old WordPress URLs mapped to new pages with 301s', tone: 'green' },
+    { value: '~€300', label: 'yearly run-rate, almost all of it data and AI', tone: 'violet' },
+    { value: '~10×', label: 'cheaper than a comparable commercial stack', tone: 'gold' },
+  ]}
+/>
+
+<Callout label="Status · October 2026" tone="green">
+Two months on, [radioking.ie](https://radioking.ie) runs on Astro and Cloudflare, and Content Factory, the admin described below, runs the business in production (see [Featured work](/#work)). What follows is the plan as it was written in August. Where a vendor has changed its terms since then, I say so next to the number.
+</Callout>
+
+## Why leave WordPress
+
+WordPress was not broken. It was expensive in three quiet ways:
+
+- **A recurring bill.** Hosting, plugin and theme licences, a CDN, security and backups came to about **€750 a year**, paid just to keep the lights on.
+- **A security surface.** PHP, a long tail of plugins (<Redacted>exact count withheld to protect their dignity</Redacted>) and a public admin login are a standing invitation for automated attacks.
+- **A performance ceiling.** Every page was assembled per request from a database and a theme, and plugins kept adding weight.
+
+The brief replaced that foundation with three connected pieces, each built and owned end to end:
+
+1. **The website.** A fast site built with [Astro](https://astro.build), hosted on Cloudflare's global edge, with a WordPress migration that carries every old link across.
+2. **The admin, "Content Factory".** One panel that runs the business: content (CMS), customers (CRM), analytics, SEO, marketing and the shop, with an AI writing editor and live marketing data.
+3. **The deployment.** The admin, its database and the company mail run on one always-free Oracle Cloud ARM server.
+
+The money that used to keep WordPress alive goes into growth tooling instead: search data and AI, which WordPress never offered on this budget.
+
+## Six goals with a finish line
+
+Every goal in the brief is SMART: specific, measurable, achievable, relevant and time-bound, so "done" is never a matter of opinion.
+
+| Goal | Done when | Due |
+| --- | --- | --- |
+| Rebuild the site on Astro and Cloudflare | Every page live; Lighthouse performance ≥ 95; edge response under 200 ms; zero console errors; `astro check` clean | Sprint 3, October 2026 |
+| Migrate with zero loss | No unmapped indexed URL; organic sessions back to 100% of baseline within 12 weeks, tracked in Search Console | At launch, confirmed by January 2027 |
+| Ship the Content Factory MVP | An article goes from editor to git to the live site; a lead flows lead → deal → won; analytics shows real numbers | Sprint 5, November 2026 |
+| Wire the data pipeline and the AI editor | Keyword core imported from DataForSEO; PostHog live; Search Console syncing daily; a publishable draft from a brief | Sprint 6, December 2026 |
+| Self-host on Oracle ARM | One-command deploy; container healthcheck green; off-box backups; TLS on the admin domain | Sprint 7, December 2026 |
+| Close the marketing loop | Live cost per lead, close rate and ROAS per channel, including the free in-garage consultation | Launch, January 2027 |
+
+Two of these carry the most risk and the most value: the migration, because organic search is the cheapest and highest-intent channel the business has, and the marketing loop, because it turns spending from guesswork into measurement.
+
+## What's in, and what waits
+
+A solo build lives or dies by its scope, so the brief draws the line in writing.
+
+**Delivered in the first release:** the Astro website in a private repository under a new GitHub organisation; a verified WordPress-to-Astro redirect map; the admin panel with CMS, CRM, analytics, SEO, marketing, social, shop and ledger modules; an AI editor that publishes straight to the site's repository; the marketing data pipeline (DataForSEO, PostHog EU, Search Console); a self-hosted deployment with backups and monitoring; and documentation to run and extend all of it.
+
+**Out of scope for v1:** statutory accounting reports (the double-entry ledger foundation ships, reporting comes later); automated posting to Meta and YouTube (it needs platform tokens, so posting starts manual); warehouse stock control for physical goods (modelled, built later); multi-user roles with organisation-level checks (one operator at launch); and a high-availability cluster, because one VM is the right size for this stage.
+
+**Roadmap after the MVP:** publishing that commits and deploys automatically; scheduled social posts with metrics coming back in; rank-drop alerts in the CRM feed the same day; stock and supplier costs feeding true product margin; P&L and balance reports on top of the ledger; team accounts with role-based access.
+
+## The architecture in one picture
+
+<Figure
+  title="System architecture"
+  subtitle="The public site on the edge, the business brain on one owned server, outside data over APIs."
+  note="The website and the admin fail independently: if the Oracle server goes down, the public site keeps serving from Cloudflare."
+  wide
+>
+  <ArchitectureDiagram />
+</Figure>
+
+The split is deliberate. The two most visible surfaces have separate failure domains. Visitors only ever touch Cloudflare. The team reaches the admin through [Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/policies/access/) and a [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/), so the server has no inbound ports open to the internet. Content never lives in a database the website depends on: the admin writes files to git, CI builds the site, and Cloudflare serves it.
+
+## The website: Astro on the edge, and a migration that keeps Google
+
+The new site is built with Astro, React islands only where a page needs interactivity, Tailwind CSS v4, MDX content stored in git, and [Stripe Checkout](https://docs.stripe.com/payments/checkout) for the shop. It is hosted on Cloudflare, and its code lives in a private repository.
+
+Why this stack:
+
+- **Speed.** Pages are pre-built and served from the edge close to each visitor. Faster pages lift both conversion and ranking.
+- **Free hosting.** Cloudflare's [free tier](https://developers.cloudflare.com/workers/platform/pricing/) comfortably covers a business site, with a global CDN and DDoS protection included.
+- **Security and ownership.** No PHP, no plugin stack, no admin login on the public site. Every change is a versioned commit.
+- **No lock-in.** Content is plain files in git: portable, backed up and reviewable.
+- **Repeatable deploys.** Every commit can be previewed and rolled back. An update can no longer white-screen the site.
+- **SEO fundamentals by default.** Clean HTML, a sitemap, RSS and generated social images ship with the build.
+
+### The redirect map comes first
+
+The real risk in any rebuild is Google. The defence is a **permanent 301 redirect from every old WordPress URL to its new home**, written before the new pages go live. Old addresses such as `/apple-carplay/` or `/dash-cam-fitting-service-dublin/` move to the new `/service/…` and `/installation/…` pages, and trailing slashes are kept exactly as Google indexed them, so link equity follows the redirect instead of hitting a dead end.
+
+In Astro the one-to-one map is plain [configuration](https://docs.astro.build/en/reference/configuration-reference/#redirects); the destinations below are simplified:
+
+```js
+// astro.config.mjs (simplified)
+export default defineConfig({
+  site: "https://radioking.ie",
+  redirects: {
+    "/apple-carplay/": { status: 301, destination: "/service/apple-carplay/" },
+    "/dash-cam-fitting-service-dublin/": { status: 301, destination: "/installation/dash-cam/" },
+  },
+});
+```
+
+Pattern rules, such as whole old category trees, are cheaper as edge rules. Cloudflare reads them from a [`_redirects`](https://developers.cloudflare.com/workers/static-assets/redirects/) file and applies them before the request reaches any code:
+
+```txt
+# public/_redirects (example)
+/product-category/*   /shop/   301
+```
+
+Google's own guidance for a [site move with URL changes](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes) is the checklist here: map every old URL, use [server-side permanent redirects](https://developers.google.com/search/docs/crawling-indexing/301-redirects), keep them in place for a long time (at least a year), submit the new sitemap and watch [Search Console](https://search.google.com/search-console/about) daily after the cutover.
+
+<Figure
+  title="Organic traffic through the migration"
+  subtitle="Indexed to 100 at the pre-migration baseline. Illustrative: the expected shape of a well-executed 301 migration, not a forecast."
+  note="The dip is real but manageable. The point of the redirect work is to make it shallow and short; the growth after it comes from the content pipeline below."
+>
+  <MigrationCurve />
+</Figure>
+
+| Concern | What actually happens |
+| --- | --- |
+| Identical links | Old addresses 301 to the new pages. Visitors and Google both land in the right place. |
+| Traffic dip | A short, shallow dip while Google re-crawls and consolidates signals, usually a few weeks, cushioned by correct 301s. |
+| Recovery | Rankings return as Google follows the redirects. A faster site and new content then push traffic above the old baseline. |
+| Monitoring | Search Console every day after cutover; the admin's site-health audit catches any stray 404 or broken canonical. |
+
+## Content Factory: one panel instead of a stack of SaaS
+
+The admin is one application, internally a small monorepo, that replaces several disconnected tools. The server runs on [Bun](https://bun.sh), [Hono](https://hono.dev), [Drizzle](https://orm.drizzle.team) and PostgreSQL; the browser side is React 19, TanStack, Tailwind and shadcn/ui; login is [Better Auth](https://www.better-auth.com) with GitHub OAuth.
+
+| Module | What it does |
+| --- | --- |
+| CMS | Articles and pages in a rich editor; publishing commits them to the website's repository. |
+| CRM | Leads, deals and companies, with a funnel, an activity timeline and the source of every lead. |
+| Analytics | One screen with clicks, leads, deals, conversions, channel P&L and the data-spend budget. |
+| SEO | Keyword core, daily positions, competitor gaps, backlinks and site health from DataForSEO. |
+| Marketing | A UTM builder, `/go` tracked links and a content-plan board tied to keywords. |
+| Shop | Products, pricing rules for retail, trade and promotions, and quote → order → invoice. |
+
+The leverage is not any single module. It is that sales, marketing, content and management **work in the same window, on the same data**: task boards with deadlines, the history of every deal and conversation, a lead and company database the business owns instead of renting, competitor research, and customer channels routed into one inbox. A new office anywhere in Ireland would log into the same platform on day one, and every hire gets an `@radioking.ie` mailbox. Because the code is owned, a new board, field, report or workflow is a feature request, not a vendor negotiation. The current module list, including the AI agent that answers customers at night, is in [Featured work](/#work) and [Meet Merlin](/#merlin).
+
+### Data instead of opinions
+
+[DataForSEO](https://dataforseo.com/pricing) streams raw search data into the company's own database: keyword demand, daily rankings, competitor visibility, backlinks and on-page issues. It is pay-as-you-go, the full programme costs about €190 a year, and every sync logs its exact cost against the budget. At the list prices quoted in the brief, Ahrefs or Semrush API access started at roughly $450–500 a month; here the business pays for data and builds its own interface.
+
+[PostHog](https://posthog.com/pricing), hosted in the EU, shows how visitors behave on the site: funnels, drop-off points and what converts. Its product analytics are free up to a million events a month, and EU hosting keeps the [GDPR story](https://posthog.com/docs/privacy/gdpr-compliance) simple. The Search Console API adds Google's own impressions, clicks and positions for the site.
+
+### The loop that pays for itself
+
+<Figure
+  title="The marketing loop"
+  subtitle="Every step is a row in the same database, joined by customer and channel, so the whole chain is one query instead of an integration project."
+  note="This is the strategic payoff. The free in-garage consultation stops being a nice gesture and becomes a measured channel: if its close rate beats cold traffic, it gets funded on purpose."
+  wide
+>
+  <MarketingLoop />
+</Figure>
+
+### An AI editor that publishes to git
+
+The content editor is [Plate](https://platejs.org), wired to [Claude](https://www.anthropic.com/claude). It drafts from a brief built out of the company's own keyword data, rewrites and improves on request, takes inline commands, and publishes to the site as a commit. It is provider-agnostic and owned: no per-seat writing subscription, no copy-paste between apps. Real photos and videos of finished cars feed it, alongside AI-generated campaign media.
+
+## Seven decisions, written down
+
+The load-bearing choices are recorded as short decision records, in the spirit of Michael Nygard's [architecture decision records](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions): context, decision, consequences. The reasoning survives the project, and anyone who joins later can see why things are the way they are.
+
+| ID | Decision | Why it holds |
+| --- | --- | --- |
+| DR-01 | Compute on Oracle Cloud's [Always Free](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm) Ampere A1 (Arm), EU home region | A real server for €0, with 200 GB of block storage. Free resources bind to the home region, chosen once, so pick an EU region for GDPR and latency. |
+| DR-02 | Self-hosted mailboxes; bulk and transactional mail through a relay ([SendGrid](https://sendgrid.com)) | Unlimited `@radioking.ie` addresses at €0 per mailbox. Oracle blocks outbound port 25 by default, so sending goes through a specialist with SPF, DKIM and [DMARC](https://dmarc.org). |
+| DR-03 | Backups and snapshots off-box on [Backblaze B2](https://www.backblaze.com/cloud-storage/pricing) | The first 10 GB are free and egress is free up to 3× the stored data, which matters on the day you restore. S3-compatible, so no lock-in. |
+| DR-04 | Website content lives in git, not in the admin's database | The site builds and serves even if the admin is offline, migrating or being restored. Every edit is a revertible commit. |
+| DR-05 | Admin on Bun, TypeScript, React and a small Hono server | Low latency in and out, one container for API and app, and a small dependency surface that is easy to self-host. |
+| DR-06 | The content factory: AI drafts from live SEO data, plus AI media | Posts start from real demand, not guesses, and campaign creative is faster to produce. |
+| DR-07 | Everything behind Cloudflare; the origin and the database never face the internet | Layered defence, detailed in the next section. |
+
+<Callout label="Correction · October 2026" tone="pink">
+The brief sized DR-01 on **4 OCPU and 24 GB of RAM** for free. Oracle's [current documentation](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm) gives every tenancy the first 1,500 OCPU hours and 9,000 GB hours of A1 compute a month, which equals **2 OCPUs and 12 GB** running full time. Capacity beyond that is billed on a pay-as-you-go account. The same page warns that idle Always Free instances can be reclaimed: over 7 days, 95th-percentile CPU under 20%, network under 20%, and on A1 shapes memory under 20%. It also lists 3,000 free emails a month through OCI Email Delivery, an alternative relay for low volumes. Check the allowance before you size anything.
+</Callout>
+
+## Security without a public database
+
+The company's customer and CRM data is the asset worth protecting, so the design assumes the internet is hostile and gives it as little as possible to touch:
+
+- **Encrypted edge.** Automatic HTTPS, a [web application firewall](https://developers.cloudflare.com/waf/), DDoS mitigation and bot protection on both the public site and the admin domain.
+- **Hidden origin.** The Oracle server connects out to Cloudflare through a tunnel. There are no inbound public ports and the origin IP is never published, so the box cannot be port-scanned or attacked directly.
+- **A database that is not on the internet.** PostgreSQL listens only on the private network and the API talks to it locally. Drizzle sends parameterised queries, so user input never becomes SQL, and the application connects with least-privilege credentials over TLS.
+- **Access and secrets.** The admin sits behind team login and can be gated further by Cloudflare Access (SSO or an email allow-list). Secrets live in the container environment, never in the image or the repository. Public forms carry a honeypot and rate limits.
+- **Data at rest and residency.** Backups are encrypted and stored off-box, so losing the server never means losing the data. Product analytics stay in the EU.
+
+## What it costs
+
+Infrastructure for compute, storage, CDN and backups runs at **€0**. The run-rate that remains is almost entirely data and AI: tools that grow the business rather than keep it running.
+
+| Service | ≈ per month | Note |
+| --- | --- | --- |
+| Cloudflare: website and edge | €0 | Free tier: CDN, TLS, WAF, DDoS protection |
+| Oracle ARM: admin, API, database, mail | €0 | Always Free, within the allowance above |
+| GitHub organisation: private repositories | €0 | Free plan |
+| PostHog EU: product analytics | €0 | Free up to 1M events a month |
+| Backblaze B2: backups | ≈ €0.50 | In or near the free 10 GB |
+| DataForSEO: SEO data | ≈ €13 | The recommended scenario below |
+| Anthropic Claude: AI editor | ≈ €5–18 | Usage-based |
+| SendGrid: bulk email | €0 → €18 | A trial covers early volume; paid only when scaling |
+| Domain | ≈ €1 | About €12 a year |
+| **Total run-rate** | **≈ €20–35** | **About €250–420 a year** |
+
+<StatGrid
+  stats={[
+    { value: '≈ €300/yr', label: 'owned platform: infrastructure at €0, plus data and AI', tone: 'green' },
+    { value: '≈ €3,300/yr', label: 'comparable commercial stack: a paid VPS, an SEO SaaS, backups and email', tone: 'pink' },
+  ]}
+/>
+
+The commercial figure is dominated by an SEO subscription and a paid server, both of which the owned stack replaces with raw APIs and a free VM. With enterprise SEO API tiers it can pass €6,000 a year.
+
+<Figure
+  title="Hosting a 4 vCPU, 24 GB always-on server"
+  subtitle="Indicative annual list price for a comparable instance, € (August 2026). The hyperscalers add egress on top."
+  note="Oracle's free tier is the differentiator, within its current 2 OCPU and 12 GB allowance. Hetzner is the cheapest paid fallback. Prices change often; check the vendor before you plan."
+  wide
+>
+  <HostingCost />
+</Figure>
+
+Backup storage tells the same story. The brief priced B2 at $6 per TB a month against roughly $18 for Azure Blob, $20 for Google Cloud and $23 for AWS S3. B2's pricing page now shows $6.95, still a fraction of the others. Egress decides the real bill: B2 is free up to three times the stored data and $0.01 per GB after that, while S3 charges around $0.09 per GB, about nine times more on the day you need a restore.
+
+For search data, the brief priced three DataForSEO scenarios:
+
+| Scenario | What it is | One-time | Per month | Launch | Year one |
+| --- | --- | --- | --- | --- | --- |
+| A · Lean | The minimal viable keyword core | $9.85 | $3.23 | $13.07 | $48.55 |
+| **B · Full (recommended)** | **The best balance of coverage and price** | **$36.19** | **$14.04** | **$50.23** | **$204.67** |
+| C · Olympus | Maximum data, daily tracking | $114.43 | $101.16 | $215.59 | $1,328.35 |
+
+DataForSEO is pay-as-you-go with a $50 minimum deposit, and the deposit covers the whole one-time pull for scenario B. A local business needs hundreds or thousands of relevant keywords, not millions: focus beats volume.
+
+## Risks, ranked
+
+Naming risks early means acting before they bite. Each one has a likelihood, an impact and a mitigation the project commits to:
+
+| # | Risk | Likelihood | Impact | Mitigation |
+| --- | --- | --- | --- | --- |
+| 1 | SEO and traffic loss during the migration | Medium | High | 1:1 301 redirects (already built), identical slugs, sitemap resubmitted, phased cutover, daily Search Console checks |
+| 2 | Broken links or lost product URLs | Medium | Medium | Complete redirect map, a pre-launch crawl, 404 monitoring, an on-page audit via DataForSEO |
+| 3 | Oracle reclaims the idle free VM | Medium | High | Keep the instance busy enough, back up off-box, rebuild from code, consider a small paid pin for the database |
+| 4 | Port 25 blocked, mail lands in spam | High | Medium | Send through a relay with SPF, DKIM and DMARC; self-host the inbox, not bulk sending |
+| 5 | A solo developer as the bus factor | Low | High | Documentation in the repositories, infrastructure as code, managed free tiers, a second developer as the platform grows |
+| 6 | Self-hosted operations eat time | Medium | Medium | Container healthchecks, automated backups, alerting, as few moving parts as possible |
+| 7 | DataForSEO spend overruns | Low | Low | Every sync logs its cost against the budget; scenario B cap; threshold alerts |
+| 8 | GDPR and privacy | Low | High | PostHog in the EU, cookie consent, data minimisation, a data processing agreement |
+| 9 | One VM is a single point of failure | Medium | Medium | Snapshots and fast redeploys; the public site stays up on Cloudflare regardless |
+
+Not on the register and still classified: the number of coffees per sprint.
+
+The two highest-impact risks, the migration and the free Oracle instance, were largely mitigated in the pre-development phase: the redirect map existed before the cutover plan, and the website never depended on the server.
+
+### SWOT, briefly
+
+**Strengths.** Most of the code already existed and type-checked; the stack is modern, owned and free to run; the redirect map was written up front; the brand brought 887 reviews and real Google presence; "one window" analytics was a design goal, not a bolt-on.
+
+**Weaknesses.** One developer means limited capacity; self-hosting adds patching, backups, uptime and mail; the breadth (CMS to CRM to SEO to ledger) invites over-building; some integrations still needed real credentials and live-data checks.
+
+**Opportunities.** Hosting and plugin spend redirected into data and AI; an owned SEO pipeline for model-specific landing pages; a measured in-garage consultation channel; trade and fleet pricing opening a B2B segment; a platform reusable for new locations.
+
+**Threats.** A temporary traffic dip if the migration slipped; Oracle reclaiming idle instances and blocking port 25; Google algorithm shifts and competitors' SEO; free-tier limits changing at Cloudflare, Oracle or PostHog; GDPR obligations around customer data.
+
+## Schedule: sprints that front-load risk
+
+The work runs in short sprints, each shipping something usable: a migrated page, a working CRM screen, a live integration. Every sprint ends with a test and a review, problems surface early, and the backlog is reordered as the team learns. That is the core of [agile delivery](https://agilemanifesto.org), and it suits a project where the riskiest, most valuable part has to land first.
+
+| Phase | Window | Milestone |
+| --- | --- | --- |
+| Discovery and architecture | August 2026 | Redirect map, schema and tooling in place |
+| Website rebuild on Astro | August to September | |
+| WordPress migration, 301s, SEO parity | September to October | **The new site goes live** |
+| Admin core: CMS and CRM | September to November | |
+| Data pipeline and AI editor | October to November | |
+| Oracle ARM deploy and mail | November to December | |
+| Analytics and the marketing loop | December to January | **Launch** |
+| Hardening and documentation | December to January | |
+
+Phases overlap where it is safe: the admin core starts before the site is fully migrated, while self-hosting and the marketing loop wait until the pieces they depend on are stable. Owner and team review the panel on real data between phases, and their feedback feeds the backlog.
+
+## Borrow the model, write the code
+
+Where adopting is faster than building, proven open-source tools can run alongside the platform or serve as data-model references:
+
+- [Chatwoot](https://www.chatwoot.com): an omnichannel inbox for live chat, email, WhatsApp, Instagram, Facebook and Telegram. The fastest way to add customer channels into one shared inbox.
+- [Erxes](https://erxes.io): a growth-marketing and CRM platform, a reference for campaigns, segmentation and engagement flows.
+- [Odoo](https://www.odoo.com): a full ERP suite, a model reference for ERP-grade modules at scale.
+- [ERPNext](https://frappe.io/erpnext): the blueprint for pricing rules, quote → order and the double-entry ledger.
+
+The rule is simple: integrate where it saves real time, and borrow proven data models elsewhere. ERPNext is licensed under the [GPLv3](https://choosealicense.com/licenses/gpl-3.0/), so its ideas inform the schema while its code stays out of a private repository.
+
+## What carries over to your project
+
+Strip away the car audio and six principles remain, useful for any small business leaving a rented CMS:
+
+1. **Write the redirect map before the first component.** Migration risk is a spreadsheet problem before it is a code problem.
+2. **Separate the failure domains.** Put the public site on the edge and the business brain on a server, so a bad day for one is not a bad day for both.
+3. **Spend on data, not on servers.** Free tiers cover the infrastructure; the budget buys keyword data and AI.
+4. **Write decisions down.** A one-paragraph record today saves an hour of archaeology next year.
+5. **Name every risk with its mitigation.** A risk without an owner and a plan is just a worry.
+6. **Declassify when it gets boring.** A plan is safe to publish the moment it stops being a plan and becomes a deploy log. That is how this file ended up in the archive.
+
+The platform this brief describes now runs a real business every day. If you are planning something similar, or want to compare notes on Astro migrations, self-hosting or sales systems, my channel is [open](/#contact).
+
+## Further reading
+
+**Migration and SEO:** [Site moves with URL changes](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes) and [Redirects and Google Search](https://developers.google.com/search/docs/crawling-indexing/301-redirects) (Google Search Central); [redirects in Astro](https://docs.astro.build/en/guides/routing/#redirects); [Cloudflare `_redirects`](https://developers.cloudflare.com/workers/static-assets/redirects/).
+
+**Infrastructure and security:** [Oracle Cloud Always Free resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm); [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) and [Access](https://developers.cloudflare.com/cloudflare-one/policies/access/); [Backblaze B2 pricing](https://www.backblaze.com/cloud-storage/pricing); [Coolify](https://coolify.io) for self-hosted deploys.
+
+**Data and analytics:** [DataForSEO pricing](https://dataforseo.com/pricing); [PostHog pricing](https://posthog.com/pricing) and [GDPR guidance](https://posthog.com/docs/privacy/gdpr-compliance); [Google Search Console](https://search.google.com/search-console/about).
+
+**The stack:** [Astro](https://astro.build) · [Bun](https://bun.sh) · [Hono](https://hono.dev) · [Drizzle ORM](https://orm.drizzle.team) · [Plate](https://platejs.org) · [Better Auth](https://www.better-auth.com) · [Stripe Checkout](https://docs.stripe.com/payments/checkout). The full toolkit I use daily is in [Tech stack](/#stack).
+
+**Process:** [Documenting architecture decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) (Michael Nygard); the [Agile Manifesto](https://agilemanifesto.org).

@@ -1,12 +1,13 @@
 ---
 import { Image } from "astro:assets";
 import topReader from "@/assets/badges/daily-dev-top-reader-2026-09-react.png";
+import { fileOf } from "@/data/dossier";
 import { LINKS, TELEMETRY } from "@/data/profile";
 import SectionHeading from "./SectionHeading.astro";
 ---
 
-<section aria-labelledby="telemetry-title" class="space-y-10">
-  <SectionHeading eyebrow="gh api /users/hvidom" title="GitHub telemetry" id="telemetry-title" animation="/animations/pc.lottie">
+<section id="telemetry" aria-labelledby="telemetry-title" class="scroll-mt-24 space-y-10">
+  <SectionHeading file={fileOf("#telemetry")} eyebrow="gh api /users/hvidom" title="GitHub telemetry" id="telemetry-title" animation="/animations/pc.lottie">
     Refreshed every night by a GitHub Action on my profile repository, including the little space shooter that clears my
     contribution graph.
   </SectionHeading>

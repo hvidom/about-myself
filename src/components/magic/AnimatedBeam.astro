@@ -1,0 +1,169 @@
+---
+import type { Tone } from "@/data/profile";
+import { cn } from "@/lib/utils";
+
+type Side = "center" | "top" | "right" | "bottom" | "left";
+
+interface Props {
+  from: string;
+  to: string;
+  curvature?: number;
+  reverse?: boolean;
+  duration?: number;
+  delay?: number;
+  fromSide?: Side;
+  toSide?: Side;
+  start?: Tone;
+  stop?: Tone;
+  track?: boolean;
+  class?: string;
+}
+
+const {
+  from,
+  to,
+  curvature = 0,
+  reverse = false,
+  duration = 4,
+  delay = 0,
+  fromSide = "center",
+  toSide = "center",
+  start = "turquoise",
+  stop = "violet",
+  track = true,
+  class: className,
+} = Astro.props;
+const id = `beam-${from}-${to}${reverse ? "-r" : ""}`;
+---
+
+<svg
+  class={cn("animated-beam pointer-events-none absolute inset-0 size-full overflow-visible", className)}
+  aria-hidden="true"
+  data-beam
+  data-from={from}
+  data-to={to}
+  data-curvature={curvature}
+  data-from-side={fromSide}
+  data-to-side={toSide}
+  style={`--beam-duration: ${duration}s; --beam-delay: ${delay}s`}
+>
+  <defs>
+    <linearGradient id={id} gradientUnits="userSpaceOnUse">
+      <stop offset="0" style={`stop-color: var(--${start})`}></stop>
+      <stop offset="1" style={`stop-color: var(--${stop})`}></stop>
+    </linearGradient>
+  </defs>
+  {track && <path class="beam-track" />}
+  <path class:list={["beam-pulse beam-glow", reverse && "beam-reverse"]} pathLength="1" stroke={`url(#${id})`}></path>
+  <path class:list={["beam-pulse beam-core", reverse && "beam-reverse"]} pathLength="1" stroke={`url(#${id})`}></path>
+</svg>
+
+<style>
+  .beam-track {
+    fill: none;
+    stroke: var(--foreground);
+    stroke-opacity: 0.1;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .beam-core {
+    stroke-width: 2;
+  }
+  .beam-glow {
+    stroke-width: 7;
+    stroke-opacity: 0.28;
+  }
+  .beam-reverse {
+    animation-direction: reverse;
+  }
+  :global([data-beam-root]:not([data-beam-live])) .beam-pulse,
+  .animated-beam:not([data-ready]) .beam-pulse {
+    animation-play-state: paused;
+    visibility: hidden;
+  }
+</style>
+
+<script>
+  type Side = "center" | "top" | "right" | "bottom" | "left";
+
+  const anchor = (rect: DOMRect, origin: DOMRect, side: Side) => {
+    const x = rect.left - origin.left;
+    const y = rect.top - origin.top;
+    switch (side) {
+      case "top":
+        return { x: x + rect.width / 2, y };
+      case "right":
+        return { x: x + rect.width, y: y + rect.height / 2 };
+      case "bottom":
+        return { x: x + rect.width / 2, y: y + rect.height };
+      case "left":
+        return { x, y: y + rect.height / 2 };
+      default:
+        return { x: x + rect.width / 2, y: y + rect.height / 2 };
+    }
+  };
+
+  const draw = (root: HTMLElement, svg: SVGSVGElement) => {
+    const a = root.querySelector<HTMLElement>(`[data-beam-node="${svg.dataset.from}"]`);
+    const b = root.querySelector<HTMLElement>(`[data-beam-node="${svg.dataset.to}"]`);
+    const ra = a?.getBoundingClientRect();
+    const rb = b?.getBoundingClientRect();
+    if (!ra || !rb || !ra.width || !rb.width) {
+      svg.removeAttribute("data-ready");
+      return;
+    }
+    const origin = root.getBoundingClientRect();
+    svg.setAttribute("viewBox", `0 0 ${origin.width} ${origin.height}`);
+    const p = anchor(ra, origin, (svg.dataset.fromSide ?? "center") as Side);
+    const q = anchor(rb, origin, (svg.dataset.toSide ?? "center") as Side);
+    const bend = Number(svg.dataset.curvature ?? 0);
+    const length = Math.hypot(q.x - p.x, q.y - p.y) || 1;
+    const cx = (p.x + q.x) / 2 + ((q.y - p.y) / length) * bend;
+    const cy = (p.y + q.y) / 2 - ((q.x - p.x) / length) * bend;
+    const d = `M ${p.x.toFixed(1)},${p.y.toFixed(1)} Q ${cx.toFixed(1)},${cy.toFixed(1)} ${q.x.toFixed(1)},${q.y.toFixed(1)}`;
+    for (const path of svg.querySelectorAll("path")) path.setAttribute("d", d);
+    const gradient = svg.querySelector("linearGradient");
+    gradient?.setAttribute("x1", String(p.x));
+    gradient?.setAttribute("y1", String(p.y));
+    gradient?.setAttribute("x2", String(q.x));
+    gradient?.setAttribute("y2", String(q.y));
+    svg.dataset.ready = "1";
+  };
+
+  let resize: ResizeObserver | undefined;
+  let view: IntersectionObserver | undefined;
+
+  const setup = () => {
+    resize?.disconnect();
+    view?.disconnect();
+    const roots = [...document.querySelectorAll<HTMLElement>("[data-beam-root]")];
+    if (roots.length === 0) return;
+    const layout = (root: HTMLElement) => {
+      for (const svg of root.querySelectorAll<SVGSVGElement>("svg[data-beam]")) {
+        if (svg.closest("[data-beam-root]") === root) draw(root, svg);
+      }
+    };
+    resize = new ResizeObserver((entries) => {
+      const touched = new Set<HTMLElement>();
+      for (const entry of entries) {
+        const root = (entry.target as HTMLElement).closest<HTMLElement>("[data-beam-root]");
+        if (root) touched.add(root);
+      }
+      touched.forEach(layout);
+    });
+    view = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        (entry.target as HTMLElement).toggleAttribute("data-beam-live", entry.isIntersecting);
+      }
+    });
+    for (const root of roots) {
+      layout(root);
+      resize.observe(root);
+      for (const node of root.querySelectorAll("[data-beam-node]")) resize.observe(node);
+      view.observe(root);
+    }
+  };
+
+  document.addEventListener("astro:page-load", setup);
+  document.fonts?.ready.then(setup);
+</script>

@@ -1,21 +1,22 @@
 ---
 import { render } from "astro:content";
-import { publishedPosts } from "@/lib/posts";
+import { fileIds, publishedPosts } from "@/lib/posts";
 import BlogPost from "../../layouts/BlogPost.astro";
 
 export async function getStaticPaths() {
   const posts = await publishedPosts();
+  const files = fileIds(posts);
   return posts.map((post) => ({
     params: { slug: post.id },
-    props: post,
+    props: { post, fileId: files.get(post.id) ?? "" },
   }));
 }
 
-const post = Astro.props;
+const { post, fileId } = Astro.props;
 const { Content, remarkPluginFrontmatter } = await render(post);
 export const prerender = true;
 ---
 
-<BlogPost {...post.data} minutesRead={remarkPluginFrontmatter.minutesRead}>
+<BlogPost {...post.data} fileId={fileId} minutesRead={remarkPluginFrontmatter.minutesRead}>
 	<Content />
 </BlogPost>

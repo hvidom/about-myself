@@ -2,7 +2,9 @@
 
 Personal site of Hryhorii Ilin (@hvidom). Astro 7 SSR on Cloudflare Workers, React 19 for
 shadcn/ui, Tailwind CSS 4, Bun, Biome. The design matches github.com/hvidom (night sky,
-turquoise primary, green accent). Read `README.md` for the domain setup.
+turquoise primary, green accent). The concept: HVIDOM = Hryhorii Victorovich Ilin Document Object Model,
+a declassified space dossier. Pages are documents, sections are numbered nodes ("File 01"), posts are
+files ("TX-001"). Read `README.md` for the domain setup.
 
 ## Commands
 
@@ -23,17 +25,30 @@ Deploying or pushing is the owner's call: do not run `deploy`, `git push` or cre
 ## Where things live
 
 - `src/data/profile.ts`: all home-page text. Change copy here, not in components.
+- `src/data/dossier.ts`: the HVIDOM layer: the acronym, the classification banner, the subject card and
+  `DOM_TREE`, the one list that numbers the home sections (`fileOf("#id")` in `SectionHeading file=…`) and
+  drives the Decoder's document tree. Adding a section means adding a node here.
 - `src/components/home/*`: home sections. `src/components/ui/*`: shadcn components with brand variants.
 - `src/components/magic/*`: Magic UI ports in Astro + CSS (no React/motion): SkyToggle (blue/black sky,
   `html[data-sky]`, applied before paint by an inline script in BaseHead), DiaText (section titles),
-  TextAnimate, MorphingText, Highlighter (rough-notation), NeonGradientCard. All respect reduced motion.
+  TextAnimate, MorphingText, Highlighter (rough-notation), NeonGradientCard, Redacted (a bar that wipes
+  away in view; text ships readable without JS), Stamp (decorative rubber stamp), TypingAnimation (types on view
+  or loops `words`; full text for screen readers and no-JS), AnimatedBeam (a pulse travelling between two
+  `data-beam-node` elements inside a `data-beam-root`; bends with `curvature`, anchors with `fromSide`/`toSide`,
+  pauses off screen). Static SVG lines get the same pulse with the `beam-pulse` utility and `pathLength="1"`.
+  All respect reduced motion.
+- `src/components/ClassificationBanner.astro` (top and bottom of every page) and `FileTag.astro` (gold
+  "File NN" label). `src/components/home/Decoder.astro`: the acronym tiles and the DevTools-style tree.
 - `src/lib/code-theme.ts`: Shiki theme in site tokens (hex placeholders + `colorReplacements` to CSS vars).
 - `src/styles/global.css`: shadcn tokens plus `--turquoise --green --cyan --violet --pink --gold`,
   utilities `glass`, `space-sky`, `text-brand`, `grid-faint`; `.prose` styles blog posts only.
 - `src/lib/pixel.ts`: generated pixel-art SVG (deterministic). Lottie files live in `public/animations/`
   and render through `src/components/LottieAnimations.astro` (lazy, still frame with reduced motion).
 - `src/fetch.ts`: advanced routing entry (Hono). Keep Astro's handler order.
-- Blog: `src/content/blog/*.mdx`. `draft: true` hides a post from pages, RSS and sitemap.
+- Blog: `src/content/blog/*.mdx`. `draft: true` hides a post from pages, RSS and sitemap. File numbers
+  (`fileIds` in `src/lib/posts.ts`) count oldest first, so a new post never renumbers old ones. MDX parts
+  live in `src/components/blog/*` (Callout, Figure, StatGrid and inline-SVG charts coloured with Tailwind
+  `fill-*`/`stroke-*` tokens). `src/utils/rehype-table-wrap.mjs` wraps tables so they scroll on phones.
 - `proxy/`: Pages project that forwards hvidom.is-a.dev to the Worker. Not part of the Astro build.
 
 ## Rules that are easy to get wrong

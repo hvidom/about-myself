@@ -1,3 +1,3 @@
 export const SITE_TITLE = "hvidom";
 export const SITE_DESCRIPTION =
-	"Personal site of Hryhorii Ilin (hvidom): full-stack developer in Dublin. Projects, journey, tech stack and writing.";
+	"HVIDOM, Hryhorii Victorovich Ilin Document Object Model: the declassified file of a full-stack developer in Dublin.";

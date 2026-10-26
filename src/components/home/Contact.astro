@@ -1,20 +1,33 @@
 ---
+import FileTag from "@/components/FileTag.astro";
 import LottieAnimation from "@/components/LottieAnimations.astro";
+import AnimatedBeam from "@/components/magic/AnimatedBeam.astro";
 import MorphingText from "@/components/magic/MorphingText.astro";
 import NeonGradientCard from "@/components/magic/NeonGradientCard.astro";
 import TextAnimate from "@/components/magic/TextAnimate.astro";
+import TypingAnimation from "@/components/magic/TypingAnimation.astro";
 import { buttonVariants } from "@/components/ui/button";
+import { fileOf } from "@/data/dossier";
 import { LINKS } from "@/data/profile";
+
+const ping = [
+  { id: "ping-you", label: "you", mark: "~" },
+  { id: "ping-edge", label: "edge", mark: "CF" },
+  { id: "ping-hvidom", label: "hvidom", mark: "HI" },
+];
 ---
 
 <NeonGradientCard>
-<section aria-labelledby="contact-title" class="grid-faint relative overflow-hidden rounded-3xl bg-card">
+<section id="contact" aria-labelledby="contact-title" class="scroll-mt-24 grid-faint relative overflow-hidden rounded-3xl bg-card">
   <div class="pointer-events-none absolute -bottom-32 -left-24 size-80 rounded-full bg-turquoise/15 blur-3xl" aria-hidden="true"></div>
   <div class="pointer-events-none absolute -top-24 right-10 size-64 rounded-full bg-green/10 blur-3xl" aria-hidden="true"></div>
 
   <div class="relative grid items-center gap-6 p-8 sm:p-12 md:grid-cols-[1fr_auto]">
     <div class="space-y-5">
-      <p class="font-mono text-sm text-turquoise"><span class="text-violet">~</span> <span class="text-green">$</span> ping hvidom</p>
+      <p class="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-sm text-turquoise">
+        <span><span class="text-violet">~</span> <span class="text-green">$</span>{" "}<TypingAnimation text="ping hvidom" cursor="block" typeSpeed={60} /></span>{" "}
+        <FileTag>File {fileOf("#contact")}</FileTag>
+      </p>
       <h2 id="contact-title" class="text-3xl font-extrabold tracking-tight sm:text-4xl">
         <span class="sr-only">Let’s build something that ships, scales and sells.</span>
         <span aria-hidden="true">Let’s build something that</span>{" "}<MorphingText texts={["ships.", "scales.", "sells."]} wordClass="text-brand" />
@@ -28,6 +41,23 @@ import { LINKS } from "@/data/profile";
         <a href={LINKS.email} class={buttonVariants({ variant: "brand", size: "xl" })}>{LINKS.emailText}</a>
         <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" class={buttonVariants({ variant: "outline", size: "xl" })}>LinkedIn</a>
         <a href={LINKS.dailydev} target="_blank" rel="noopener noreferrer" class={buttonVariants({ variant: "ghost", size: "xl" })}>daily.dev</a>
+      </div>
+      <div class="relative max-w-md pt-4" data-beam-root role="img" aria-label="Ping trace: your message reaches hvidom through Cloudflare's edge, and a reply comes back.">
+        <ol class="flex items-start justify-between font-mono text-[11px] text-muted-foreground" aria-hidden="true">
+          {
+            ping.map(({ id, label, mark }) => (
+              <li class="flex w-20 flex-col items-center gap-2">
+                <span class="relative z-10 grid size-11 place-items-center rounded-full border border-border bg-card text-xs font-bold text-foreground" data-beam-node={id}>
+                  {mark}
+                </span>
+                {label}
+              </li>
+            ))
+          }
+        </ol>
+        <AnimatedBeam from="ping-you" to="ping-edge" start="turquoise" stop="green" duration={2.6} />
+        <AnimatedBeam from="ping-edge" to="ping-hvidom" start="green" stop="violet" duration={2.6} delay={0.9} />
+        <AnimatedBeam from="ping-you" to="ping-hvidom" curvature={34} reverse track={false} start="violet" stop="pink" duration={3.2} delay={1.8} />
       </div>
     </div>
     <div class="mx-auto size-48 animate-float md:size-56">

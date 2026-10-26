@@ -1,25 +1,28 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import FileTag from "@/components/FileTag.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import { badgeVariants } from "@/components/ui/badge";
 import { cardVariants } from "@/components/ui/card";
+import { fileOf } from "@/data/dossier";
 import { cn } from "@/lib/utils";
 import SectionHeading from "./SectionHeading.astro";
 
 interface Props {
   posts: CollectionEntry<"blog">[];
+  files: Map<string, string>;
 }
 
-const { posts } = Astro.props;
+const { posts, files } = Astro.props;
 ---
 
 <section aria-labelledby="writing-title" class="space-y-10">
   <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-    <SectionHeading eyebrow="ls ~/blog" title="Recent writing" id="writing-title">
-      Frontend architecture, sales systems and server configs.
+    <SectionHeading file={fileOf("/blog/")} eyebrow="ls ~/archive" title="Recently declassified" id="writing-title">
+      Field reports on architecture, sales systems and servers, opened for public release.
     </SectionHeading>
     <a href="/blog/" class="group inline-flex shrink-0 items-center gap-1 font-mono text-sm text-turquoise hover:underline">
-      all posts
+      all files
       <span class="transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
     </a>
   </div>
@@ -31,6 +34,7 @@ const { posts } = Astro.props;
           <a href={`/blog/${post.id}/`} class={cn(cardVariants({ variant: "glass" }), "group h-full justify-between gap-0 rounded-2xl py-0")}>
             <div class="space-y-3 p-6">
               <div class="flex flex-wrap items-center gap-2 font-mono text-[11px] text-muted-foreground uppercase">
+                <FileTag>{files.get(post.id)}</FileTag>{" "}
                 <FormattedDate date={post.data.pubDate} />
                 {post.data.category && <span class={cn(badgeVariants({ variant: "turquoise" }), "h-5")}>{post.data.category}</span>}
               </div>
@@ -40,7 +44,7 @@ const { posts } = Astro.props;
               <p class="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{post.data.description}</p>
             </div>
             <div class="flex items-center justify-between border-t border-border px-6 py-4 font-mono text-xs text-muted-foreground">
-              <span>read article</span>
+              <span>open file</span>
               <span class="text-turquoise transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
             </div>
           </a>

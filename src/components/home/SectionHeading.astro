@@ -1,6 +1,8 @@
 ---
+import FileTag from "@/components/FileTag.astro";
 import LottieAnimation from "@/components/LottieAnimations.astro";
 import DiaText from "@/components/magic/DiaText.astro";
+import TypingAnimation from "@/components/magic/TypingAnimation.astro";
 
 interface Props {
   eyebrow: string;
@@ -8,15 +10,21 @@ interface Props {
   id?: string;
   align?: "left" | "center";
   animation?: string;
+  file?: string;
 }
 
-const { eyebrow, title, id, align = "left", animation } = Astro.props;
+const { eyebrow, title, id, align = "left", animation, file } = Astro.props;
 ---
 
 <div class:list={[animation && "flex items-end justify-between gap-6"]}>
   <div class:list={["max-w-2xl space-y-3", align === "center" && "mx-auto text-center"]}>
-    <p class="font-mono text-sm text-turquoise">
-      <span class="text-violet">~</span> <span class="text-green">$</span>{" "}{eyebrow}
+    <p class:list={["flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-sm text-turquoise", align === "center" && "justify-center"]}>
+      <span><span class="text-violet">~</span> <span class="text-green">$</span>{" "}<TypingAnimation text={eyebrow} cursor="block" typeSpeed={45} /></span>{" "}
+      {
+        file && (
+          <FileTag>File {file}</FileTag>
+        )
+      }
     </p>
     <h2 id={id} class="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl"><DiaText text={title} /></h2>
     {

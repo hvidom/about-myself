@@ -3,11 +3,16 @@ import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { beforeAll, describe, expect, test } from "vitest";
 import Header from "@/components/Header.astro";
 import Contact from "@/components/home/Contact.astro";
+import FactoryBeams from "@/components/home/FactoryBeams.astro";
 import Hero from "@/components/home/Hero.astro";
 import Merlin from "@/components/home/Merlin.astro";
 import SectionHeading from "@/components/home/SectionHeading.astro";
+import AnimatedBeam from "@/components/magic/AnimatedBeam.astro";
 import Highlighter from "@/components/magic/Highlighter.astro";
-import { MERLIN_SNIPPETS } from "@/data/profile";
+import Redacted from "@/components/magic/Redacted.astro";
+import Stamp from "@/components/magic/Stamp.astro";
+import TypingAnimation from "@/components/magic/TypingAnimation.astro";
+import { CF_FLOW, MERLIN_SNIPPETS } from "@/data/profile";
 import { brandCodeTheme } from "@/lib/code-theme";
 
 let container: AstroContainer;
@@ -124,5 +129,99 @@ describe("text effects", () => {
 		expect(html).toMatch(
 			/<span data-highlight="underline" data-tone="green"[^>]*>in production<\/span>/,
 		);
+	});
+});
+
+describe("dossier effects", () => {
+	test("redacted text ships readable; only the script arms the bar", async () => {
+		const html = await render(Redacted, { slots: { default: "confidential" } });
+		expect(html).toMatch(
+			/<span class="redacted" data-redacted="" data-delay="0">confidential<\/span>/,
+		);
+	});
+
+	test("the stamp is decorative and inked in the chosen tone", async () => {
+		const html = await render(Stamp, { props: { text: "Declassified", tone: "gold", tilt: 5 } });
+		expect(html).toContain('aria-hidden="true"');
+		expect(html).toContain("--tone: var(--gold); --tilt: 5deg");
+		expect(text(html)).toBe("Declassified");
+	});
+});
+
+describe("typing animation", () => {
+	test("ships the full text, readable once; the typed copy is decorative", async () => {
+		const html = await render(TypingAnimation, {
+			props: { text: "cat ~/journey.log", cursor: "block" },
+		});
+		expect(html).toContain('<span class="sr-only">cat ~/journey.log</span>');
+		expect(html).toMatch(
+			/<span class="typing-box"[^>]*aria-hidden="true"[^>]*>[\s\S]*?data-typing-text>cat ~\/journey\.log<\/span>/,
+		);
+		expect(html).toMatch(/ data-on-view[ >]/);
+		expect(html).toContain("typing-cursor-block");
+		expect(html).not.toContain("data-loop");
+	});
+
+	test("words loop on request and reserve room for the longest one", async () => {
+		const html = await render(TypingAnimation, {
+			props: { words: ["ships", "scales well"], loop: true, startOnView: false },
+		});
+		expect(html).toContain('data-words="[&quot;ships&quot;,&quot;scales well&quot;]"');
+		expect(html).toContain('data-reserve="scales well"');
+		expect(html).toMatch(/ data-loop[ >]/);
+		expect(html).not.toContain("data-on-view");
+		expect(html).toContain('<span class="sr-only">ships. scales well</span>');
+	});
+
+	test("cursor: none renders no cursor", async () => {
+		const html = await render(TypingAnimation, { props: { text: "x", cursor: "none" } });
+		expect(html).not.toContain("typing-cursor");
+	});
+});
+
+describe("animated beam", () => {
+	test("is a decorative overlay that names both ends and pulses along the path", async () => {
+		const html = await render(AnimatedBeam, {
+			props: {
+				from: "a",
+				to: "b",
+				curvature: 20,
+				reverse: true,
+				fromSide: "right",
+				start: "green",
+				stop: "violet",
+			},
+		});
+		expect(html).toMatch(/<svg[^>]*aria-hidden="true"[^>]*data-beam/);
+		expect(html).toContain('data-from="a"');
+		expect(html).toContain('data-to="b"');
+		expect(html).toContain('data-curvature="20"');
+		expect(html).toContain('data-from-side="right"');
+		expect(html).toContain("stop-color: var(--green)");
+		expect(html).toContain("stop-color: var(--violet)");
+		expect(html.match(/pathLength="1"/g)).toHaveLength(2);
+		expect(html).toContain("beam-reverse");
+		expect(html).toContain('class="beam-track"');
+	});
+
+	test("the track is optional", async () => {
+		const html = await render(AnimatedBeam, { props: { from: "a", to: "b", track: false } });
+		expect(html).not.toContain("beam-track");
+	});
+
+	test("the Content Factory diagram beams every channel in and every service out", async () => {
+		const html = await render(FactoryBeams);
+		const beams = [...html.matchAll(/data-from="([^"]+)" data-to="([^"]+)"/g)].map(
+			(m) => `${m[1]}>${m[2]}`,
+		);
+		expect(beams).toHaveLength(CF_FLOW.inputs.length + CF_FLOW.outputs.length);
+		CF_FLOW.inputs.forEach((_, i) => {
+			expect(beams).toContain(`in-${i}>hub`);
+		});
+		CF_FLOW.outputs.forEach((_, i) => {
+			expect(beams).toContain(`hub>out-${i}`);
+		});
+		for (const id of ["hub", "in-0", "out-4"]) expect(html).toContain(`data-beam-node="${id}"`);
+		expect(text(html)).toContain(`flow into ${CF_FLOW.hub}`);
 	});
 });

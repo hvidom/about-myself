@@ -122,6 +122,18 @@ export const CF_MODULES: { title: string; text: string; tone: Tone; href?: strin
 	},
 ];
 
+export const CF_FLOW = {
+	inputs: ["WhatsApp", "Messenger", "Instagram", "Email", "Web chat"],
+	hub: "Content Factory",
+	outputs: [
+		"Website on Cloudflare",
+		"Stripe payments",
+		"PostgreSQL",
+		"Merlin on Claude",
+		"Search Console",
+	],
+} as const;
+
 export const CF_STACK =
 	"Bun · Hono · React 19 · TanStack · Tailwind v4 · shadcn/ui · Drizzle · PostgreSQL 18 · Plate · Vercel AI SDK · Docker on Coolify";
 

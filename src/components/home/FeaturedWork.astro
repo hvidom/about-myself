@@ -4,15 +4,17 @@ import radioking from "@/assets/projects/radioking.webp";
 import Highlighter from "@/components/magic/Highlighter.astro";
 import { badgeVariants } from "@/components/ui/badge";
 import { cardVariants } from "@/components/ui/card";
+import { fileOf } from "@/data/dossier";
 import { CF_METRICS, CF_MODULES, CF_STACK, SITES, TONE } from "@/data/profile";
 import { cn } from "@/lib/utils";
+import FactoryBeams from "./FactoryBeams.astro";
 import SectionHeading from "./SectionHeading.astro";
 
 const shots = { radioking };
 ---
 
 <section id="work" aria-labelledby="work-title" class="scroll-mt-24 space-y-10">
-  <SectionHeading eyebrow="ls ~/projects" title="Featured work" id="work-title" animation="/animations/soft-dev-feature.lottie">
+  <SectionHeading file={fileOf("#work")} eyebrow="ls ~/projects" title="Featured work" id="work-title" animation="/animations/soft-dev-feature.lottie">
     The thing I'm proudest of <Highlighter tone="violet">runs a real business every day</Highlighter>. The website around it brings in the leads.
   </SectionHeading>
 
@@ -44,6 +46,8 @@ const shots = { radioking };
         ))
       }
     </dl>
+
+    <FactoryBeams />
 
     <ul class="relative grid gap-3 md:grid-cols-2">
       {

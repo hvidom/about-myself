@@ -20,3 +20,19 @@ describe("publishedPosts", () => {
 		expect(posts.map((p) => p.id)).toEqual(["new", "old"]);
 	});
 });
+
+describe("fileIds", () => {
+	test("numbers files oldest first, so a new post never renumbers the old ones", async () => {
+		const { fileIds } = await import("@/lib/posts");
+		const ids = fileIds([
+			{ id: "c", data: { pubDate: new Date("2026-10-26") } },
+			{ id: "a", data: { pubDate: new Date("2026-01-01") } },
+			{ id: "b", data: { pubDate: new Date("2026-05-01") } },
+		]);
+		expect([...ids]).toEqual([
+			["a", "TX-001"],
+			["b", "TX-002"],
+			["c", "TX-003"],
+		]);
+	});
+});

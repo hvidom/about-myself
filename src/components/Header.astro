@@ -1,5 +1,7 @@
 ---
+import ClassificationBanner from "@/components/ClassificationBanner.astro";
 import SkyToggle from "@/components/magic/SkyToggle.astro";
+import { CODENAME } from "@/data/dossier";
 import { LINKS } from "@/data/profile";
 
 const path = Astro.url.pathname.replace(/\/$/, "");
@@ -11,11 +13,14 @@ const nav = [
 ];
 ---
 
+<ClassificationBanner class="border-b" />
+
 <header class="sticky top-0 z-50 border-b border-border bg-background/70 backdrop-blur-md">
   <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:px-6">
-    <a href="/" class="flex items-center gap-1.5 font-mono text-lg font-bold tracking-tight">
+    <a href="/" class="group flex items-center gap-1.5 font-mono text-lg font-bold tracking-tight" title={`${CODENAME}: Hryhorii Victorovich Ilin Document Object Model`}>
       <span class="text-violet" aria-hidden="true">~/</span><span class="text-brand">hvidom</span>
       <span class="ml-1 size-2 rounded-full bg-green shadow-[0_0_12px_var(--green)]" aria-hidden="true"></span>
+      <span class="hidden rounded-sm border border-gold/30 px-1.5 py-px text-[9px] font-semibold tracking-[0.2em] text-gold/90 uppercase lg:inline" aria-hidden="true">dom</span>
     </a>
 
     <nav aria-label="Main" class="flex items-center gap-1 font-mono text-sm sm:gap-2">

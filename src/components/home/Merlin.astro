@@ -2,6 +2,7 @@
 import { Code } from "astro:components";
 import Highlighter from "@/components/magic/Highlighter.astro";
 import { cardVariants } from "@/components/ui/card";
+import { fileOf } from "@/data/dossier";
 import { MERLIN_SLIDES, MERLIN_SNIPPETS, MERLIN_STATS, TONE } from "@/data/profile";
 import { brandCodeTheme } from "@/lib/code-theme";
 import { cn } from "@/lib/utils";
@@ -22,7 +23,7 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
 ---
 
 <section id="merlin" aria-labelledby="merlin-title" class="scroll-mt-24 space-y-10">
-  <SectionHeading eyebrow="merlin --help" title="Meet Merlin" id="merlin-title" animation="/animations/like.lottie">
+  <SectionHeading file={fileOf("#merlin")} eyebrow="merlin --help" title="Meet Merlin" id="merlin-title" animation="/animations/like.lottie">
     The AI layer of Content Factory: a teammate in the chat, automations on a canvas and{" "}
     <Highlighter action="underline" tone="pink">a night shift for customers</Highlighter>. A short deck, then the code.
   </SectionHeading>
@@ -197,6 +198,7 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
     let target = 0;
     let shown = 0;
     let settle = 0;
+    let driving = false;
     const sync = (i: number) => {
       if (i === shown) return;
       shown = i;
@@ -207,6 +209,7 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
     };
     const go = (i: number) => {
       target = Math.max(0, Math.min(slides - 1, i));
+      driving = true;
       const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       track.scrollTo({ left: target * track.clientWidth, behavior: smooth ? "smooth" : "auto" });
       sync(target);
@@ -214,12 +217,24 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
     prev.addEventListener("click", () => go(target - 1));
     next.addEventListener("click", () => go(target + 1));
     dots.forEach((dot, d) => dot.addEventListener("click", () => go(d)));
+    for (const name of ["pointerdown", "touchstart", "wheel"]) {
+      track.addEventListener(
+        name,
+        () => {
+          driving = false;
+        },
+        { passive: true },
+      );
+    }
     track.addEventListener(
       "scroll",
       () => {
         window.clearTimeout(settle);
         settle = window.setTimeout(() => {
-          target = index();
+          const at = index();
+          if (driving && at !== target) return;
+          driving = false;
+          target = at;
           sync(target);
         }, 120);
       },

@@ -1,32 +1,39 @@
 ---
 import { Image } from "astro:assets";
+import FileTag from "@/components/FileTag.astro";
 import Footer from "@/components/Footer.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import Header from "@/components/Header.astro";
 import LottieAnimation from "@/components/LottieAnimations.astro";
+import TypingAnimation from "@/components/magic/TypingAnimation.astro";
 import { badgeVariants } from "@/components/ui/badge";
 import { cardVariants } from "@/components/ui/card";
 import Layout from "@/layouts/Layout.astro";
-import { publishedPosts } from "@/lib/posts";
+import { fileIds, publishedPosts } from "@/lib/posts";
 import { cn } from "@/lib/utils";
 
 export const prerender = true;
 
 const posts = await publishedPosts();
+const files = fileIds(posts);
 ---
 
 <Layout
-  title="Blog"
-  description="Articles by Hryhorii Ilin (hvidom) on full-stack web development, CRM automation, cloud operations and sales systems."
+  title="Declassified files"
+  description="Field reports by Hryhorii Ilin (hvidom) on full-stack development, CRM automation, cloud operations and sales systems."
 >
   <Header />
 
   <main id="main" class="mx-auto max-w-6xl space-y-12 px-5 py-16 sm:px-6">
     <div class="max-w-2xl space-y-3">
-      <p class="font-mono text-sm text-turquoise"><span class="text-violet">~</span> <span class="text-green">$</span> ls ~/blog</p>
-      <h1 class="text-4xl font-black tracking-tight sm:text-5xl"><span class="text-brand">Writing & insights</span></h1>
+      <p class="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-sm text-turquoise">
+        <span><span class="text-violet">~</span> <span class="text-green">$</span>{" "}<TypingAnimation text="ls ~/archive" cursor="block" typeSpeed={60} /></span>{" "}
+        <FileTag>File 08</FileTag>
+      </p>
+      <h1 class="text-4xl font-black tracking-tight sm:text-5xl"><span class="text-brand">Declassified files</span></h1>
       <p class="text-muted-foreground">
-        Articles on full-stack web development, CRM automation, scalable cloud operations and sales methodology.
+        Field reports from real projects, released the moment they stop being secret plans and turn into boring deploy logs:
+        full-stack development, CRM automation, cloud operations and sales systems.
       </p>
     </div>
 
@@ -37,7 +44,7 @@ const posts = await publishedPosts();
           <p class="font-mono text-sm text-muted-foreground">
             <span class="text-green">$</span> ls ~/blog
             <br />
-            <span class="text-turquoise">total 0</span>, first posts are being written.
+            <span class="text-turquoise">total 0</span>, the first files are still waiting for clearance from the coffee machine.
           </p>
         </div>
       )
@@ -72,6 +79,7 @@ const posts = await publishedPosts();
                 <div class:list={["flex flex-1 flex-col justify-between gap-6 p-6 sm:p-7", featured && post.data.heroImage && "md:w-1/2"]}>
                   <div class="space-y-3">
                     <div class="flex flex-wrap items-center gap-2 font-mono text-[11px] text-muted-foreground uppercase">
+                      <FileTag>{files.get(post.id)}</FileTag>{" "}
                       <FormattedDate date={post.data.pubDate} />
                       {post.data.category && <span class={cn(badgeVariants({ variant: "turquoise" }), "h-5")}>{post.data.category}</span>}
                     </div>
@@ -81,7 +89,7 @@ const posts = await publishedPosts();
                     <p class="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{post.data.description}</p>
                   </div>
                   <div class="flex items-center justify-between border-t border-border pt-4 font-mono text-xs text-muted-foreground">
-                    <span>read article</span>
+                    <span>open file</span>
                     <span class="text-turquoise transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
                   </div>
                 </div>

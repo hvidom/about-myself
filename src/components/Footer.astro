@@ -1,5 +1,8 @@
 ---
+import ClassificationBanner from "@/components/ClassificationBanner.astro";
 import LottieAnimation from "@/components/LottieAnimations.astro";
+import TypingAnimation from "@/components/magic/TypingAnimation.astro";
+import { FILE_ID } from "@/data/dossier";
 import { LINKS } from "@/data/profile";
 
 const year = new Date().getFullYear();
@@ -15,7 +18,7 @@ const year = new Date().getFullYear();
   <div class="relative mx-auto flex max-w-6xl flex-col items-center gap-5 px-6 pt-14 pb-56 text-center">
     <LottieAnimation src="/animations/hand.lottie" class="size-28 sm:size-32" />
     <p class="text-brand font-heading text-2xl sm:text-3xl">Thanks for flying by</p>
-    <p class="font-mono text-xs text-muted-foreground sm:text-sm">built in Dublin · see you in the commits</p>
+    <TypingAnimation as="p" text="built in Dublin · see you in the commits" cursor="underscore" typeSpeed={40} class="font-mono text-xs text-muted-foreground sm:text-sm" />
     <nav aria-label="Elsewhere" class="flex flex-wrap justify-center gap-x-6 gap-y-2 font-mono text-xs text-muted-foreground">
       <a href={LINKS.email} class="transition-colors hover:text-turquoise">{LINKS.emailText}</a>
       <a href={LINKS.github} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-turquoise">github</a>
@@ -26,5 +29,7 @@ const year = new Date().getFullYear();
     <p class="font-mono text-[11px] text-muted-foreground/70">
       © {year} Hryhorii Ilin · Astro · Tailwind CSS · shadcn/ui · Cloudflare Workers
     </p>
+    <p class="font-mono text-[10px] tracking-[0.3em] text-gold/70 uppercase">End of document · {FILE_ID} · shred after reading (optional)</p>
   </div>
+  <ClassificationBanner class="relative border-t" label="Classification, end of document" />
 </footer>

@@ -1,0 +1,75 @@
+---
+const steps = [
+  { title: "Ad spend", sub: "Google · Meta", metric: undefined },
+  { title: "Lead", sub: "+ attribution", metric: "cost per lead" },
+  { title: "Consultation", sub: "in the garage", metric: undefined },
+  { title: "Deal", sub: "funnel → won", metric: "close rate" },
+  { title: "Profit", sub: "by channel", metric: "ROAS" },
+];
+const W = 124;
+const GAP = 30;
+const x = (i: number) => 10 + i * (W + GAP);
+---
+
+<svg viewBox="0 0 760 214" class="block h-auto w-full min-w-[600px]" role="img" aria-labelledby="loop-title loop-desc">
+  <title id="loop-title">The measured marketing loop</title>
+  <desc id="loop-desc">
+    Ad spend leads to a lead with attribution, then an in-garage consultation, a deal and profit by channel. Cost per lead,
+    close rate and return on ad spend are measured along the way, and profit is reinvested where it returns.
+  </desc>
+  <defs>
+    <marker id="loop-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 8 4 0 8z" class="fill-muted-foreground" />
+    </marker>
+  </defs>
+
+  {
+    steps.map((step, i) => (
+      <g>
+        <rect x={x(i)} y="24" width={W} height="60" rx="12" class="fill-card stroke-turquoise/50" />
+        <text x={x(i) + W / 2} y="50" text-anchor="middle" class="fill-foreground text-[13px] font-semibold">
+          {step.title}
+        </text>
+        <text x={x(i) + W / 2} y="68" text-anchor="middle" class="fill-muted-foreground text-[11px]">
+          {step.sub}
+        </text>
+        {step.metric && (
+          <g>
+            <rect x={x(i) + 12} y="98" width={W - 24} height="24" rx="12" class="fill-violet/15" />
+            <text x={x(i) + W / 2} y="114" text-anchor="middle" class="fill-foreground font-mono text-[10.5px]">
+              {step.metric}
+            </text>
+          </g>
+        )}
+        {i < steps.length - 1 && (
+          <path d={`M${x(i) + W + 2} 54H${x(i + 1) - 4}`} class="fill-none stroke-muted-foreground" stroke-width="1.5" marker-end="url(#loop-arrow)" />
+        )}
+        {i < steps.length - 1 && (
+          <path
+            d={`M${x(i) + W + 2} 54H${x(i + 1) - 4}`}
+            pathLength="1"
+            class="beam-pulse stroke-turquoise"
+            stroke-width="2.5"
+            style={`--beam-delay: ${i * 0.55}s; --beam-duration: 2.2s`}
+          />
+        )}
+      </g>
+    ))
+  }
+
+  <path
+    d={`M${x(4) + W / 2} 126C${x(4) + W / 2} 200 ${x(0) + W / 2} 200 ${x(0) + W / 2} 88`}
+    class="fill-none stroke-gold"
+    stroke-width="1.5"
+    stroke-dasharray="5 5"
+    marker-end="url(#loop-arrow)"
+  />
+  <path
+    d={`M${x(4) + W / 2} 126C${x(4) + W / 2} 200 ${x(0) + W / 2} 200 ${x(0) + W / 2} 88`}
+    pathLength="1"
+    class="beam-pulse stroke-gold"
+    stroke-width="3"
+    style="--beam-delay: 2.4s; --beam-duration: 3.4s"
+  />
+  <text x="380" y="190" text-anchor="middle" class="fill-gold font-mono text-[11px]">reinvest where it returns</text>
+</svg>

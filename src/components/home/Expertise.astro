@@ -1,13 +1,14 @@
 ---
 import LottieAnimation from "@/components/LottieAnimations.astro";
 import { cardVariants } from "@/components/ui/card";
+import { fileOf } from "@/data/dossier";
 import { EXPERTISE, TONE } from "@/data/profile";
 import { cn } from "@/lib/utils";
 import SectionHeading from "./SectionHeading.astro";
 ---
 
-<section aria-labelledby="expertise-title" class="space-y-10">
-  <SectionHeading eyebrow="man hvidom" title="Areas of expertise" id="expertise-title">
+<section id="expertise" aria-labelledby="expertise-title" class="scroll-mt-24 space-y-10">
+  <SectionHeading file={fileOf("#expertise")} eyebrow="man hvidom" title="Areas of expertise" id="expertise-title">
     Where business questions turn into reliable software.
   </SectionHeading>
 

@@ -50,6 +50,7 @@ import {
   siWhatsapp,
 } from "simple-icons";
 import Highlighter from "@/components/magic/Highlighter.astro";
+import { fileOf } from "@/data/dossier";
 import { iconColor } from "@/lib/icon-color";
 import { cn } from "@/lib/utils";
 import SectionHeading from "./SectionHeading.astro";
@@ -136,7 +137,7 @@ const groups: { label: string; tone: string; items: Item[] }[] = [
 ---
 
 <section id="stack" aria-labelledby="stack-title" class="scroll-mt-24 space-y-10">
-  <SectionHeading eyebrow="cat package.json" title="Tech stack" id="stack-title" animation="/animations/dj.lottie">
+  <SectionHeading file={fileOf("#stack")} eyebrow="cat package.json" title="Tech stack" id="stack-title" animation="/animations/dj.lottie">
     Used in <Highlighter action="box" tone="green">production</Highlighter>, not just in tutorials.
   </SectionHeading>
 

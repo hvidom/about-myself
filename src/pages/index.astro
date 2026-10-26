@@ -2,6 +2,7 @@
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
 import Contact from "@/components/home/Contact.astro";
+import Decoder from "@/components/home/Decoder.astro";
 import Expertise from "@/components/home/Expertise.astro";
 import FeaturedWork from "@/components/home/FeaturedWork.astro";
 import Hero from "@/components/home/Hero.astro";
@@ -12,21 +13,24 @@ import Stack from "@/components/home/Stack.astro";
 import Telemetry from "@/components/home/Telemetry.astro";
 import Terminal from "@/components/home/Terminal.astro";
 import Layout from "@/layouts/Layout.astro";
-import { publishedPosts } from "@/lib/posts";
+import { fileIds, publishedPosts } from "@/lib/posts";
 
 export const prerender = true;
 
-const posts = (await publishedPosts()).slice(0, 3);
+const all = await publishedPosts();
+const posts = all.slice(0, 3);
+const files = fileIds(all);
 ---
 
 <Layout
   title="hvidom · Hryhorii Ilin, full-stack developer"
-  description="Hryhorii Ilin (hvidom): full-stack developer, infrastructure tinkerer and ex-sales director in Dublin. Projects, journey, tech stack and writing."
+  description="HVIDOM: the declassified file of Hryhorii Victorovich Ilin, full-stack developer and ex-sales director in Dublin. Projects, journey, stack, writing."
 >
   <Header />
 
   <main id="main" class="mx-auto max-w-6xl space-y-32 px-5 py-14 sm:px-6">
     <Hero />
+    <Decoder />
     <Terminal />
     <Journey />
     <FeaturedWork />
@@ -34,7 +38,7 @@ const posts = (await publishedPosts()).slice(0, 3);
     <Expertise />
     <Stack />
     <Telemetry />
-    {posts.length > 0 && <RecentPosts posts={posts} />}
+    {posts.length > 0 && <RecentPosts posts={posts} files={files} />}
     <Contact />
   </main>
 

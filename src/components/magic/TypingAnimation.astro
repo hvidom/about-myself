@@ -1,0 +1,188 @@
+---
+import { cn } from "@/lib/utils";
+
+interface Props {
+  text?: string;
+  words?: string[];
+  as?: "span" | "p" | "div";
+  class?: string;
+  textClass?: string;
+  cursorClass?: string;
+  cursor?: "line" | "block" | "underscore" | "none";
+  typeSpeed?: number;
+  deleteSpeed?: number;
+  pauseDelay?: number;
+  delay?: number;
+  loop?: boolean;
+  startOnView?: boolean;
+  reserve?: boolean;
+}
+
+const {
+  text,
+  words,
+  as: Tag = "span",
+  class: className,
+  textClass,
+  cursorClass,
+  cursor = "line",
+  typeSpeed = 55,
+  deleteSpeed,
+  pauseDelay = 1600,
+  delay = 0,
+  loop = false,
+  startOnView = true,
+  reserve = true,
+} = Astro.props;
+const list = words ?? (text ? [text] : []);
+const longest = list.reduce((a, b) => (Array.from(b).length > Array.from(a).length ? b : a), "");
+---
+
+<Tag
+  class={cn("typing", reserve && "typing-reserve", className)}
+  data-typing=""
+  data-words={JSON.stringify(list)}
+  data-type-speed={typeSpeed}
+  data-delete-speed={deleteSpeed ?? Math.round(typeSpeed / 2)}
+  data-pause={pauseDelay}
+  data-delay={delay}
+  data-loop={loop ? "" : undefined}
+  data-on-view={startOnView ? "" : undefined}
+  data-cursor={cursor}
+>
+  <span class="sr-only">{list.join(". ")}</span>
+  <span class="typing-box" data-reserve={reserve ? longest : undefined} aria-hidden="true">
+    <span class="typing-live"><span class={textClass} data-typing-text>{list[0]}</span>{
+      cursor !== "none" && <span class={cn("typing-cursor animate-blink", `typing-cursor-${cursor}`, cursorClass)} />
+    }</span>
+  </span>
+</Tag>
+
+<style>
+  .typing-reserve .typing-box {
+    display: inline-grid;
+  }
+  .typing-reserve .typing-box::before {
+    content: attr(data-reserve);
+    grid-area: 1 / 1;
+    visibility: hidden;
+    white-space: pre;
+  }
+  .typing-reserve .typing-live {
+    grid-area: 1 / 1;
+    white-space: pre;
+  }
+  .typing-box,
+  .typing-live {
+    min-width: 0;
+  }
+  .typing:not(.typing-reserve) .typing-box,
+  .typing:not(.typing-reserve) .typing-live {
+    display: flex;
+    align-items: center;
+  }
+  .typing-cursor {
+    display: inline-block;
+    flex-shrink: 0;
+    background: currentColor;
+    vertical-align: text-bottom;
+  }
+  .typing-cursor-line {
+    width: 2px;
+    height: 1.1em;
+    margin-left: 1px;
+  }
+  .typing-cursor-block {
+    width: 0.55em;
+    height: 1.1em;
+    margin-left: 2px;
+  }
+  .typing-cursor-underscore {
+    width: 0.6em;
+    height: 2px;
+    margin-left: 2px;
+    vertical-align: baseline;
+  }
+  .typing[data-typing=""]:not([data-loop]) .typing-cursor,
+  .typing[data-typing="armed"] .typing-cursor,
+  .typing[data-typing="done"] .typing-cursor {
+    visibility: hidden;
+  }
+</style>
+
+<script>
+  const start = (el: HTMLElement) => {
+    const target = el.querySelector<HTMLElement>("[data-typing-text]");
+    const words: string[] = JSON.parse(el.dataset.words ?? "[]");
+    if (!target || words.length === 0) return;
+    const typeMs = Number(el.dataset.typeSpeed);
+    const deleteMs = Number(el.dataset.deleteSpeed);
+    const pauseMs = Number(el.dataset.pause);
+    const loop = el.hasAttribute("data-loop");
+    const shown = target.textContent === words[0];
+    let word = 0;
+    let chars = shown ? Array.from(words[0]!).length : 0;
+    let phase: "typing" | "pause" | "deleting" = shown ? "pause" : "typing";
+    el.dataset.typing = "run";
+
+    const tick = () => {
+      if (!el.isConnected) return;
+      const graphemes = Array.from(words[word]!);
+      if (phase === "typing") {
+        if (chars < graphemes.length) {
+          chars++;
+          target.textContent = graphemes.slice(0, chars).join("");
+          setTimeout(tick, typeMs);
+          return;
+        }
+        if (!loop && word === words.length - 1) {
+          el.dataset.typing = "done";
+          return;
+        }
+        phase = "pause";
+        setTimeout(tick, pauseMs);
+        return;
+      }
+      if (phase === "pause") {
+        phase = "deleting";
+        setTimeout(tick, deleteMs);
+        return;
+      }
+      if (chars > 0) {
+        chars--;
+        target.textContent = graphemes.slice(0, chars).join("");
+        setTimeout(tick, deleteMs);
+        return;
+      }
+      word = (word + 1) % words.length;
+      phase = "typing";
+      setTimeout(tick, typeMs);
+    };
+    setTimeout(tick, phase === "pause" ? pauseMs : Number(el.dataset.delay) || typeMs);
+  };
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        observer.unobserve(entry.target);
+        start(entry.target as HTMLElement);
+      }
+    },
+    { threshold: 0.3 },
+  );
+
+  document.addEventListener("astro:page-load", () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    for (const el of document.querySelectorAll<HTMLElement>('[data-typing=""]')) {
+      if (el.hasAttribute("data-on-view")) {
+        el.dataset.typing = "armed";
+        const target = el.querySelector<HTMLElement>("[data-typing-text]");
+        if (target) target.textContent = "";
+        observer.observe(el);
+      } else {
+        start(el);
+      }
+    }
+  });
+</script>

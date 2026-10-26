@@ -1,0 +1,65 @@
+---
+const rows = [
+  { name: "Oracle Cloud (Always Free)", value: 0, note: "free" },
+  { name: "Hetzner Cloud", value: 360 },
+  { name: "DigitalOcean", value: 1020 },
+  { name: "Vultr", value: 1060 },
+  { name: "Google Cloud", value: 1170, note: "+ egress" },
+  { name: "AWS EC2", value: 1200, note: "+ egress" },
+  { name: "Microsoft Azure", value: 1320, note: "+ egress" },
+];
+const LABEL = 236;
+const PLOT = 370;
+const MAX = 1400;
+const ROW = 36;
+const BAR = 18;
+const ticks = [0, 350, 700, 1050, 1400];
+const bx = (v: number) => LABEL + (v / MAX) * PLOT;
+const height = rows.length * ROW + 34;
+const bar = (y: number, w: number) => {
+  const r = Math.min(4, w);
+  return `M${LABEL} ${y}H${LABEL + w - r}Q${LABEL + w} ${y} ${LABEL + w} ${y + r}V${y + BAR - r}Q${LABEL + w} ${y + BAR} ${LABEL + w - r} ${y + BAR}H${LABEL}Z`;
+};
+---
+
+<svg viewBox={`0 0 720 ${height}`} class="block h-auto w-full min-w-[560px]" role="img" aria-labelledby="host-title host-desc">
+  <title id="host-title">Indicative annual cost of a 4 vCPU, 24 GB always-on server</title>
+  <desc id="host-desc">{rows.map((r) => `${r.name}: ${r.value === 0 ? "free" : `€${r.value}`}${r.note && r.value ? ` ${r.note}` : ""}`).join("; ")}.</desc>
+
+  {
+    ticks.map((t) => (
+      <g>
+        <line x1={bx(t)} x2={bx(t)} y1="4" y2={rows.length * ROW + 4} class="stroke-border" stroke-width="1" />
+        <text x={bx(t)} y={rows.length * ROW + 24} text-anchor="middle" class="fill-muted-foreground font-mono text-[11px] tabular-nums">
+          €{t.toLocaleString("en-IE")}
+        </text>
+      </g>
+    ))
+  }
+
+  {
+    rows.map((row, i) => {
+      const y = 4 + i * ROW + (ROW - BAR) / 2;
+      const w = (row.value / MAX) * PLOT;
+      const highlight = row.value === 0;
+      return (
+        <g>
+          <text x={LABEL - 12} y={y + 13} text-anchor="end" class:list={["text-[12.5px]", highlight ? "fill-foreground font-semibold" : "fill-muted-foreground"]}>
+            {row.name}
+          </text>
+          {highlight ? (
+            <circle cx={LABEL} cy={y + BAR / 2} r="5" class="fill-green stroke-background" stroke-width="2" />
+          ) : (
+            <path d={bar(y, w)} class="fill-muted-foreground/45">
+              <title>{`${row.name}: €${row.value}${row.note ? ` ${row.note}` : ""}`}</title>
+            </path>
+          )}
+          <text x={(highlight ? LABEL + 4 : bx(row.value)) + 10} y={y + 13} class:list={["text-[12px] font-semibold tabular-nums", highlight ? "fill-green" : "fill-foreground"]}>
+            {highlight ? "free" : `€${row.value.toLocaleString("en-IE")}`}
+            {row.note && !highlight && <tspan class="fill-muted-foreground font-normal"> {row.note}</tspan>}
+          </text>
+        </g>
+      );
+    })
+  }
+</svg>

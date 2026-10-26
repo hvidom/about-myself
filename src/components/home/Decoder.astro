@@ -1,0 +1,179 @@
+---
+import AnimatedBeam from "@/components/magic/AnimatedBeam.astro";
+import Highlighter from "@/components/magic/Highlighter.astro";
+import TypingAnimation from "@/components/magic/TypingAnimation.astro";
+import { ACRONYM, CODENAME, DOM_TREE, FILE_ID } from "@/data/dossier";
+import { TONE } from "@/data/profile";
+import { cn } from "@/lib/utils";
+import SectionHeading from "./SectionHeading.astro";
+
+const halves = [
+  {
+    key: "subject",
+    title: "Subject",
+    tone: "text-turquoise",
+    items: ACRONYM.filter((a) => a.half === "subject"),
+  },
+  {
+    key: "model",
+    title: "Model",
+    tone: "text-violet",
+    items: ACRONYM.filter((a) => a.half === "model"),
+  },
+] as const;
+const decoded = `${ACRONYM.slice(0, 3)
+  .map((a) => a.word)
+  .join(" ")} · ${ACRONYM.slice(3)
+  .map((a) => a.word)
+  .join(" ")}`;
+---
+
+<section id="decode" aria-labelledby="decode-title" class="scroll-mt-24 space-y-10" data-decoded={decoded}>
+  <SectionHeading file="00" eyebrow="hvidom --decode" title={`Decoding ${CODENAME}`} id="decode-title">
+    Six letters, two halves. <Highlighter action="underline" tone="turquoise">H.V.I.</Highlighter> is the subject. <Highlighter action="underline" tone="violet">D.O.M.</Highlighter> is how this site files him: every page
+    is a document, every section is a node, and the tree below is the index of this dossier. Nothing here is actually
+    secret; it just reads better with a stamp on it.
+  </SectionHeading>
+
+  <div class="relative grid gap-6 lg:grid-cols-[1fr_1.2fr] lg:items-start" data-beam-root>
+    <div class="space-y-5">
+      {
+        halves.map((half) => (
+          <div class="space-y-2.5">
+            <p class="font-mono text-[10px] tracking-[0.3em] text-gold/80 uppercase">
+              {half.title} · {half.items.map((a) => a.letter).join(".")}.
+            </p>
+            <ul class="grid gap-2 sm:grid-cols-3 sm:gap-3" data-beam-node={`${half.key}-tiles`}>
+              {half.items.map(({ letter, word, note }) => (
+                <li class="glass relative flex items-center gap-4 overflow-hidden rounded-2xl px-4 py-3 sm:block sm:p-4">
+                  <span class={cn("block w-8 shrink-0 font-heading text-3xl leading-none sm:w-auto sm:text-5xl", half.tone)} aria-hidden="true">
+                    {letter}
+                  </span>
+                  <span class="sr-only">{word}, {note}</span>
+                  <span class="min-w-0" aria-hidden="true">
+                    <span class="block truncate font-semibold text-foreground sm:mt-3" data-decrypt={word}>
+                      {word}
+                    </span>
+                    <span class="block font-mono text-[11px] leading-snug text-muted-foreground">{note}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="glass overflow-hidden rounded-2xl font-mono text-[13px]">
+      <div class="flex items-center gap-4 border-b border-border bg-foreground/[0.03] px-4 text-xs" aria-hidden="true">
+        <span class="border-b-2 border-turquoise py-2.5 text-foreground">Elements</span>
+        <span class="py-2.5 text-muted-foreground">Console</span>
+        <span class="hidden py-2.5 text-muted-foreground sm:inline">Sources</span>
+        <span class="ml-auto truncate py-2.5 text-muted-foreground">hvidom.is-a.dev</span>
+      </div>
+
+      <nav aria-label="Dossier index" class="py-3">
+        <p class="px-4 py-1 text-muted-foreground" aria-hidden="true" data-beam-node="node-dossier">
+          &lt;<span class="text-violet">dossier</span> <span class="text-gold">id</span>=<span class="text-turquoise">"{CODENAME.toLowerCase()}"</span>{" "}
+          <span class="text-gold">clearance</span>=<span class="text-turquoise">"public"</span>&gt;
+        </p>
+        <ol>
+          {
+            DOM_TREE.map((node) => (
+              <li data-beam-node={node.tag === "subject" ? "node-subject" : undefined}>
+                <a
+                  href={node.href}
+                  aria-label={`${node.tag}: ${node.label}`}
+                  class="group relative flex items-start gap-3 py-1 pr-4 pl-4 transition-colors hover:bg-turquoise/10 focus-visible:bg-turquoise/10 focus-visible:outline-offset-[-2px] sm:pl-8"
+                >
+                  <span class="flex w-7 shrink-0 items-center gap-1.5 pt-px text-[11px] text-muted-foreground/70" aria-hidden="true">
+                    <span class={cn("size-1.5 rounded-full", TONE[node.tone].dot)} />
+                    {node.file}
+                  </span>
+                  <span class="min-w-0 break-words text-muted-foreground" aria-hidden="true">
+                    &lt;<span class="text-violet">{node.tag}</span>
+                    {node.attrs.map(([name, value], i) => (
+                      <span class:list={[i > 0 && "hidden sm:inline"]}>
+                        {" "}
+                        <span class="text-gold">{name}</span>=<span class="text-turquoise">"{value}"</span>
+                      </span>
+                    ))}
+                    {" "}/&gt;
+                  </span>
+                  <span class="absolute top-1/2 right-3 hidden -translate-y-1/2 rounded-md border border-border bg-card px-2 py-0.5 text-[11px] text-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 md:inline" aria-hidden="true">
+                    {node.label} →
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="px-4 py-1 text-muted-foreground" aria-hidden="true">&lt;/<span class="text-violet">dossier</span>&gt;</p>
+      </nav>
+
+      <div class="space-y-1 border-t border-border bg-background/40 px-4 py-3 text-xs">
+        <p><span class="text-turquoise" aria-hidden="true">›</span>{" "}<TypingAnimation text="hvidom.decode()" cursor="block" typeSpeed={70} /></p>
+        <p class="flex gap-1.5 text-muted-foreground">
+          <span aria-hidden="true">←</span>{" "}
+          <TypingAnimation text={`"${decoded}"`} reserve={false} cursor="none" typeSpeed={16} delay={1500} class="text-green" />
+        </p>
+      </div>
+
+      <p class="truncate border-t border-border px-4 py-2 text-[11px] text-muted-foreground" aria-hidden="true">
+        html › body › dossier#{CODENAME.toLowerCase()} · {FILE_ID}
+      </p>
+    </div>
+    <AnimatedBeam from="subject-tiles" to="node-subject" fromSide="right" toSide="left" start="turquoise" stop="turquoise" duration={3.4} class="hidden lg:block" />
+    <AnimatedBeam from="model-tiles" to="node-dossier" fromSide="right" toSide="left" curvature={-24} start="violet" stop="violet" duration={3.8} delay={1.1} class="hidden lg:block" />
+  </div>
+</section>
+
+<script>
+  const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&@$";
+  const STEP_MS = 38;
+
+  const decrypt = (el: HTMLElement) => {
+    const word = el.dataset.decrypt ?? "";
+    let frame = 0;
+    const tick = () => {
+      if (!el.isConnected) return;
+      const settled = Math.floor(frame / 2);
+      el.textContent = [...word]
+        .map((ch, i) => (i < settled ? ch : GLYPHS[Math.floor(Math.random() * GLYPHS.length)]))
+        .join("");
+      frame++;
+      if (settled < word.length) setTimeout(tick, STEP_MS);
+      else el.textContent = word;
+    };
+    tick();
+  };
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        observer.unobserve(entry.target);
+        const words = entry.target.querySelectorAll<HTMLElement>("[data-decrypt]");
+        words.forEach((el, i) => setTimeout(() => decrypt(el), i * 140));
+      }
+    },
+    { rootMargin: "0px 0px -20% 0px" },
+  );
+
+  document.addEventListener("astro:page-load", () => {
+    const section = document.getElementById("decode");
+    if (!section || section.dataset.ready) return;
+    section.dataset.ready = "1";
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) observer.observe(section);
+
+    const w = window as Window & { hvidom?: { decode: () => string } };
+    if (w.hvidom) return;
+    const decoded = section.dataset.decoded ?? "";
+    w.hvidom = { decode: () => decoded };
+    console.info(
+      "%cHVIDOM%c dossier opened. Try hvidom.decode()",
+      "background:#facc15;color:#0b1130;font-weight:700;padding:2px 6px;border-radius:3px",
+      "color:inherit",
+    );
+  });
+</script>

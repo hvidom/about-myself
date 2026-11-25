@@ -83,9 +83,10 @@ const decoded = `${ACRONYM.slice(0, 3)
               <li data-beam-node={node.tag === "subject" ? "node-subject" : undefined}>
                 <a
                   href={node.href}
-                  aria-label={`${node.tag}: ${node.label}`}
                   class="group relative flex items-start gap-3 py-1 pr-4 pl-4 transition-colors hover:bg-turquoise/10 focus-visible:bg-turquoise/10 focus-visible:outline-offset-[-2px] sm:pl-8"
                 >
+                  {/* Name starts with the visible tag (WCAG 2.5.3): voice users can say "click agent" */}
+                  <span class="sr-only">{node.tag}: {node.label}</span>
                   <span class="flex w-7 shrink-0 items-center gap-1.5 pt-px text-[11px] text-muted-foreground/70" aria-hidden="true">
                     <span class={cn("size-1.5 rounded-full", TONE[node.tone].dot)} />
                     {node.file}

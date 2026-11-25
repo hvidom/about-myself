@@ -125,7 +125,7 @@ describe("Decoder", () => {
 		expect(html.match(/<h2/g)).toHaveLength(1);
 		for (const node of DOM_TREE) {
 			expect(html).toContain(`href="${node.href}"`);
-			expect(html).toContain(`aria-label="${node.tag}: ${node.label}"`);
+			expect(html).toContain(`<span class="sr-only">${node.tag}: ${node.label}</span>`);
 		}
 	});
 

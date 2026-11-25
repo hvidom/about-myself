@@ -1,0 +1,95 @@
+---
+const nodes = [
+  { title: "Cloudflare", lines: ["signs the zone", "shows the DS values"] },
+  { title: "You", lines: ["copy four values", "recompute the digest"] },
+  { title: "Registrar panel", lines: ["DNSSEC Management", "DS records only"] },
+  { title: "Registry", lines: [".ie · .eu · .pl", "publishes the DS"] },
+];
+const fields = [
+  { value: "2371", label: "key tag", note: "Cloudflare's, on every zone", w: 190 },
+  { value: "13", label: "algorithm", note: "ECDSA P-256 with SHA-256", w: 160 },
+  { value: "2", label: "digest type", note: "SHA-256", w: 110 },
+  { value: "9F2C…41AB", label: "digest", note: "hash of name + key, per domain", w: 230 },
+];
+
+const NODE_W = 160;
+const GAP = (760 - NODE_W * 4) / 3;
+const nx = (i: number) => i * (NODE_W + GAP);
+const TOP = 24;
+const NODE_H = 72;
+const mid = TOP + NODE_H / 2;
+const first = nx(0) + NODE_W / 2;
+const last = nx(3) + NODE_W / 2;
+const loop = `M${last} ${TOP + NODE_H + 4}C${last} 156 ${first} 156 ${first} ${TOP + NODE_H + 6}`;
+
+const ROW_Y = 196;
+const FIELD_GAP = 10;
+const fx = (i: number) => fields.slice(0, i).reduce((x, f) => x + f.w + FIELD_GAP, 20);
+---
+
+<svg viewBox="0 0 760 276" class="block h-auto w-full min-w-[620px]" role="img" aria-labelledby="dnssec-title dnssec-desc">
+  <title id="dnssec-title">How a DS record gets from Cloudflare to the registry</title>
+  <desc id="dnssec-desc">
+    {nodes.map((n) => `${n.title}: ${n.lines.join(", ")}`).join(" → ")}. Validating resolvers then check that the DS at the
+    registry matches the key Cloudflare publishes. A DS record has four fields: {fields.map((f) => `${f.label} ${f.value} (${f.note})`).join(", ")}.
+  </desc>
+  <defs>
+    <marker id="dnssec-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 8 4 0 8z" class="fill-muted-foreground" />
+    </marker>
+  </defs>
+
+  {
+    nodes.map((node, i) => (
+      <g>
+        <rect x={nx(i) + 1} y={TOP} width={NODE_W - 2} height={NODE_H} rx="12" class:list={["fill-card", i === 2 ? "stroke-gold/70" : "stroke-cyan/50"]} />
+        <text x={nx(i) + NODE_W / 2} y={TOP + 26} text-anchor="middle" class="fill-foreground text-[13px] font-semibold">
+          {node.title}
+        </text>
+        {node.lines.map((line, l) => (
+          <text x={nx(i) + NODE_W / 2} y={TOP + 45 + l * 15} text-anchor="middle" class="fill-muted-foreground text-[11px]">
+            {line}
+          </text>
+        ))}
+        {i < nodes.length - 1 && (
+          <g>
+            <path d={`M${nx(i) + NODE_W + 2} ${mid}H${nx(i + 1) - 4}`} class="fill-none stroke-muted-foreground" stroke-width="1.5" marker-end="url(#dnssec-arrow)" />
+            <path
+              d={`M${nx(i) + NODE_W + 2} ${mid}H${nx(i + 1) - 4}`}
+              pathLength="1"
+              class="beam-pulse stroke-cyan"
+              stroke-width="2.5"
+              style={`--beam-delay: ${i * 0.6}s; --beam-duration: 2.2s`}
+            />
+          </g>
+        )}
+      </g>
+    ))
+  }
+
+  <path d={loop} class="fill-none stroke-gold" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#dnssec-arrow)" />
+  <path d={loop} pathLength="1" class="beam-pulse stroke-gold" stroke-width="3" style="--beam-delay: 2s; --beam-duration: 3.2s" />
+  <text x="380" y="164" text-anchor="middle" class="fill-gold font-mono text-[11px]">
+    resolvers match DS against the zone key → "AD": true
+  </text>
+
+  <text x="20" y={ROW_Y - 10} class="fill-muted-foreground font-mono text-[10.5px] tracking-[0.16em] uppercase">
+    Anatomy of the DS record you paste
+  </text>
+  {
+    fields.map((f, i) => (
+      <g>
+        <rect x={fx(i)} y={ROW_Y} width={f.w} height="70" rx="10" class="fill-cyan/8 stroke-cyan/35" />
+        <text x={fx(i) + 14} y={ROW_Y + 26} class="fill-foreground font-mono text-[16px] font-bold">
+          {f.value}
+        </text>
+        <text x={fx(i) + 14} y={ROW_Y + 44} class="fill-foreground text-[11.5px] font-semibold">
+          {f.label}
+        </text>
+        <text x={fx(i) + 14} y={ROW_Y + 59} class="fill-muted-foreground text-[10.5px]">
+          {f.note}
+        </text>
+      </g>
+    ))
+  }
+</svg>

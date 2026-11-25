@@ -49,6 +49,24 @@ test("the post's links point at real sections and the social card is the cover",
 	}
 });
 
+test("the email playbook is file two, with its charts and a link back to file one", async ({
+	page,
+}) => {
+	const errors = trackErrors(page);
+	await page.goto("/blog/email-marketing-automation-playbook/");
+	await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+		"How to automate email marketing: five years of running mail servers",
+	);
+	await expect(page.getByText("File HVI-DOM-0001/TX-002").first()).toBeVisible();
+	await expect(page.locator("figure")).toHaveCount(7);
+	await expect(
+		page.getByRole("img", { name: "How mail moves through Cloudflare, Gmail and Brevo" }),
+	).toBeAttached();
+	await expect(page.locator('.prose a[href="/blog/radio-king-platform-brief/"]')).toBeAttached();
+	await expectNoHorizontalScroll(page);
+	expect(errors).toEqual([]);
+});
+
 test("draft posts are not published", async ({ request }) => {
 	expect((await request.get("/blog/first-post/")).status()).toBe(404);
 });

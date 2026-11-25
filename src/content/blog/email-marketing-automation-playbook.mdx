@@ -1,0 +1,402 @@
+---
+title: 'How to automate email marketing: five years of running mail servers'
+description: 'DNSSEC to bulk campaigns: Cloudflare Email Routing, Gmail sending as sales@ through Brevo, signatures and DMARC.'
+pubDate: 2026-11-19
+heroImage: '../../assets/blog/email-marketing-automation-playbook.jpg'
+category: 'Playbook'
+releaseNote: 'API keys, SMTP logins and server addresses stay classified. The rest is the exact runbook every new domain of ours goes through.'
+tags: ['Email', 'Deliverability', 'Cloudflare', 'Brevo', 'Gmail', 'DNS', 'Self-hosting']
+---
+
+import AuthStack from '@/components/blog/AuthStack.astro';
+import Callout from '@/components/blog/Callout.astro';
+import DmarcLadder from '@/components/blog/DmarcLadder.astro';
+import DnssecChain from '@/components/blog/DnssecChain.astro';
+import Figure from '@/components/blog/Figure.astro';
+import MailCost from '@/components/blog/MailCost.astro';
+import MailFlow from '@/components/blog/MailFlow.astro';
+import SetupTime from '@/components/blog/SetupTime.astro';
+import StatGrid from '@/components/blog/StatGrid.astro';
+import ToolMatrix from '@/components/blog/ToolMatrix.astro';
+import Redacted from '@/components/magic/Redacted.astro';
+
+I have run mail for small businesses for five years: self-hosted boxes, relays, forwarders, shared inboxes and newsletter tools. The lesson I keep relearning is that email is not one problem, it is three. **Receiving** mail is cheap and nearly solved. **Reading and replying** is solved better by Gmail than by anything you will host yourself. **Sending**, especially in bulk, is a reputation business, and a fresh server with no history loses that game on day one.
+
+So I stopped asking one box to do all three jobs. Every new domain I set up now goes through the same runbook: Cloudflare receives, Gmail is the inbox, and [Brevo](https://www.brevo.com) sends, signs, keeps the contacts and runs the campaigns. The latest domain went through it on 19 November 2026. By the evening its `sales@` address received mail, replied from Gmail through Brevo, passed SPF, DKIM and DMARC, and landed in the inbox.
+
+This file is that runbook, step by step, from DNSSEC to the first campaign. A side file covers the open-source route and the mail server we do run on our own AMD box, because sometimes self-hosting is the right call. Just not for sending.
+
+<StatGrid
+  stats={[
+    { value: '€0', label: 'a month to receive, read and send up to 300 emails a day', tone: 'green' },
+    { value: '~2 h', label: 'of hands-on work per domain, the rest is DNS waiting', tone: 'turquoise' },
+    { value: '200', label: 'free routing rules per domain on Cloudflare', tone: 'violet' },
+    { value: '5', label: 'DNS records between you and the spam folder', tone: 'gold' },
+  ]}
+/>
+
+## The short answer: split the job in three
+
+The whole setup is three free accounts wired together through DNS. Mail to `sales@example.com` hits Cloudflare's MX servers, which forward it to a shared Gmail inbox. Replies leave Gmail through Brevo's SMTP relay, so they are signed with your domain's DKIM key and pass DMARC. Website forms push contacts into Brevo over its API, and campaigns go out from the same authenticated domain.
+
+<Figure
+  title="Three lanes, three free services"
+  subtitle="Inbound mail, one-to-one replies and bulk campaigns each take the cheapest path that is also the most trusted."
+  note="Gmail never sends as your domain on its own servers. Every message with your From address leaves through Brevo, which is what makes DMARC pass."
+  wide
+>
+  <MailFlow />
+</Figure>
+
+Why not just run a mail server for everything? I have, and here is what it costs you:
+
+- **Port 25 is usually closed.** Most clouds block outbound SMTP by default. Oracle Cloud blocked it on our server, so direct delivery was off the table before we started.
+- **A new IP has no reputation.** Gmail and Outlook judge a sender by history. A fresh IP sending a campaign looks exactly like a spammer, and warming one up takes weeks of careful, low-volume sending.
+- **You become the postmaster.** Blocklist monitoring, bounce handling, feedback loops, TLS certificates, spam filtering on the way in. All of it is real work that never ends.
+
+A relay like Brevo has already done that work. You rent its reputation and keep your domain, your contacts and your copy.
+
+## Side file: the open-source route
+
+<Callout label="Side file · open source" tone="cyan">
+If you need real mailboxes on your own hardware, open source has mature options. The matrix below shows what each one is built for. Note the pattern: the mail servers handle mailboxes, and the marketing tools still need someone else's SMTP to send well.
+</Callout>
+
+<Figure
+  title="What each platform is built for"
+  subtitle="Self-hosted mail servers, self-hosted sending and marketing tools, and the three services this post wires together."
+  note="'Partial' means the job is possible but not the tool's focus, for example an MTA that can send but has no API, tracking or bounce processing. Check each project's docs for its current feature list."
+  wide
+>
+  <ToolMatrix />
+</Figure>
+
+- **[mailcow](https://mailcow.email)**: the most complete Docker bundle (Postfix, Dovecot, Rspamd, SOGo). Heavy on RAM, light on surprises.
+- **[Mail-in-a-Box](https://mailinabox.email)**: one script turns a fresh Ubuntu box into a mail server with sensible defaults. Opinionated by design.
+- **[iRedMail](https://www.iredmail.org)**: the classic Postfix and Dovecot stack with Roundcube or SOGo, installed natively.
+- **[Mailu](https://mailu.io)**: a lighter Docker alternative to mailcow.
+- **[Stalwart](https://stalw.art)**: a modern mail server in one Rust binary, with SMTP, IMAP, JMAP, built-in spam filtering and an API. This is the one we run.
+- **[Postal](https://docs.postalserver.io)**: your own sending platform, a self-hosted answer to SendGrid. It still needs IPs with a good reputation.
+- **[listmonk](https://listmonk.app)**: a fast newsletter and mailing-list manager in one Go binary. It sends through any SMTP relay.
+- **[Mautic](https://mautic.org)**: full marketing automation with segments, campaigns and lead scoring. Powerful, and a project in its own right.
+
+We also looked at **BillionMail**, a mail server bundled with newsletters, and turned it down. It duplicated what we already had, and its sending would go out from our own IP with no reputation, which is the exact problem this post is about.
+
+<Callout label="What runs on our AMD server" tone="gold">
+One mail server does run on hardware we control: **Stalwart Community** on an Always Free AMD micro instance in Oracle Cloud, with about 1 GB of RAM. It serves a separate internal domain that only **receives** mail: login codes, sign-up confirmations and service invitations for the team. Staff talk to each other in our own admin, not by email.
+
+- **Small footprint.** Stalwart uses about 115–140 MB of RAM, and the mail store is under 100 MB. Webmail runs as an app inside Stalwart, so there is no extra process.
+- **Locked down.** Relaying to the outside world is off, SPF is `-all`, DMARC is `p=reject` and DKIM signs with both Ed25519 and RSA keys. MTA-STS runs in testing mode for now.
+- **Lesson one.** Oracle blocks outbound port 25, so this box could never send directly. Since it only receives, that never mattered.
+- **Lesson two.** Spamhaus blocklists returned nothing. Queries went through Oracle's shared DNS resolver, which Spamhaus refuses (`DBL_BLOCKED_OPENRESOLVER`). The fix is a local resolver such as `unbound` on the box.
+- **Lesson three.** A test message with "test" and the domain name in the subject landed in Junk. The spam filter was right. Test with realistic mail.
+
+For a receive-only domain, this is the right tool. For anything customers see, the runbook below wins.
+</Callout>
+
+In [file TX-001](/blog/radio-king-platform-brief/), decision DR-02 planned SendGrid as the relay. In practice Brevo won: relay, transactional API, contacts, campaigns and a CRM in one account, and a free tier that covers a small business.
+
+## The runbook at a glance
+
+Five DNS records carry the whole setup. Each one answers a different question that a receiving server asks before it trusts your mail, and each one builds on the one below it.
+
+<Figure
+  title="The trust stack"
+  subtitle="What the receiving server checks, from the foundation up."
+  note="MX, SPF and the routing DKIM key come from Cloudflare Email Routing. The Brevo DKIM keys and the DMARC record come from Brevo. DNSSEC is one switch in Cloudflare and one DS record at your registrar."
+  wide
+>
+  <AuthStack />
+</Figure>
+
+Before you start, have four things ready:
+
+| You need | Why |
+| --- | --- |
+| A domain on Cloudflare DNS (full setup) | Email Routing only works on zones in your own Cloudflare account |
+| Your registrar login | To publish the DNSSEC DS record |
+| A Gmail account for the team inbox | For example `sales.yourcompany@gmail.com`. Free, and every salesperson can sign in |
+| A Brevo account | The free plan sends 300 emails a day |
+
+<Figure
+  title="Where the two hours go"
+  subtitle="Approximate hands-on minutes per step, from our own setups. Waiting for DNS and registries is not work, so it is shown as a note."
+  note="About 125 minutes of real work. Most of step 7 is writing the first campaign, not configuring anything."
+  wide
+>
+  <SetupTime />
+</Figure>
+
+## Step 1. Turn on DNSSEC
+
+DNSSEC signs your DNS answers, so nobody can hand a mail server a forged MX or DKIM record for your domain. It is the foundation the other four records stand on, and it costs nothing. It happens in two places: one switch in Cloudflare, and one record at the company that sold you the domain.
+
+### In Cloudflare: one switch
+
+1. Open your domain, go to **DNS → Settings** and select **Enable DNSSEC**.
+2. The dialog shows the DS record: key tag, algorithm, digest type and digest. You can close it and reopen it later from **DS record** on the DNSSEC card.
+3. The card says **Pending** until the registry publishes your DS record. That is the registrar's half.
+
+If the domain is registered with Cloudflare Registrar, or the registrar reads CDS and CDNSKEY records ([RFC 8078](https://www.rfc-editor.org/rfc/rfc8078.html)), the DS record is published for you within a day or two. Our registrar does neither, so we paste it by hand.
+
+### At the registrar: how we did it
+
+Our registrar's control panel runs on WHMCS, the same software many registrars use, so these steps look much the same elsewhere:
+
+1. Sign in to the control panel and go to **Domains → My Domains**, pick the domain, then **DNSSEC Management**.
+2. The page has two sections, **DS records** and **KEY records**. Fill in **only the DS section**: key tag `2371`, algorithm `13`, digest type `2` and the 64-character digest. Leave KEY records empty. Cloudflare gives you a DS record, and the registry builds the chain from that.
+3. If a field asks for the algorithm by name, choose *ECDSA Curve P-256 with SHA-256*. For the digest type, *SHA-256*.
+4. Save. The registry usually publishes the record within a few hours, and Cloudflare's card switches from Pending to Success.
+
+Another registrar we use takes the same four values in the domain's DNSSEC settings. The screen changes from registrar to registrar; the record does not.
+
+<Figure
+  title="DNSSEC: Cloudflare signs, the registry vouches"
+  subtitle="The registrar is only the courier. It carries four values from your Cloudflare dashboard to the registry of your domain ending."
+  note="The digest shown is a placeholder. Cloudflare's key tag is 2371 on every zone; the digest is what makes each DS record unique, because the domain name is part of what gets hashed."
+  wide
+>
+  <DnssecChain />
+</Figure>
+
+**Check the digest before you paste it.** Nobody proofreads 64 hex characters by eye, and a wrong DS record is worse than none: validating resolvers stop answering for your domain. We recompute the record from the key Cloudflare publishes and paste only when the two match. This script asks DNS over HTTPS for the zone's key, computes the key tag ([RFC 4034](https://www.rfc-editor.org/rfc/rfc4034#appendix-B), appendix B) and the SHA-256 digest, and prints the DS line to compare with Cloudflare's dialog:
+
+```python
+# ds_check.py: python3 ds_check.py example.com
+import base64, hashlib, json, struct, sys, urllib.request
+
+name = sys.argv[1]
+
+def doh(qtype):
+    url = f"https://cloudflare-dns.com/dns-query?name={name}&type={qtype}"
+    req = urllib.request.Request(url, headers={"accept": "application/dns-json"})
+    return json.load(urllib.request.urlopen(req)).get("Answer", [])
+
+# The key-signing key (flag 257) that Cloudflare publishes for the zone
+ksk = next(a["data"] for a in doh("DNSKEY") if a["data"].startswith("257 "))
+flags, protocol, algorithm, key = ksk.split(" ", 3)
+rdata = struct.pack("!HBB", int(flags), int(protocol), int(algorithm)) + base64.b64decode(key.replace(" ", ""))
+
+# Key tag: the checksum from RFC 4034, appendix B
+acc = sum(b << 8 if i % 2 == 0 else b for i, b in enumerate(rdata))
+acc += (acc >> 16) & 0xFFFF
+key_tag = acc & 0xFFFF
+
+# Digest type 2: SHA-256 over the domain name in wire format plus the key
+owner = b"".join(bytes([len(label)]) + label.encode() for label in name.lower().rstrip(".").split(".")) + b"\0"
+digest = hashlib.sha256(owner + rdata).hexdigest().upper()
+
+print(f"DS to paste: {key_tag} {algorithm} 2 {digest}")
+print("DS at registry:", [a["data"] for a in doh("DS")] or "none yet")
+```
+
+The "wire format" line is where my own first hand calculation went wrong: every label carries its length as a leading byte, and one wrong byte gives a completely different digest. Do not copy a DS record from one domain to another either. The key can be identical across your Cloudflare zones, but the digest never is.
+
+### After the DS record goes live
+
+Check it through DNS over HTTPS, not your local resolver. Your machine's resolver may not validate DNSSEC at all; our first `dig` from a server said DNSSEC was off when it was working fine:
+
+```sh
+# The DS record is at the registry
+curl -s -H 'accept: application/dns-json' \
+  'https://cloudflare-dns.com/dns-query?name=example.com&type=DS'
+
+# Validating resolvers mark the answer as authenticated ("AD": true)
+curl -s 'https://dns.google/resolve?name=example.com&type=A' | grep -o '"AD":[a-z]*'
+```
+
+Expect the resolvers to disagree for a while. Cloudflare's resolver showed `"AD": true` first, while Google kept answering `false`, because it had cached the domain as unsigned, and that cache can last up to a day. Nothing to fix, just wait it out.
+
+Two rules for as long as the DS record is published:
+
+- **Do not change nameservers and do not switch DNSSEC off in Cloudflare.** Either one breaks the chain, and the domain goes dark for every validating resolver.
+- **Undo in the right order.** Delete the DS record at the registrar first, wait about a day for its TTL to expire, and only then turn DNSSEC off or move DNS.
+
+<Callout label="Moving DNS to Cloudflare?" tone="pink">
+Remove the old provider's DS record at the registrar and wait out its TTL **before** you switch nameservers. A stale DS record that does not match Cloudflare's keys makes validating resolvers return SERVFAIL, and your domain disappears for everyone who validates.
+</Callout>
+
+## Step 2. Receive with Cloudflare Email Routing
+
+Email Routing gives you unlimited addresses on your domain and forwards them to any inbox you verify. It only receives; sending is step 4.
+
+1. In the Cloudflare dashboard, go to **Compute → Email Service → Email Routing** (older dashboards: **Email → Email Routing**) and onboard the domain.
+2. Cloudflare adds the records itself: three MX records, an SPF record and a DKIM key for forwarded mail.
+3. Under **Destination addresses**, add the team Gmail and click the verification link Cloudflare sends.
+4. Create routing rules **straight away**: `sales@` → Gmail, `info@` → Gmail. Without a rule, mail to an address is rejected with "Address does not exist", and the sender does not retry.
+
+```txt
+MX   example.com                  route1.mx.cloudflare.net   (priority set by Cloudflare)
+MX   example.com                  route2.mx.cloudflare.net
+MX   example.com                  route3.mx.cloudflare.net
+TXT  example.com                  "v=spf1 include:_spf.mx.cloudflare.net ~all"
+TXT  cf2024-1._domainkey          "v=DKIM1; h=sha256; k=rsa; p=…"
+```
+
+Forwarding normally breaks SPF, because the message now arrives from Cloudflare's servers, not the sender's. Cloudflare handles that with sender rewriting (SRS) and an [ARC](https://arc-spec.org) seal that preserves the original authentication results, so Gmail keeps trusting forwarded mail.
+
+The free limits are generous: 200 routing rules per domain and 200 destination addresses per account. I leave the catch-all off. It mostly catches spam sent to addresses that never existed.
+
+## Step 3. Authenticate your domain in Brevo
+
+This is the step that makes your mail trustworthy. Brevo needs to prove it may send for your domain, and receivers need a key to verify its signature.
+
+1. In Brevo, go to **Senders, domains and dedicated IPs → Domains → Add a domain**.
+2. Choose automatic setup if Brevo offers it for Cloudflare. It writes the records for you. Otherwise copy them by hand:
+
+| Type | Name | Value |
+| --- | --- | --- |
+| TXT | `@` | `brevo-code:<your code>` |
+| CNAME | `brevo1._domainkey` | `b1.<your-domain-slug>.dkim.brevo.com` |
+| CNAME | `brevo2._domainkey` | `b2.<your-domain-slug>.dkim.brevo.com` |
+| TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com` |
+
+3. Set both DKIM CNAMEs to **DNS only** (the grey cloud). A proxied CNAME returns Cloudflare's addresses instead of Brevo's key, and authentication fails. This is the most common Brevo and Cloudflare mistake.
+4. Merge SPF into **one** record. Two `v=spf1` records are a permanent error, and receivers then ignore SPF entirely:
+
+```txt
+TXT  example.com  "v=spf1 include:_spf.mx.cloudflare.net include:spf.brevo.com ~all"
+```
+
+5. Under **Senders**, add `sales@example.com` and `info@example.com`. Brevo emails each address a confirmation code, which arrives through Email Routing in the Gmail inbox. That loop is also your first proof that receiving works.
+
+In the DNS editor, type the TXT value without quotes. The quotes you see in `dig` output are how DNS displays text, not part of the value.
+
+<Callout label="'SPF aligned 0%' is not a bug" tone="green">
+Your first DMARC reports through Brevo will likely show DMARC pass 100%, DKIM aligned 100% and **SPF aligned 0%**. It looks broken. It is not. Brevo sends with a return path on its own domain, so SPF passes for Brevo's domain, not yours, and does not align. DMARC needs only one aligned mechanism, and DKIM provides it on every message. A custom return path in Brevo would align SPF too, but it is optional.
+</Callout>
+
+## Step 4. Send from Gmail as sales@, through Brevo
+
+The team works in Gmail, but customers should see `sales@example.com` and every reply must pass DMARC. Gmail's "Send mail as" with an external SMTP server does both.
+
+**In Brevo**, open **SMTP & API → SMTP**, generate an SMTP key and name it after its use, for example "Gmail sales@". Note the SMTP login shown on that page. It looks like `<id>@smtp-brevo.com`, not your account email. Ours is <Redacted>classified, obviously</Redacted>.
+
+**In Gmail**, open **Settings → See all settings → Accounts and Import → Send mail as → Add another email address**:
+
+1. Name: how customers should see you, for example "Example Sales". Address: `sales@example.com`. Keep **Treat as an alias** checked, because the address is yours and its mail lands in this inbox.
+2. SMTP server `smtp-relay.brevo.com`, port `587`, username: the Brevo SMTP login, password: the SMTP key, **TLS** selected.
+3. Gmail sends a confirmation code to `sales@`. It comes back through Email Routing into the same inbox. Paste it, done.
+4. Make `sales@` the **default** address and choose **Reply from the same address the message was sent to**.
+
+<Callout label="The failure that taught me this" tone="pink">
+After weeks of clean DMARC reports, one message failed: sent from Google's own servers, From our domain, and Outlook put it in spam. Somebody had replied through an alias that skipped the relay. Earlier, replies from our CRM had failed the same way, sent through Gmail's SMTP instead of the company relay, until we routed them through Brevo. **Every path that sends as your domain must go through the relay.** Gmail aliases, CRM replies, scripts and the website's contact form included.
+</Callout>
+
+One more thing to plan for: mail that Gmail sends through Brevo counts toward Brevo's daily limit. A busy sales team can pass 300 emails a day on its own, and then the Starter plan is the cheaper fix.
+
+## Step 5. Signatures that render everywhere
+
+A signature is a small brand asset, and it is also where most HTML breaks. Keep it boring:
+
+- **One signature per address.** In **Settings → General → Signature**, create it, then set **For new emails use** and **On reply/forward use** for `sales@` and for the Gmail address itself.
+- **Link the logo, do not upload it.** Insert the image by URL from your own site, for example `https://example.com/icon-192.png`. Uploaded or pasted images travel as inline attachments, and some clients show them as files.
+- **Text first.** Name, role, phone, website, one logo. No tracking pixels, no banner images, nothing that needs a click to load. Gmail allows up to 10,000 characters, so the limit is taste, not space.
+- **Match the transactional mail.** Brevo's templates for confirmations and thank-you emails use the same logo, colours, policy links and unsubscribe footer, so a customer sees one brand whichever path a message took.
+
+## Step 6. Climb the DMARC ladder
+
+DMARC tells receivers what to do when a message fails SPF and DKIM alignment, and it sends you reports about everyone who sends as your domain. The trick is to climb slowly: watch first, enforce later.
+
+1. **`p=none` with reports.** Send reports to Brevo (`rua@dmarc.brevo.com`) and to Cloudflare's free [DMARC Management](https://developers.cloudflare.com/dmarc-management/) (**Email → DMARC Management**), which turns the XML reports into a readable dashboard. Watch for a week or two.
+2. **`p=quarantine; pct=25`.** Failing mail goes to spam, but only a quarter of it. If an unknown sender exists, it gets hurt a little, not completely.
+3. **`p=quarantine`** at 100%, once the reports stay clean for a week.
+4. **`p=reject`**, once you understand every remaining failure.
+
+<Figure
+  title="The DMARC ladder, week by week"
+  subtitle="A typical climb from watching to rejecting. Each step waits for clean reports, and the reports are where forgotten senders turn up."
+  note="A pattern, not a rule. A domain with one sender can climb in a month; one with years of forgotten tools sending as it can take a quarter. pct=25 is the safety net: if you missed a sender, it loses a quarter of its mail, not all of it."
+  wide
+>
+  <DmarcLadder />
+</Figure>
+
+The reports are the real product of this step. Every sender that uses your domain shows up there, including the ones nobody remembers setting up: an old contact form, a CRM, a billing tool, a colleague's phone.
+
+| Stage | Record |
+| --- | --- |
+| Watch | `v=DMARC1; p=none; rua=mailto:<reports>` |
+| Quarantine a quarter | `v=DMARC1; p=quarantine; pct=25; rua=mailto:<reports>` |
+| Quarantine all | `v=DMARC1; p=quarantine; rua=mailto:<reports>` |
+| Reject | `v=DMARC1; p=reject; rua=mailto:<reports>` |
+
+<Callout label="Field note · for interest" tone="violet">
+On our main sales domain the climb took about eight weeks. In the three weeks before the reject decision, about 1,800 messages were reported and five failed: three Brevo messages with a broken DKIM signature on two days that never repeated, one message forwarded by its recipient, and one reply that skipped the relay. No unknown sender used the domain.
+</Callout>
+
+Two traps when you edit the record. The Cloudflare editor wants the value without quotes. And your local resolver can hold the old value for a few minutes, so check the change through DNS over HTTPS before you decide it did not work.
+
+## Step 7. Campaigns and automation in Brevo
+
+Now the part the title promised. With the domain authenticated, Brevo becomes the marketing engine, and the website feeds it.
+
+**Contacts arrive from the website, not from a spreadsheet.** Every form posts to a small API route that creates or updates the contact in Brevo, drops it into a list per service and sets attributes for the service, the page and the form it came from. Six weeks later you can still see which page produced a lead.
+
+**Consent is a separate, optional checkbox.** The required checkbox says "contact me about this enquiry". A second, optional one says "email me offers". Only the second sets the marketing attribute, and only contacts with it receive campaigns. That keeps you on the right side of GDPR, and it keeps your complaint rate low, which matters more to deliverability than any DNS record.
+
+**Unsubscribe in one click.** Brevo adds an unsubscribe link and a `List-Unsubscribe` header. Our own unsubscribe route also blocks the contact in Brevo and revokes the marketing attribute in the CRM, so nobody gets mailed by accident from a second system.
+
+**Campaigns come from `info@`, replies go to `sales@`.** Segments split trade customers from retail. Instead of trusting open rates, which privacy features in mail apps inflate, each campaign link is a personal tracked link. A click tells you who is interested, and that is what sales needs.
+
+**Automations do the repetitive mail.** A thank-you after a purchase goes out from the payment webhook as a transactional email. A welcome series follows a sign-up, and a re-engagement message goes to contacts who have gone quiet. Delivery events come back through Brevo's webhooks, so bounces and blocks show up in the CRM next to the customer, not in a dashboard nobody opens.
+
+If you ever send more than 5,000 messages a day to Gmail addresses, Google's [sender requirements](https://support.google.com/a/answer/81126) become mandatory: SPF, DKIM and DMARC, one-click unsubscribe for marketing mail, and a spam complaint rate under 0.3%. With this setup you already meet all of them, before you need to.
+
+## Test before you trust it
+
+| Check | How | Pass looks like |
+| --- | --- | --- |
+| DNSSEC | DNS over HTTPS query, as in step 1 | `"AD": true` |
+| MX | `dig MX example.com` | `route1`, `route2` and `route3.mx.cloudflare.net` |
+| SPF | `dig TXT example.com` | exactly one `v=spf1` with both includes |
+| DKIM and DMARC | Send to a Gmail address, then **Show original** | SPF, DKIM and DMARC all `PASS`, DKIM domain is yours |
+| The relay | **Show original** on a reply sent from Gmail | Received from Brevo, not only from Google |
+| Content | [mail-tester.com](https://www.mail-tester.com) | 9–10 out of 10 |
+| Signature | Open a reply on a phone, in dark mode | logo loads, no attachment icon |
+
+## What it costs
+
+<Figure
+  title="Monthly cost by team size"
+  subtitle="Google Workspace Business Starter at €6.80 per user a month on an annual plan, against this setup on free tiers and with Brevo's entry paid plan."
+  note="Not a like-for-like comparison: Workspace gives every person a full mailbox, storage and Google Meet. This setup gives a shared inbox, unlimited addresses and a marketing platform. Brevo Starter is priced by send volume (from about $9 a month for 5,000 emails), not by people. Prices before VAT, November 2026."
+  wide
+>
+  <MailCost />
+</Figure>
+
+| Service | What it does here | Per month |
+| --- | --- | --- |
+| Cloudflare DNS, DNSSEC, Email Routing | Receives and forwards, signs DNS | €0 |
+| Gmail | Team inbox, search, mobile apps | €0 |
+| Brevo Free | Relay, contacts, campaigns: 300 emails a day | €0 |
+| Brevo Starter | The same without the daily cap, priced by volume | from ≈ €9 |
+| Domain | | about €1 |
+
+The trade-off is honest: a shared Gmail inbox is not a corporate mailbox per person, and Gmail's free terms are not an enterprise contract. For a sales team of a few people it is more than enough. When it stops being enough, the DNSSEC, Brevo and DMARC work carries over to Workspace unchanged. Only the MX and SPF records change.
+
+## Eight lessons from five years
+
+1. **Split the jobs.** Receive, read and send are different problems with different best tools.
+2. **Never send from a fresh IP.** Rent a reputation from a relay, and keep your domain.
+3. **One SPF record.** Merge the includes and watch the 10-lookup limit.
+4. **DKIM carries DMARC.** Do not panic about SPF alignment through a relay.
+5. **Read the reports before you enforce.** Every DMARC step waits for a clean week.
+6. **Every path goes through the relay.** Aliases, CRM replies, scripts and forms all leave through it.
+7. **Consent first.** A small list that asked to hear from you beats a big one that did not.
+8. **Check DNS through DoH.** Your local resolver is not the internet's.
+
+If you are setting up mail for a business and want a second pair of eyes on your DNS, or a hand with Brevo, Cloudflare or a self-hosted server, my channel is [open](/#contact). The rest of my daily toolkit is in [Tech stack](/#stack).
+
+## Further reading
+
+**Cloudflare:** [DNSSEC](https://developers.cloudflare.com/dns/dnssec/) · [Email Routing domains and records](https://developers.cloudflare.com/email-service/configuration/domains/) · [routing addresses](https://developers.cloudflare.com/email-service/configuration/email-routing-addresses/) · [DMARC Management](https://developers.cloudflare.com/dmarc-management/).
+
+**Brevo:** [authenticate your domain](https://help.brevo.com/hc/en-us/articles/12163873383186) · [domain authentication FAQ](https://help.brevo.com/hc/en-us/articles/17286219877778) · [pricing](https://www.brevo.com/pricing/).
+
+**Google:** [send emails from a different address or alias](https://support.google.com/mail/answer/22370) · [email sender guidelines](https://support.google.com/a/answer/81126) · [Workspace prices](https://support.google.com/a/answer/15400543).
+
+**Standards:** [dmarc.org](https://dmarc.org) · [ARC](https://arc-spec.org) · [RFC 8078 on automatic DS updates](https://www.rfc-editor.org/rfc/rfc8078.html).
+
+**Open source:** [mailcow](https://mailcow.email) · [Mail-in-a-Box](https://mailinabox.email) · [iRedMail](https://www.iredmail.org) · [Mailu](https://mailu.io) · [Stalwart](https://stalw.art) · [Postal](https://docs.postalserver.io) · [listmonk](https://listmonk.app) · [Mautic](https://mautic.org).

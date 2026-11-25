@@ -14,17 +14,20 @@ import Telemetry from "@/components/home/Telemetry.astro";
 import Terminal from "@/components/home/Terminal.astro";
 import Layout from "@/layouts/Layout.astro";
 import { fileIds, publishedPosts } from "@/lib/posts";
+import { personSchema, websiteSchema } from "@/lib/schema";
 
 export const prerender = true;
 
 const all = await publishedPosts();
 const posts = all.slice(0, 3);
 const files = fileIds(all);
+const site = Astro.site ?? Astro.url;
 ---
 
 <Layout
   title="hvidom · Hryhorii Ilin, full-stack developer"
   description="HVIDOM: the declassified file of Hryhorii Victorovich Ilin, full-stack developer and ex-sales director in Dublin. Projects, journey, stack, writing."
+  schema={[personSchema(site), websiteSchema(site)]}
 >
   <Header />
 

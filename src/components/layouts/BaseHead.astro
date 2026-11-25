@@ -2,6 +2,7 @@
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import { SITE_DESCRIPTION, SITE_TITLE } from "@/consts";
+import { type SchemaNode, serializeSchema } from "@/lib/schema";
 import "@/styles/scrollbar.css";
 import "@/styles/global.css";
 
@@ -10,13 +11,17 @@ interface Props {
   description?: string;
   image?: string;
   article?: { publishedTime: Date; modifiedTime?: Date | undefined };
+  /** schema.org nodes for JSON-LD (`lib/schema.ts`) */
+  schema?: SchemaNode[];
 }
 
 const site = Astro.site ?? Astro.url;
 const canonicalURL = new URL(Astro.url.pathname, site);
-const { title, description = SITE_DESCRIPTION, image = "/og.jpg", article } = Astro.props;
+const { title, description = SITE_DESCRIPTION, image = "/og.jpg", article, schema } = Astro.props;
 const imageURL = new URL(image, site);
-const fullTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}`;
+// The " | hvidom" suffix only when it still fits the ~60 characters Google shows in results.
+const suffixed = `${title} | ${SITE_TITLE}`;
+const fullTitle = title.includes(SITE_TITLE) || suffixed.length > 60 ? title : suffixed;
 ---
 
 <meta charset="utf-8" />
@@ -42,6 +47,8 @@ const fullTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}
 </script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/manifest.webmanifest" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL("rss.xml", site)} />
 <meta name="generator" content={Astro.generator} />
@@ -69,5 +76,7 @@ const fullTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={imageURL} />
+
+{schema && schema.length > 0 && <script type="application/ld+json" set:html={serializeSchema(schema)} />}
 
 <ClientRouter />

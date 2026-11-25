@@ -45,6 +45,11 @@ Deploying or pushing is the owner's call: do not run `deploy`, `git push` or cre
 - `src/lib/pixel.ts`: generated pixel-art SVG (deterministic). Lottie files live in `public/animations/`
   and render through `src/components/LottieAnimations.astro` (lazy, still frame with reduced motion).
 - `src/fetch.ts`: advanced routing entry (Hono). Keep Astro's handler order.
+- `src/lib/schema.ts`: JSON-LD (Person and WebSite on the home page, Blog, BlogPosting, BreadcrumbList), passed to
+  `Layout` as `schema` and printed by `BaseHead`.
+- `public/_headers`: security headers, including HSTS and the CSP; `public/_redirects`: 301 for URLs without the
+  trailing slash (Astro appends the `redirects` from `astro.config.mjs` to it). `src/pages/llms.txt.ts` is built from
+  `DOM_TREE` and the published posts.
 - Blog: `src/content/blog/*.mdx`. `draft: true` hides a post from pages, RSS and sitemap. File numbers
   (`fileIds` in `src/lib/posts.ts`) count oldest first, so a new post never renumbers old ones. MDX parts
   live in `src/components/blog/*` (Callout, Figure, StatGrid and inline-SVG charts coloured with Tailwind
@@ -62,6 +67,10 @@ Deploying or pushing is the owner's call: do not run `deploy`, `git push` or cre
 - Text for the site is English. Keep the "Areas of expertise" framing non-commercial (is-a.dev rule).
 - Under Vitest the Cloudflare adapter is skipped (`process.env.VITEST` in `astro.config.mjs`).
 - Prerendered pages ignore response headers; guard with `Astro.isPrerendered`.
+- The CSP in `public/_headers` allows images only from our origin, raw.githubusercontent.com and api.daily.dev. A new
+  external image, script or embed must be added there, or the browser blocks it.
+- Inter is a subset (`src/assets/fonts/InterVariable-subset.woff2`, Latin, punctuation, arrows, a few symbols). If
+  new text uses a character outside it, add the code point in `scripts/subset-inter.sh` and run the script.
 
 ## MCP servers (`.mcp.json` for Claude Code, `.cursor/mcp.json` for Cursor)
 

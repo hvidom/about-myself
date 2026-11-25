@@ -42,7 +42,7 @@ test.describe("home", () => {
 
 	test("the classification banner frames the page, top and bottom", async ({ page }) => {
 		await page.goto("/");
-		await expect(page.getByRole("note", { name: "Classification", exact: true })).toBeVisible();
+		await expect(page.getByRole("region", { name: "Classification", exact: true })).toBeVisible();
 		await expect(
 			page.getByRole("note", { name: "Classification, end of document" }),
 		).toBeAttached();

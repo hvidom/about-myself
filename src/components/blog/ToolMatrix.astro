@@ -1,0 +1,135 @@
+---
+type Level = 2 | 1 | 0;
+type Tone = "cyan" | "violet" | "green";
+
+const columns = ["Mailboxes", "Webmail", "Sending API", "Campaigns", "Automation", "CRM"];
+
+const groups: {
+  name: string;
+  tone: Tone;
+  rows: { name: string; note: string; cells: Level[] }[];
+}[] = [
+  {
+    name: "Self-hosted mail servers",
+    tone: "cyan",
+    rows: [
+      { name: "mailcow", note: "Docker · Postfix, Dovecot", cells: [2, 2, 1, 0, 0, 0] },
+      { name: "Mail-in-a-Box", note: "one box, one script", cells: [2, 2, 1, 0, 0, 0] },
+      { name: "iRedMail", note: "Postfix, Dovecot, Roundcube", cells: [2, 2, 1, 0, 0, 0] },
+      { name: "Mailu", note: "Docker · light", cells: [2, 2, 1, 0, 0, 0] },
+      { name: "Stalwart", note: "one Rust binary · JMAP", cells: [2, 1, 1, 0, 0, 0] },
+    ],
+  },
+  {
+    name: "Self-hosted sending and marketing",
+    tone: "violet",
+    rows: [
+      { name: "Postal", note: "your own sending platform", cells: [0, 0, 2, 0, 0, 0] },
+      { name: "listmonk", note: "newsletters · needs SMTP", cells: [0, 0, 1, 2, 0, 0] },
+      { name: "Mautic", note: "automation · needs SMTP", cells: [0, 0, 1, 2, 2, 1] },
+    ],
+  },
+  {
+    name: "The setup in this post",
+    tone: "green",
+    rows: [
+      { name: "Cloudflare", note: "Email Routing, forward only", cells: [1, 0, 0, 0, 0, 0] },
+      { name: "Gmail", note: "inbox, search, mobile apps", cells: [2, 2, 0, 0, 0, 0] },
+      { name: "Brevo", note: "relay, campaigns, CRM", cells: [0, 0, 2, 2, 2, 2] },
+    ],
+  },
+];
+
+const FILL: Record<Tone, string> = {
+  cyan: "fill-cyan",
+  violet: "fill-violet",
+  green: "fill-green",
+};
+const STROKE: Record<Tone, string> = {
+  cyan: "stroke-cyan",
+  violet: "stroke-violet",
+  green: "stroke-green",
+};
+const WORD: Record<Level, string> = { 2: "built in", 1: "partial or add-on", 0: "no" };
+
+const NAME_W = 252;
+const COL_W = 84;
+const ROW_H = 30;
+const GROUP_H = 30;
+const HEAD = 40;
+const cx = (c: number) => NAME_W + c * COL_W + COL_W / 2;
+
+let cursor = HEAD;
+const layout = groups.map((group) => {
+  const top = cursor;
+  cursor += GROUP_H + group.rows.length * ROW_H + 8;
+  return { ...group, top };
+});
+const height = cursor + 30;
+---
+
+<svg viewBox={`0 0 ${NAME_W + COL_W * columns.length + 8} ${height}`} class="block h-auto w-full min-w-[640px]" role="img" aria-labelledby="matrix-title matrix-desc">
+  <title id="matrix-title">What each email platform covers</title>
+  <desc id="matrix-desc">
+    {groups.map((g) => `${g.name}: ${g.rows.map((r) => `${r.name} — ${r.cells.map((c, i) => `${columns[i]} ${WORD[c]}`).join(", ")}`).join("; ")}`).join(". ")}.
+  </desc>
+
+  {
+    columns.map((col, c) => (
+      <text x={cx(c)} y="24" text-anchor="middle" class="fill-muted-foreground font-mono text-[10px] uppercase">
+        {col}
+      </text>
+    ))
+  }
+  <line x1="0" x2={NAME_W + COL_W * columns.length} y1={HEAD - 6} y2={HEAD - 6} class="stroke-border" stroke-width="1" />
+
+  {
+    layout.map((group) => (
+      <g>
+        <text x="4" y={group.top + 20} class="fill-foreground font-mono text-[10.5px] font-semibold tracking-[0.16em] uppercase">
+          {group.name}
+        </text>
+        {group.rows.map((row, r) => {
+          const y = group.top + GROUP_H + r * ROW_H;
+          const mid = y + ROW_H / 2;
+          return (
+            <g>
+              {r % 2 === 0 && <rect x="0" y={y} width={NAME_W + COL_W * columns.length} height={ROW_H} rx="6" class="fill-muted/40" />}
+              <text x="12" y={mid + 4} class="fill-foreground text-[12.5px] font-semibold">
+                {row.name}
+                <tspan class="fill-muted-foreground text-[11px] font-normal"> {row.note}</tspan>
+              </text>
+              {row.cells.map((level, c) =>
+                level === 2 ? (
+                  <circle cx={cx(c)} cy={mid} r="6.5" class={FILL[group.tone]}>
+                    <title>{`${row.name} · ${columns[c]}: ${WORD[level]}`}</title>
+                  </circle>
+                ) : level === 1 ? (
+                  <g>
+                    <circle cx={cx(c)} cy={mid} r="5.5" class:list={["fill-none", STROKE[group.tone]]} stroke-width="2" />
+                    <path d={`M${cx(c)} ${mid - 5.5}A5.5 5.5 0 0 0 ${cx(c)} ${mid + 5.5}Z`} class={FILL[group.tone]} />
+                    <circle cx={cx(c)} cy={mid} r="11" class="fill-transparent">
+                      <title>{`${row.name} · ${columns[c]}: ${WORD[level]}`}</title>
+                    </circle>
+                  </g>
+                ) : (
+                  <line x1={cx(c) - 4} x2={cx(c) + 4} y1={mid} y2={mid} class="stroke-muted-foreground/40" stroke-width="1.5" stroke-linecap="round" />
+                ),
+              )}
+            </g>
+          );
+        })}
+      </g>
+    ))
+  }
+
+  <g transform={`translate(4 ${height - 12})`} class="font-mono text-[10.5px]">
+    <circle cx="6" cy="-4" r="5.5" class="fill-muted-foreground" />
+    <text x="18" y="0" class="fill-muted-foreground">built in</text>
+    <circle cx="100" cy="-4" r="4.5" class="fill-none stroke-muted-foreground" stroke-width="2" />
+    <path d="M100 -8.5A4.5 4.5 0 0 0 100 0.5Z" class="fill-muted-foreground" />
+    <text x="112" y="0" class="fill-muted-foreground">partial or add-on</text>
+    <line x1="252" x2="260" y1="-4" y2="-4" class="stroke-muted-foreground/60" stroke-width="1.5" stroke-linecap="round" />
+    <text x="268" y="0" class="fill-muted-foreground">not its job</text>
+  </g>
+</svg>

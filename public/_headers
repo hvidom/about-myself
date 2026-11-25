@@ -2,4 +2,13 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), browsing-topics=()
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://raw.githubusercontent.com https://api.daily.dev; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+
+# Mirrors of hvidom.is-a.dev: the Worker's own URL and the Pages proxy (which forwards the original host).
+https://about-myself.devopsick.workers.dev/*
+  X-Robots-Tag: noindex
+
+https://hvidom.pages.dev/*
+  X-Robots-Tag: noindex

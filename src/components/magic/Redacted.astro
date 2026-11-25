@@ -30,6 +30,13 @@ const { delay = 0 } = Astro.props;
     background-size: 0% 88%;
     color: inherit;
   }
+  /* Paper drops the bar's background, so a not-yet-revealed span would print blank: print it revealed. */
+  @media print {
+    .redacted[data-redacted] {
+      background-image: none;
+      color: inherit;
+    }
+  }
 </style>
 
 <script>

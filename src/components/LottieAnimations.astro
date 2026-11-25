@@ -18,7 +18,12 @@ const { src, class: className, label } = Astro.props;
 </div>
 
 <script>
-  import "@lottiefiles/dotlottie-wc";
+  import { setWasmUrl } from "@lottiefiles/dotlottie-wc";
+  // Serve the player's WASM from our own origin instead of the default cdn.jsdelivr.net.
+  // Keep @lottiefiles/dotlottie-web pinned to the version dotlottie-wc depends on.
+  import wasmUrl from "@lottiefiles/dotlottie-web/dotlottie-player.wasm?url";
+
+  setWasmUrl(wasmUrl);
 
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
   const observer = new IntersectionObserver(

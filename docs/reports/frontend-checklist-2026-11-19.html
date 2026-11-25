@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Аудит hvidom.is-a.dev</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f8f84'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11.5' stroke='white' stroke-width='3.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #f6f5f2;
+  --surface: #ffffff;
+  --surface-2: #f0eee9;
+  --text: #1d1c1a;
+  --muted: #6b6862;
+  --border: #e2dfd8;
+  --accent: #0f8f84;
+  --ok: #1f8a4c;
+  --ok-soft: #e0f3e8;
+  --fail: #c62f1a;
+  --fail-soft: #fde4df;
+  --warn: #a86400;
+  --warn-soft: #fdf0d9;
+  --manual: #3d6fb6;
+  --manual-soft: #e2ecfa;
+  --na: #8a867e;
+  --na-soft: #efede8;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgb(0 0 0 / .04), 0 4px 16px rgb(0 0 0 / .04);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141412; --surface: #1c1b19; --surface-2: #252421; --text: #ecebe7; --muted: #a29e96; --border: #33312d;
+    --accent: #3dd6c6; --ok: #4cc583; --ok-soft: #173426; --fail: #ff7a63; --fail-soft: #3b1d17;
+    --warn: #f0a93a; --warn-soft: #382a14; --manual: #7fa9ee; --manual-soft: #1b2638; --na: #8a867e; --na-soft: #262522;
+    --shadow: none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141412; --surface: #1c1b19; --surface-2: #252421; --text: #ecebe7; --muted: #a29e96; --border: #33312d;
+  --accent: #3dd6c6; --ok: #4cc583; --ok-soft: #173426; --fail: #ff7a63; --fail-soft: #3b1d17;
+  --warn: #f0a93a; --warn-soft: #382a14; --manual: #7fa9ee; --manual-soft: #1b2638; --na: #8a867e; --na-soft: #262522;
+  --shadow: none; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; }
+code { font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 32px 16px 96px; }
+h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; letter-spacing: -.02em; text-wrap: balance; }
+h2 { font-size: 21px; letter-spacing: -.01em; margin: 40px 0 12px; }
+.sub { margin: 6px 0 0; color: var(--muted); max-width: 70ch; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+.title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 7px 12px; cursor: pointer; font-size: 13px; white-space: nowrap; }
+.btn:hover { border-color: var(--muted); }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.kpi { padding: 14px 16px; }
+.kpi b { display: block; font-size: 26px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.kpi small { color: var(--muted); font-size: 13px; }
+.kpi.ok b { color: var(--ok); } .kpi.fail b { color: var(--fail); } .kpi.warn b { color: var(--warn); } .kpi.manual b { color: var(--manual); } .kpi.na b { color: var(--na); }
+.stack { height: 10px; display: flex; border-radius: 6px; overflow: hidden; margin: 14px 0 6px; background: var(--surface-2); }
+.stack i { display: block; height: 100%; }
+.verdict { padding: 18px 20px; margin-top: 12px; }
+.verdict p { margin: 0 0 8px; } .verdict p:last-child { margin: 0; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+.tscroll { overflow-x: auto; }
+.num { text-align: right; white-space: nowrap; }
+.good { color: var(--ok); font-weight: 600; } .mid { color: var(--warn); font-weight: 600; }
+
+ol.fixes { margin: 0; padding: 0; list-style: none; counter-reset: f; display: grid; gap: 8px; }
+ol.fixes li { counter-increment: f; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 12px 16px; }
+ol.fixes li::before { content: counter(f); font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+ol.fixes .t { font-weight: 600; }
+ol.fixes .d { color: var(--muted); font-size: 14px; margin-top: 2px; }
+
+.toolbar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 0; background: var(--bg); border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.chip { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
+.chip[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+section.cat { margin-bottom: 24px; scroll-margin-top: 64px; }
+.cat-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.cat-head h3 { margin: 0; font-size: 18px; }
+.cat-head .mini { display: flex; gap: 8px; font-size: 13px; font-variant-numeric: tabular-nums; }
+ul.items { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+li.item { display: grid; grid-template-columns: 104px 1fr auto; gap: 12px; padding: 10px 12px; align-items: start; }
+.st { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-align: center; white-space: nowrap; }
+.st.ok { color: var(--ok); background: var(--ok-soft); } .st.fail { color: var(--fail); background: var(--fail-soft); }
+.st.warn { color: var(--warn); background: var(--warn-soft); } .st.manual { color: var(--manual); background: var(--manual-soft); }
+.st.na { color: var(--na); background: var(--na-soft); }
+.it .t { font-weight: 550; }
+.it .e { color: var(--muted); font-size: 13.5px; margin-top: 2px; }
+.pri { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.hidden { display: none !important; }
+footer { color: var(--muted); font-size: 13px; margin-top: 40px; border-top: 1px solid var(--border); padding-top: 16px; }
+footer p { margin: 0 0 6px; }
+@media (max-width: 600px) {
+  li.item { grid-template-columns: 1fr; gap: 6px; }
+  li.item .st { justify-self: start; }
+  .pri { order: -1; }
+}
+@media print {
+  .toolbar, .actions { display: none !important; }
+  li.item, ol.fixes li { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="title-row">
+    <div>
+      <h1>Аудит hvidom.is-a.dev по фронтенд-чеклистам</h1>
+      <p class="sub">19 ноября 2026 · боевой сайт https://hvidom.is-a.dev (все 3 страницы карты сайта + 404) и репозиторий about-myself на коммите 2832d94. Регламент Content Factory, 138 пунктов в 15 разделах, плюс frontendchecklist.io, Lighthouse, W3C, axe.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="json" type="button">JSON для чеклиста</button>
+      <button class="btn" id="theme" type="button">Тема</button>
+      <button class="btn" type="button" onclick="window.print()">Печать</button>
+    </div>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="stack" id="stack" aria-hidden="true"></div>
+  <div class="card verdict">
+    <p><b>Итог.</b> База крепкая. Lighthouse даёт 100 по доступности, практикам и SEO на всех страницах, скорость 92–100. Валидатор W3C не нашёл ни одной ошибки, горизонтального скролла нет ни на одной ширине от 320 до 1280, в консоли чисто, фокус виден, reduced motion соблюдается. На чистом HEAD проходят astro check (0/0/0), Biome, Vitest (68/68) и e2e (67 пройдено, 1 пропущен).</p>
+    <p><b>Слабые места.</b> Шрифт Inter целиком весит 353 КБ: это 38 % веса главной, и он грузится через preload на каждой странице. На <code>/blog</code> обложка-LCP загружается лениво, поэтому LCP 3,3 с на мобильном. Разметки JSON-LD нет вообще. Не хватает HSTS и CSP, плеер Lottie тянет WASM с jsDelivr. В зависимостях 87 уязвимостей, почти все в CLI shadcn. Есть мелкие огрехи доступности: таблицы, точки слайдов, aria-label в дереве Decoder.</p>
+    <p><b>Перед коммитом.</b> В 16:50 сборка рабочей копии падала: соседняя сессия удалила 6 картинок из шаблона Astro, а 5 черновых постов на них ещё ссылались. К 17:05 она удалила и сами посты и сейчас пишет новый пост про email-маркетинг. Закоммиченный код собирается. После её работы нужно перезапустить <code>bun run verify</code>.</p>
+  </div>
+
+  <h2>Исправлено 25 ноября: в рабочей копии, не выложено</h2>
+  <div class="card tscroll">
+    <table>
+      <thead><tr><th>Что было</th><th>Что сделано</th><th>Проверка</th></tr></thead>
+      <tbody>
+        <tr><td>Inter целиком, 353 КБ</td><td>Подмножество InterVariable-subset.woff2 на 86 КБ: обе оси wght/opsz, латиница, пунктуация, стрелки, € ≈ ≥ ★ ✓. Пересборка: <code>scripts/subset-inter.sh</code></td><td>Шрифт загружается на 85,5 КБ, все символы сайта на месте</td></tr>
+        <tr><td>LCP на /blog 3,3 с</td><td>У первой обложки <code>priority</code> (eager + fetchpriority=high), у героя поста тоже. widths и sizes у обложек, FeaturedWork и значков</td><td>Локальный Lighthouse mobile: /blog 98, LCP 2,5 с; главная и пост 100</td></tr>
+        <tr><td>Нет JSON-LD</td><td><code>src/lib/schema.ts</code>: Person и WebSite на главной, Blog и BreadcrumbList на /blog/, BlogPosting и BreadcrumbList на постах</td><td>4 юнит-теста, разметка в собранном HTML</td></tr>
+        <tr><td>Нет HSTS и CSP</td><td>HSTS на год; CSP: свои ресурсы плюс картинки GitHub и daily.dev, wasm-unsafe-eval для Lottie, frame-ancestors none, object-src none. Из Permissions-Policy убран browsing-topics: новый Chrome на него ругается в консоли</td><td>0 нарушений CSP в консоли: 4 страницы × 3 ширины</td></tr>
+        <tr><td>WASM Lottie с jsDelivr</td><td>Файл <code>/_astro/dotlottie-player.*.wasm</code> со своего домена, dotlottie-web закреплён на 0.81.0</td><td>Запросов на cdn.jsdelivr.net нет</td></tr>
+        <tr><td>87 уязвимостей</td><td>shadcn переехал в devDependencies, bun update в пределах диапазонов: astro 7.4.13, @astrojs/cloudflare 14.4.9, hono 4.13.22, Playwright 1.65</td><td>bun audit: 9 (4 high, 5 moderate), все в инструментах (undici и minimatch через wrangler)</td></tr>
+        <tr><td>Доступность</td><td>Таблицы: role=region, tabindex=0, подпись из шапки таблицы. Точки Merlin: зона нажатия 24×24. Decoder: имя ссылки начинается с видимого тега. Верхний баннер — именованный region. Callout — div role=note (API label/tone прежний). Holopin: ссылка-блок</td><td>axe: 0 нарушений в обеих темах, desktop и mobile, 5 страниц + 404</td></tr>
+        <tr><td>/blog → 307</td><td><code>public/_redirects</code>: /blog и /blog/:slug без слеша отдают 301</td><td>wrangler dev: 301 без петли, /about → /#whoami не сломан</td></tr>
+        <tr><td>Title поста 74 символа</td><td>Суффикс « | hvidom» ставится, только если title укладывается в 60 символов. Title /blog/: «Declassified files: field reports | hvidom», description 148</td><td>Description постов не трогал: схема контента ограничивает их 120 символами, это осознанное правило проекта</td></tr>
+        <tr><td>Печать, иконки, llms.txt, зеркала, Holopin</td><td>Печатная палитра (тёмный текст, redacted-фрагменты раскрыты, без шапки и звёзд). apple-touch-icon, manifest и новый фавикон «~/» вместо логотипа Astro из шаблона. <code>/llms.txt</code>. X-Robots-Tag: noindex для workers.dev и pages.dev. Holopin — локальная картинка вместо PNG на 445 КБ</td><td>PDF поста читается целиком, файлы отдаются 200</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="sub">Осталось вне правок: privacy-заметка (решение по тексту за владельцем), мониторинг аптайма и ошибок JS (внешние сервисы), SEO-страховка check-seo в сборке, вычитка текстов, реальные устройства. Выкладка — <code>bun run deploy</code>, по решению владельца. После выкладки стоит повторить аудит на живом сайте.</p>
+
+  <h2>Что исправить в первую очередь</h2>
+  <ol class="fixes" id="fixes"></ol>
+
+  <h2>Скорость: Lighthouse 13.6, локально</h2>
+  <div class="card tscroll">
+    <table>
+      <thead><tr><th>Страница</th><th class="num">Perf</th><th class="num">A11y</th><th class="num">BP</th><th class="num">SEO</th><th class="num">LCP</th><th class="num">CLS</th><th class="num">TBT</th><th class="num">Вес</th></tr></thead>
+      <tbody id="lh"></tbody>
+    </table>
+  </div>
+  <p class="sub">Полевых данных Core Web Vitals нет: при таком трафике у CrUX их скорее всего нет, а PageSpeed API без ключа упирается в квоту, поэтому Lighthouse запускался локально. DOM главной: 3018 узлов, из них около 1200 <code>&lt;span&gt;</code> подсветки кода в Merlin. Основной поток на мобильном работает 3,4 с, из них около 1 с уходит на стили и раскладку.</p>
+
+  <h2>Все пункты</h2>
+  <div class="toolbar" role="group" aria-label="Фильтр по статусу">
+    <button class="chip" type="button" data-f="all" aria-pressed="true">Все</button>
+    <button class="chip" type="button" data-f="fail" aria-pressed="false">Не пройдено</button>
+    <button class="chip" type="button" data-f="warn" aria-pressed="false">Замечания</button>
+    <button class="chip" type="button" data-f="manual" aria-pressed="false">Проверить вручную</button>
+    <button class="chip" type="button" data-f="ok" aria-pressed="false">Пройдено</button>
+  </div>
+  <div id="list"></div>
+
+  <footer>
+    <p><b>Как проверялось.</b> Автоправила Content Factory (<code>site-audit-rules.ts</code>, те же, что в ежедневной проверке radioking.ie, без блоков про ботов Cloudflare, Dependabot и выкладку, которые завязаны на radioking) по всем URL карты сайта. frontendchecklist.io <code>audit_url</code> по 3 страницам, 367 проверок; его эвристики сверены с HTML вручную, ложные отброшены: «img без alt» (там пустой alt у декоративных обложек), «non-HTTPS URL» (это xmlns у SVG), «дубли id», «19 title» (это <code>&lt;title&gt;</code> внутри SVG графиков). Lighthouse mobile и desktop по 3 страницам, валидатор W3C Nu. Playwright: ширины 320/375/768/1280, 60 нажатий Tab, режим без JS, reduced motion, axe-core 4.10 в обеих темах неба на десктопе и мобильном, печать в PDF. curl, dig и openssl: заголовки, редиректы, зеркала workers.dev и pages.dev, DNS, TLS. Плюс <code>bun audit</code>, <code>bun outdated</code>, <code>bun run verify</code> и сборка с e2e на чистой копии HEAD. Проверки web-check.xyz (заголовки, TLS, DNS, редиректы, HSTS, security.txt) закрыты теми же curl, dig и openssl.</p>
+    <p><b>Не проверялось</b> (статус «вручную»): реальные iOS и Android, браузеры кроме Chromium, скринридеры, Search Console и Bing (нет доступа), полевые CWV, вычитка текста глазами, лицензии медиа.</p>
+    <p>Кнопка «JSON для чеклиста» скачивает файл для «Импорт» в шаблоне <code>frontend-checklist.html</code>: пройденные пункты отмечаются галочкой, N/A переносится, находки попадают в заметки.</p>
+  </footer>
+</div>
+<script>
+const STATUS = { fail: "Не пройдено", warn: "Замечание", manual: "Вручную", ok: "Пройдено", na: "N/A" };
+const PRI = { high: "High", med: "Medium", low: "Low" };
+const LH = [
+  ["Главная /, mobile", 98, 100, 100, 100, "1,4 с", "0", "147 мс", "930 КБ"],
+  ["Главная /, desktop", 99, 100, 100, 100, "0,8 с", "0", "6 мс", "932 КБ"],
+  ["Архив /blog/, mobile", 92, 100, 100, 100, "3,3 с", "0", "38 мс", "505 КБ"],
+  ["Архив /blog/, desktop", 92, 100, 100, 100, "1,8 с", "0", "0 мс", "915 КБ"],
+  ["Пост /blog/radio-king-platform-brief/, mobile", 100, 100, 100, 100, "1,1 с", "0", "12 мс", "530 КБ"],
+  ["Пост, desktop", 100, 100, 100, 100, "0,6 с", "0", "0 мс", "530 КБ"],
+];
+const FIXES = [
+  ["Перезапустить verify после работы соседней сессии", "В 16:50 соседняя сессия about-myself удалила src/assets/blog-placeholder-*.jpg, а 5 шаблонных постов (draft: true, lorem ipsum) на них ещё ссылались: astro build падал с ImageNotFound, e2e не стартовали. К 17:05 посты тоже удалены, а в работе новый пост email-marketing-automation-playbook. На HEAD 2832d94 сборка зелёная. Перед коммитом прогнать bun run verify, а новый пост сверить с этим отчётом: title до 60 символов, description 120–160, fetchpriority у обложки, JSON-LD."],
+  ["Урезать Inter до нужных алфавитов", "src/assets/fonts/InterVariable.woff2 весит 353 КБ: полный файл без unicode-range, preload на каждой странице, 38 % веса главной. Лучше взять Inter через fontsource() (variable, latin + cyrillic с unicode-range, как уже сделано для Days One и JetBrains Mono) или прогнать файл через pyftsubset. Ожидаемая экономия около 300 КБ на первом визите."],
+  ["Поднять LCP на /blog и отдавать картинки по размеру экрана", "У обложки первой карточки в src/pages/blog/index.astro стоит loading=lazy и нет fetchpriority. Это LCP-элемент, отсюда LCP 3,3 с на мобильном и Perf 92. Первой карточке нужны loading=\"eager\" и fetchpriority=\"high\", герою поста в BlogPost.astro тоже fetchpriority=\"high\". Ещё <Image> без widths и sizes отдаёт телефону картинку 960 и 1200 px (image-delivery в Lighthouse): нужно добавить widths=[480, 720, 960, 1200] и sizes."],
+  ["Добавить разметку JSON-LD", "Сейчас её нет ни на одной странице, в src нет ни одного application/ld+json. На главную: Person (name, alternateName hvidom, jobTitle, address Dublin, sameAs GitHub/LinkedIn/daily.dev, url) и WebSite. На пост: BlogPosting (headline, datePublished, author, image, mainEntityOfPage) и BreadcrumbList. Для личного сайта это главный способ, чтобы Google и AI-поиск связали имя с профилями."],
+  ["HSTS и CSP", "В public/_headers уже стоят nosniff, X-Frame-Options, Referrer-Policy и Permissions-Policy. Добавить Strict-Transport-Security: max-age=31536000 (без preload: домен is-a.dev не наш). CSP можно собрать через security.csp в Astro 7 (хеши для 14 inline-скриптов, включая тему неба до отрисовки) или руками в _headers; сначала в Report-Only."],
+  ["WASM плеера Lottie со своего домена", "@lottiefiles/dotlottie-wc на каждом визите главной грузит dotlottie-player.wasm с cdn.jsdelivr.net: IP посетителя уходит jsDelivr, сайт зависит от чужого CDN, в CSP появляется лишний источник. Положить wasm в public/ и вызвать setWasmUrl. Заодно Lighthouse видит 27 КБ неиспользуемого кода в этом бандле (80 %)."],
+  ["Доступность: четыре точечные правки", "1) Таблицы в посте (.table-wrap из rehype-table-wrap) прокручиваются на мобильном, но не фокусируются, и с клавиатуры их не прокрутить (axe serious): добавить tabindex=\"0\", role=\"region\" и aria-label. 2) Точки слайдов Merlin 16×6 px: увеличить зону нажатия до 24×24 через padding или ::after. 3) В дереве Decoder aria-label «subject: The short version» не содержит видимого текста «<subject name=…>» (WCAG 2.5.3, Lighthouse label-content-name-mismatch, 10 ссылок): либо начинать aria-label с видимого текста, либо перенести пояснение в aria-describedby. 4) Баннер классификации стоит вне landmark (axe region), Callout в посте сделан как <aside> внутри article: баннер обернуть в landmark, Callout перевести на <div role=\"note\">."],
+  ["Зависимости", "bun audit: 87 уязвимостей (1 critical, 32 high). Critical proxy-addr и почти все high приходят из shadcn CLI (express, MCP SDK, undici), а shadcn лежит в dependencies: его место в devDependencies. В рантайме astro 7.3.8 (low XSS в динамических тегах; moderate касается только @astrojs/node), hono 4.13.13 чистый. Обновить до astro 7.4.13 и @astrojs/cloudflare 14.4.9, как на radioking.pl, потом bun run verify."],
+  ["/blog без слеша отвечает 307", "Адрес без слеша уходит на /blog/ временным 307, для SEO нужен 301 или 308. Это поведение Workers assets, как на radioking.ie и .pl: решается правилом в src/fetch.ts. Внутренние ссылки везде уже со слешем."],
+  ["Title и description", "Title поста 74 символа: из-за суффикса « | hvidom» Google его обрежет, для постов суффикс лучше убрать или укоротить. Title /blog/ 27 символов (короче 30). Description /blog/ 118 и поста 113, при норме регламента 120–160."],
+  ["Мелочи", "apple-touch-icon.png 180×180 и web manifest (сейчас 404). llms.txt, как на radioking. Печатные стили для поста: сейчас при печати текст светло-серый, а redacted и зачёркнутые фрагменты пропадают совсем. Holopin отдаёт PNG на 445 КБ ради показа 260×82: лучше локальный webp. На ссылку Holopin нужен display:block, иначе рамка фокуса 0×0. X-Robots-Tag: noindex или 301 для зеркал workers.dev и pages.dev. Короткая privacy-заметка (сторонние ресурсы получают IP). SEO-страховка check-seo в сборке. Мониторинг аптайма."],
+];
+const REPORT = [
+  { id: "head", title: "Head", items: [
+    ["doctype", "high", "ok", "<!doctype html> первой строкой", "Есть на всех страницах и на 404."],
+    ["charset", "high", "ok", "meta charset utf-8 в начале", "В первых байтах документа."],
+    ["viewport", "high", "ok", "meta viewport", "width=device-width, initial-scale=1, зум не запрещён."],
+    ["lang", "high", "ok", "lang на <html>", "lang=\"en\"."],
+    ["title", "high", "warn", "Уникальный title 35–60 символов", "Главная 44 — норма. /blog/ 27 («Declassified files | hvidom»). Пост 74 («Off WordPress, onto an owned stack: the Radio King platform brief | hvidom»), в выдаче обрежется. Дублей нет."],
+    ["description", "high", "warn", "meta description 120–160", "Главная 148 — норма. /blog/ 118, пост 113: чуть короче нормы."],
+    ["canonical", "high", "ok", "canonical на каждой странице", "Совпадает с адресом в карте сайта. Зеркала workers.dev и pages.dev тоже ставят canonical на is-a.dev."],
+    ["favicon", "med", "warn", "favicon.ico, SVG, apple-touch-icon", "favicon.ico и favicon.svg есть, но это логотип Astro из шаблона. /apple-touch-icon.png — 404."],
+    ["og", "med", "ok", "Open Graph", "og:title, description, url, type (article у поста), image 1200×630 (у поста своя обложка), article:published_time. Можно добавить og:site_name, og:locale и og:image:alt."],
+    ["twitter", "low", "ok", "twitter:card", "summary_large_image с картинкой."],
+    ["theme", "low", "warn", "theme-color и web manifest", "theme-color есть, manifest нет."],
+    ["hreflang", "med", "na", "hreflang", "Одна языковая версия."],
+    ["robots-meta", "high", "ok", "На проде нет noindex", "noindex нет, robots.txt: Allow: /."],
+    ["preconnect", "med", "warn", "preload только критичного", "Два preload: Days One (15 КБ) и Inter на 353 КБ. Preload такого файла отнимает канал у критичных ресурсов, см. «Подмножество символов»."],
+  ]},
+  { id: "html", title: "HTML", items: [
+    ["semantic", "med", "ok", "Семантические теги", "header, nav, main, footer, один <main>. Замечания axe про landmark — в разделе «ARIA по делу»."],
+    ["h1", "high", "ok", "Один H1, порядок заголовков", "Ровно один H1 на каждой странице, уровни не пропускаются."],
+    ["validator", "med", "ok", "Валидатор W3C", "W3C Nu: 0 ошибок и 0 предупреждений на главной, /blog/ и посте."],
+    ["links", "high", "ok", "Нет битых ссылок", "Все внутренние ссылки отвечают 200. Внешние картинки (GitHub, daily.dev, Holopin) тоже 200."],
+    ["404", "high", "ok", "Своя 404 с правильным статусом", "Несуществующий адрес отдаёт 404 со своей страницей, axe на ней без замечаний."],
+    ["ext-links", "med", "ok", "target=_blank с noopener", "Нарушений нет."],
+    ["btn-link", "med", "ok", "button/a по назначению", "Нет href=\"#\". Слайды и вкладки сделаны кнопками."],
+    ["tel", "med", "na", "Кликабельные телефоны", "Личный сайт: контакт через mailto и профили."],
+    ["placeholder", "high", "ok", "Нет заглушек", "На живом сайте lorem ipsum нет. Шаблонные посты в репо лежат как черновики, см. «Нет мусора»."],
+    ["forms-markup", "high", "na", "Разметка полей форм", "Форм на сайте нет."],
+    ["dead-code", "low", "warn", "Нет мусора в HTML", "5 шаблонных постов Astro (draft: true, lorem ipsum) в рабочей копии уже удалены соседней сессией, но ещё не закоммичены. Клиентский бандл React (220 КБ) собирается, но ни одна страница его не грузит: директив client: нет."],
+  ]},
+  { id: "fonts", title: "Шрифты", items: [
+    ["woff2", "med", "ok", "WOFF2", "Все три гарнитуры только в woff2."],
+    ["display", "high", "ok", "font-display", "swap во всех @font-face."],
+    ["preload-font", "med", "warn", "preload 1–2 шрифтов", "Два preload с crossorigin, но один из них Inter на 353 КБ."],
+    ["subset", "med", "fail", "Подмножество символов", "Inter Variable: полный файл на 353 КБ без unicode-range, все алфавиты и OpenType-фичи. Это 38 % веса главной. Days One и JetBrains Mono уже разбиты на подмножества через fontsource."],
+    ["fallback", "med", "ok", "Метрики fallback", "Fallback-гарнитуры с size-adjust и ascent/descent-override. CLS 0 на всех страницах."],
+    ["weights", "low", "ok", "Только нужные начертания", "Inter и JetBrains Mono variable, Days One 400."],
+    ["self-host", "med", "ok", "Шрифты со своего домена", "/_astro/fonts/*.woff2, e2e это проверяет."],
+  ]},
+  { id: "css", title: "CSS и вёрстка", items: [
+    ["responsive", "high", "ok", "Вёрстка 320–1920", "Playwright на 320, 375, 768 и 1280 по трём страницам — без поломок."],
+    ["hscroll", "high", "ok", "Нет горизонтального скролла на 320", "scrollWidth равен ширине окна на всех ширинах и страницах."],
+    ["devices", "high", "manual", "Реальные iOS и Android", "Не проверялось, только эмуляция в Chromium."],
+    ["browsers", "med", "manual", "Safari, Firefox, Edge, Samsung", "Не проверялось. В e2e только Chromium (desktop и Pixel 7)."],
+    ["focus", "high", "warn", "Видимый focus-visible", "60 нажатий Tab: у всех элементов видимый контур. Исключение — ссылка Holopin: inline <a> с блочной картинкой даёт рамку 0×0, фокус на ней не виден."],
+    ["motion", "high", "ok", "prefers-reduced-motion", "С reduce на главной 0 бегущих анимаций, Lottie показывает стоп-кадр."],
+    ["ios-zoom", "med", "na", "Шрифт полей ≥ 16 px", "Полей ввода нет."],
+    ["safe-area", "med", "warn", "safe-area для фиксированных панелей", "Кнопка «наверх» стоит fixed right-6 bottom-6 без env(safe-area-inset-*). В горизонтальной ориентации iPhone может уйти под вырез. Мелочь."],
+    ["hover", "med", "ok", "Ничего важного только под hover", "Подсказки в дереве Decoder дублируют подписи, остальное доступно без наведения."],
+    ["minify", "high", "ok", "CSS минифицирован", "Один файл: 91 КБ, по сети 15 КБ в brotli."],
+    ["critical", "med", "ok", "Критичный CSS не блокирует отрисовку", "Блокирует один файл на 15 КБ. Lighthouse оценивает экономию в 110–150 мс на мобильном, трогать необязательно."],
+    ["prefixes", "low", "ok", "Префиксы", "Tailwind 4 / Lightning CSS."],
+    ["dark", "low", "ok", "Тёмная тема", "Две темы неба (blue и black), обе тёмные. axe в обеих темах нарушений контраста не нашёл."],
+    ["print", "low", "warn", "Печатная версия", "Печатных стилей нет. В PDF текст поста светло-серый на белом, а redacted и зачёркнутые фрагменты («TOP SECRET» и т. п.) пропадают совсем."],
+  ]},
+  { id: "images", title: "Картинки", items: [
+    ["formats", "med", "warn", "WebP / AVIF", "Свои картинки идут в WebP через astro:assets. Внешние PNG: Holopin весит 445 КБ при показе 260×82, плюс DevCard daily.dev."],
+    ["srcset", "high", "warn", "srcset + sizes", "srcset нет у 7 из 8 картинок: <Image> без widths отдаёт один размер, и телефон получает обложки 960 и 1200 px. В Lighthouse image-delivery 0,5 на /blog и посте."],
+    ["dimensions", "high", "ok", "width и height", "Есть у всех, CLS 0."],
+    ["lazy", "high", "fail", "lazy ниже экрана, LCP eager", "На /blog обложка первой карточки и есть LCP-элемент, а у неё loading=lazy и нет fetchpriority. LCP на мобильном 3,3 с. Герой поста eager, но тоже без fetchpriority=high."],
+    ["alt", "high", "ok", "alt у картинок", "alt есть везде. У обложек он пустой, они декоративные, заголовок рядом. Значки и дашборд GitHub описаны по существу."],
+    ["compress", "med", "ok", "Сжатие", "Lighthouse не видит заметной экономии на своих картинках. Внешний PNG Holopin — см. «WebP / AVIF»."],
+    ["svg", "low", "ok", "SVG оптимизированы", "Иконки simple-icons инлайн. На главной 86 SVG (92 КБ HTML), часть повторяется (PostgreSQL, Linux по 5 КБ) — можно сделать спрайт <symbol>/<use>."],
+    ["filenames", "med", "ok", "Осмысленные имена файлов", "radioking.webp, radio-king-platform-brief.webp, daily-dev-top-reader-…"],
+  ]},
+  { id: "media", title: "Видео и медиа", items: [
+    ["h264", "high", "na", "Видео в H.264", "Видео нет."],
+    ["autoplay", "med", "na", "muted playsinline + poster", "Видео нет. Lottie сразу показывает стоп-кадр и уважает reduced motion."],
+    ["no-sound", "high", "na", "Нет автозвука", "Звука нет."],
+    ["video-size", "med", "na", "Вес видео до 2–3 МБ", "Видео нет."],
+    ["embeds", "med", "ok", "Тяжёлые встраивания по клику", "iframe нет. Lottie (28 КБ анимации) грузится лениво."],
+    ["captions", "low", "na", "Субтитры", "Видео нет."],
+  ]},
+  { id: "js", title: "JavaScript", items: [
+    ["console", "high", "ok", "Нет ошибок в консоли", "0 ошибок и предупреждений: 3 страницы × 4 ширины, с прокруткой до конца."],
+    ["bundle", "high", "ok", "Минификация, разбиение", "Посетителю уходят ClientRouter 14 КБ, Lottie 187 КБ (35 КБ по сети), Highlighter 11 КБ, prefetch 2 КБ. Всё минифицировано и разбито по компонентам."],
+    ["defer", "med", "ok", "defer / module", "Внешние скрипты подключены модулями. «4 скрипта в head без defer» у frontendchecklist — это inline-скрипт темы неба до отрисовки, так задумано."],
+    ["third-party", "high", "warn", "Сторонние скрипты", "Трекеров нет. Но dotlottie-wc грузит WASM-плеер с cdn.jsdelivr.net на каждом визите главной, а картинки идут с raw.githubusercontent.com, api.daily.dev и holopin.me."],
+    ["unused-libs", "med", "warn", "Нет лишнего JS", "Lighthouse: в бандле Lottie 27 КБ неиспользуемого кода (80 %)."],
+    ["no-js", "med", "ok", "Контент без JS", "Без JS весь текст читается: Redacted, TypingAnimation, пост целиком. Не переключаются только вкладки кода Merlin, видна первая. Для прогрессивного улучшения это нормально."],
+    ["inp", "high", "manual", "INP < 200 мс", "Полевых данных нет. В лаборатории TBT на мобильной главной 147 мс, Max Potential FID 0,55: основной поток 3,4 с из-за DOM в 3018 узлов."],
+    ["monitoring", "med", "warn", "Мониторинг ошибок", "Observability воркера включена, серверные логи есть. Ошибки JS в браузере не собираются. Для личного сайта это низкий приоритет."],
+  ]},
+  { id: "security", title: "Безопасность", items: [
+    ["https", "high", "warn", "HTTPS и HSTS", "HTTPS работает, http переходит на https одним 301. Сертификат Google Trust Services действует до 12.01.2027 и продлевается сам. Заголовка HSTS нет."],
+    ["one-host", "high", "ok", "Один хост одним 301", "http://hvidom.is-a.dev → https одним 301, www не существует."],
+    ["mixed", "high", "ok", "Нет mixed content", "http:// встречается только в xmlns у SVG."],
+    ["headers", "med", "warn", "Заголовки безопасности", "nosniff, X-Frame-Options DENY, Referrer-Policy и Permissions-Policy есть (public/_headers). HSTS и CSP нет."],
+    ["csp", "med", "warn", "Content-Security-Policy", "CSP нет. Учесть 14 inline-скриптов (хеши через security.csp в Astro 7) и пока что cdn.jsdelivr.net для WASM."],
+    ["secrets", "high", "ok", "Нет секретов в бандле", "В dist/client ключей и токенов нет."],
+    ["form-spam", "high", "na", "Защита форм", "Форм нет."],
+    ["deps", "med", "warn", "Зависимости без уязвимостей", "bun audit: 87 (1 critical, 32 high, 47 moderate, 7 low). Critical (proxy-addr) и почти все high — из shadcn CLI (express, MCP SDK, undici), который лежит в dependencies. В рантайме astro 7.3.8: low XSS и moderate только для @astrojs/node, обновить до 7.4.13. hono 4.13.13 чистый."],
+    ["cookies", "med", "ok", "Флаги куки", "Сайт куки не ставит."],
+  ]},
+  { id: "perf", title: "Производительность", items: [
+    ["cwv", "high", "manual", "Core Web Vitals в поле", "Полевых данных нет. В лаборатории CLS 0 везде, LCP mobile: главная 1,4 с, пост 1,1 с, /blog 3,3 с."],
+    ["lighthouse", "med", "ok", "Lighthouse mobile ≥ 90", "Mobile 98 / 92 / 100, desktop 99 / 92 / 100. A11y, BP и SEO 100 на всех страницах."],
+    ["ttfb", "med", "ok", "TTFB < 800 мс", "359 мс, cf-cache-status HIT."],
+    ["cache", "high", "ok", "immutable для ассетов", "/_astro/*: public, max-age=31536000, immutable. HTML: max-age=0, must-revalidate."],
+    ["compression", "high", "ok", "Brotli", "br."],
+    ["cdn", "med", "ok", "CDN, HTTP/2–3", "Cloudflare, HTTP/3."],
+    ["weight", "med", "warn", "Вес в бюджете", "Главная весит 930 КБ, из них Inter 353 КБ. HTML 363 КБ (62 КБ в brotli), DOM 3018 узлов, около 1200 span подсветки кода Merlin. Если рисовать неактивные вкладки Merlin только по клику, DOM и время раскладки сократятся."],
+    ["requests", "low", "ok", "Нет лишних редиректов на ресурсах", "Ресурсы отдаются без редиректов."],
+  ]},
+  { id: "a11y", title: "Доступность", items: [
+    ["keyboard", "high", "ok", "Клавиатура без ловушек", "Ловушек нет. Первый Tab ведёт на «Skip to content», порядок логичный."],
+    ["contrast", "high", "ok", "Контраст", "Lighthouse 100. axe в обеих темах неба нарушений не нашёл. На посте в теме blue 119 узлов поверх градиента axe оценить не смог — глазами выглядят нормально."],
+    ["axe", "high", "warn", "Автоматическая проверка", "serious: scrollable-region-focusable ×2 — таблицы поста на мобильном. moderate: region (баннер классификации вне landmark) на всех страницах, landmark-complementary-is-top-level ×2 (Callout как <aside> внутри article)."],
+    ["modals", "high", "na", "Модалки: фокус, Esc", "Модалок нет."],
+    ["skip", "med", "ok", "Ссылка «к содержимому»", "Есть, первая в порядке Tab."],
+    ["aria", "med", "warn", "ARIA по делу", "Дерево Decoder: aria-label «subject: The short version» не содержит видимого текста «<subject name=\"Hryhorii…\" />» (WCAG 2.5.3, 10 ссылок, Lighthouse label-content-name-mismatch). Callout должен быть <div role=\"note\">, а не <aside>."],
+    ["form-errors", "med", "na", "Ошибки форм озвучиваются", "Форм нет."],
+    ["targets", "med", "warn", "Зоны нажатия", "Точки слайдов Merlin 16×6 и 32×6 px — меньше 24×24 (WCAG 2.5.8). Ссылки футера высотой 16 px проходят только за счёт отступов."],
+    ["zoom", "med", "ok", "Зум 200%", "Зум не запрещён, вёрстка резиновая."],
+    ["color-only", "med", "manual", "Не только цветом", "Глазами не проверялось."],
+    ["sr-test", "med", "manual", "Скринридер", "Не проверялось."],
+  ]},
+  { id: "seo", title: "SEO", items: [
+    ["sitemap", "high", "ok", "sitemap.xml", "sitemap-index → 3 URL, все 200, черновиков нет. Указан в robots.txt."],
+    ["robots", "high", "ok", "robots.txt", "Allow: / и Sitemap."],
+    ["bots", "high", "manual", "Поисковики и AI-боты получают 200", "Зона Cloudflare принадлежит is-a.dev, логов ботов нет. robots.txt пускает всех."],
+    ["gsc", "high", "manual", "Search Console и Bing", "google-site-verification нет ни в DNS, ни в meta. Если сайт подтверждён иначе — ок. TXT рядом с CNAME на is-a.dev не поставить, остаются meta-тег или HTML-файл."],
+    ["redirects", "high", "ok", "301 со старых URL", "/about → /#whoami 301."],
+    ["changes", "med", "na", "Отслеживание изменений", "Снимков сайта нет, 3 страницы."],
+    ["urls", "high", "warn", "Чистые URL, слеш в конце", "/blog → /blog/ отвечает 307 (временный), нужен 301 или 308. Внутренние ссылки везде со слешем."],
+    ["schema", "med", "fail", "Структурированные данные", "JSON-LD нет ни на одной странице. Нужны Person и WebSite на главной, BlogPosting и BreadcrumbList на посте."],
+    ["intent", "med", "ok", "Один интент — одна страница", "Главная — профиль, /blog/ — архив, пост — кейс."],
+    ["internal", "med", "ok", "Внутренняя перелинковка", "Главная ведёт в архив и пост, пост ссылается на разделы главной и внешние источники."],
+    ["thin", "med", "ok", "Нет тонких страниц", "В архиве один пост, но это честный индекс."],
+    ["local", "med", "na", "Google Business Profile, NAP", "Не бизнес."],
+    ["llms", "low", "warn", "Доступность для AI-краулеров", "/llms.txt — 404. На radioking.ie и .pl он генерируется из конфига."],
+  ]},
+  { id: "analytics", title: "Аналитика и приватность", items: [
+    ["consent", "high", "na", "Баннер и Consent Mode", "Трекеров и куки нет, баннер не нужен."],
+    ["policies", "high", "warn", "Privacy и Cookie Policy", "Страницы о приватности нет. Данных сайт не собирает, но jsDelivr, GitHub, daily.dev и Holopin получают IP посетителя. Хватит короткой заметки в футере."],
+    ["ga4", "high", "na", "GA4 без дублей", "Аналитики нет."],
+    ["conversions", "high", "na", "Ключевые события", "Аналитики нет."],
+    ["utm", "med", "na", "UTM до лида", "Лидов нет."],
+    ["capi", "low", "na", "Серверные конверсии", "Нет."],
+    ["staging-tags", "med", "na", "Стейдж без боевой аналитики", "Аналитики нет."],
+  ]},
+  { id: "forms", title: "Формы и конверсия", items: [
+    ["e2e-form", "high", "na", "Форма проверена до конца", "Форм нет, контакт через mailto devopsick@pm.me."],
+    ["success", "high", "na", "Состояние «отправлено»", "Форм нет."],
+    ["errors", "med", "na", "Понятные ошибки", "Форм нет."],
+    ["required", "med", "na", "Минимум обязательных полей", "Форм нет."],
+    ["double-submit", "med", "na", "Защита от двойной отправки", "Форм нет."],
+    ["email-auth", "high", "na", "SPF, DKIM, DMARC", "С hvidom.is-a.dev почта не отправляется. На имени стоит CNAME, поэтому TXT (SPF) рядом не поставить. Если почту подключать, DMARC — отдельной записью _dmarc через PR в is-a.dev."],
+    ["cta", "med", "ok", "CTA на первом экране", "«Explore my journey» и «GitHub profile» в герое."],
+  ]},
+  { id: "content", title: "Контент и юридическое", items: [
+    ["spelling", "med", "manual", "Орфография", "Глазами не вычитывалось. В package.json description «My webiste CV», на сайте это не видно."],
+    ["nap", "high", "ok", "Единые контакты", "devopsick@pm.me, GitHub, LinkedIn, daily.dev — одинаково на всех страницах."],
+    ["legal", "med", "na", "Реквизиты и условия", "Некоммерческий личный сайт."],
+    ["prices", "med", "na", "Актуальные цены", "Цен нет. Суммы в посте отмечены как цифры на август 2026."],
+    ["copyright", "low", "ok", "Год в копирайте", "2026."],
+    ["rights", "med", "manual", "Права на медиа", "Не проверялось: лицензия анимации hacker.lottie (LottieFiles). Обложка поста своя."],
+  ]},
+  { id: "launch", title: "Запуск и эксплуатация", items: [
+    ["env", "high", "ok", "Секреты на проде", "У воркера секретов нет, только KV SESSION."],
+    ["noindex-off", "high", "ok", "Нет noindex на проде", "Нет."],
+    ["seo-guard", "high", "warn", "SEO-страховка в сборке", "scripts/check-seo.ts, как на radioking.ie и .pl, в сборке нет. Часть правил закрывают e2e (canonical, description, абсолютная картинка соцсетей)."],
+    ["old-site", "high", "warn", "Старые URL закрыты", "about-myself.devopsick.workers.dev и hvidom.pages.dev отдают полную копию сайта с canonical на is-a.dev. Google это понимает, но надёжнее X-Robots-Tag: noindex на этих хостах или 301 с workers.dev."],
+    ["rollback", "med", "ok", "План отката", "wrangler rollback к прошлой версии воркера плюс git."],
+    ["uptime", "med", "warn", "Мониторинг доступности", "Нет. Для личного сайта хватит бесплатного пинга."],
+    ["domain", "low", "ok", "Автопродление", "is-a.dev бесплатный, без продления. Сертификат Cloudflare продлевает сам."],
+    ["purge", "low", "na", "Сброс кэша CDN", "HTML с must-revalidate, ассеты с хешами."],
+    ["post-launch", "med", "manual", "Разбор после запуска", "Не делалось."],
+  ]},
+];
+</script>
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+const all = REPORT.flatMap((s) => s.items);
+const count = (st) => all.filter((i) => i[2] === st).length;
+const order = ["fail", "warn", "manual", "ok", "na"];
+const colors = { ok: "var(--ok)", fail: "var(--fail)", warn: "var(--warn)", manual: "var(--manual)", na: "var(--na)" };
+const kpis = [["ok", "пройдено"], ["fail", "не пройдено"], ["warn", "замечаний"], ["manual", "проверить вручную"], ["na", "не относится"]];
+$("#kpis").innerHTML = kpis.map(([k, l]) => `<div class="card kpi ${k}"><b>${count(k)}</b><small>${l}</small></div>`).join("");
+$("#stack").innerHTML = order.map((k) => `<i style="width:${(count(k) / all.length) * 100}%;background:${colors[k]}"></i>`).join("");
+
+$("#fixes").innerHTML = FIXES.map(([t, d]) => `<li class="card"><div><div class="t">${esc(t)}</div><div class="d">${esc(d)}</div></div></li>`).join("");
+$("#lh").innerHTML = LH.map((r) => `<tr>${r.map((c, i) => `<td class="${i ? "num" : ""}">${i > 0 && i < 5 ? `<span class="${c >= 90 ? "good" : "mid"}">${c}</span>` : esc(c)}</td>`).join("")}</tr>`).join("");
+
+$("#list").innerHTML = REPORT.map((sec) => {
+  const mini = order.filter((k) => sec.items.some((i) => i[2] === k)).map((k) => `<span class="st ${k}">${sec.items.filter((i) => i[2] === k).length}</span>`).join("");
+  const items = [...sec.items].sort((a, b) => order.indexOf(a[2]) - order.indexOf(b[2])).map(([id, pri, st, t, e]) => `
+    <li class="card item" data-st="${st}">
+      <span class="st ${st}">${STATUS[st]}</span>
+      <div class="it"><div class="t">${esc(t)}</div><div class="e">${esc(e)}</div></div>
+      <span class="pri">${PRI[pri]}</span>
+    </li>`).join("");
+  return `<section class="cat" data-sec><div class="cat-head"><h3>${esc(sec.title)}</h3><div class="mini">${mini}</div></div><ul class="items">${items}</ul></section>`;
+}).join("");
+
+for (const chip of document.querySelectorAll(".chip")) {
+  chip.addEventListener("click", () => {
+    const f = chip.dataset.f;
+    for (const c of document.querySelectorAll(".chip")) c.setAttribute("aria-pressed", c === chip);
+    for (const li of document.querySelectorAll("li.item")) li.classList.toggle("hidden", f !== "all" && li.dataset.st !== f);
+    for (const s of document.querySelectorAll("section[data-sec]")) s.classList.toggle("hidden", !s.querySelector("li.item:not(.hidden)"));
+  });
+}
+
+$("#json").addEventListener("click", () => {
+  const items = {};
+  for (const sec of REPORT) for (const [id, , st, , e] of sec.items) {
+    const s = st === "ok" ? "done" : st === "na" ? "na" : "";
+    items[sec.id + ":" + id] = { s, note: `[${STATUS[st]}] ${e}` };
+  }
+  const data = { meta: { project: "hvidom", url: "https://hvidom.is-a.dev", owner: "", date: "2026-11-19" }, items, custom: [] };
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+  a.download = "checklist-hvidom-2026-11-19.json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
+const THEME_KEY = "frontend-checklist:theme";
+const applyTheme = (t) => { if (t) document.documentElement.dataset.theme = t; };
+try { applyTheme(localStorage.getItem(THEME_KEY)); } catch {}
+$("#theme").addEventListener("click", () => {
+  const cur = document.documentElement.dataset.theme;
+  const dark = cur ? cur === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const next = dark ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem(THEME_KEY, next); } catch {}
+});
+</script>
+</body>
+</html>

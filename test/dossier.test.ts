@@ -78,9 +78,27 @@ describe("rehype table wrap", () => {
 		const out = tree;
 		const [, wrapped, aside] = out.children ?? [];
 		expect(wrapped?.tagName).toBe("div");
-		expect(wrapped?.properties).toEqual({ className: ["table-wrap"] });
+		expect(wrapped?.properties).toEqual({
+			className: ["table-wrap"],
+			role: "region",
+			tabIndex: 0,
+			ariaLabel: "Table",
+		});
 		expect(wrapped?.children?.[0]?.tagName).toBe("table");
 		expect(aside?.children?.[0]?.tagName).toBe("div");
 		expect(out.children?.[0]?.tagName).toBe("p");
+	});
+
+	test("names the scroll region after the header row", () => {
+		const th = (value: string): Node => ({
+			...el("th"),
+			children: [{ type: "text", value } as Node],
+		});
+		const tree: Node = {
+			type: "root",
+			children: [el("table", [el("thead", [el("tr", [th("Milestone"), th(" Due ")])])])],
+		};
+		rehypeTableWrap()(tree);
+		expect(tree.children?.[0]?.properties).toMatchObject({ ariaLabel: "Table: Milestone, Due" });
 	});
 });

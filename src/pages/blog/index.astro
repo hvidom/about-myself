@@ -10,17 +10,37 @@ import { badgeVariants } from "@/components/ui/badge";
 import { cardVariants } from "@/components/ui/card";
 import Layout from "@/layouts/Layout.astro";
 import { fileIds, publishedPosts } from "@/lib/posts";
+import { blogSchema, breadcrumbSchema } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 
 export const prerender = true;
 
 const posts = await publishedPosts();
 const files = fileIds(posts);
+const site = Astro.site ?? Astro.url;
+const schema = [
+  blogSchema(
+    posts.map((post) => ({
+      title: post.data.title,
+      path: `/blog/${post.id}/`,
+      publishedTime: post.data.pubDate,
+    })),
+    site,
+  ),
+  breadcrumbSchema(
+    [
+      { name: "Home", path: "/" },
+      { name: "Declassified files", path: "/blog/" },
+    ],
+    site,
+  ),
+];
 ---
 
 <Layout
-  title="Declassified files"
-  description="Field reports by Hryhorii Ilin (hvidom) on full-stack development, CRM automation, cloud operations and sales systems."
+  title="Declassified files: field reports"
+  description="Field reports by Hryhorii Ilin (hvidom), a full-stack developer in Dublin: CRM automation, cloud operations, sales systems and the code behind them."
+  schema={schema}
 >
   <Header />
 
@@ -69,6 +89,9 @@ const files = fileIds(posts);
                     <Image
                       width={featured ? 960 : 720}
                       height={featured ? 540 : 360}
+                      widths={featured ? [480, 720, 960] : [360, 560, 720]}
+                      sizes="(min-width: 768px) 560px, calc(100vw - 2.5rem)"
+                      priority={featured}
                       src={post.data.heroImage}
                       alt=""
                       class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

@@ -3,6 +3,7 @@ import BaseHead from "@/components/layouts/BaseHead.astro";
 import Preloader from "@/components/layouts/Preloader.astro";
 import ScrollToTop from "@/components/layouts/ScrollToTop.astro";
 import SpaceBackground from "@/components/layouts/SpaceBackground.astro";
+import type { SchemaNode } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -11,9 +12,10 @@ type Props = {
   image?: string;
   article?: { publishedTime: Date; modifiedTime?: Date | undefined };
   mainClass?: string;
+  schema?: SchemaNode[];
 };
 
-const { title, description, image, article, mainClass } = Astro.props;
+const { title, description, image, article, mainClass, schema } = Astro.props;
 
 if (!Astro.isPrerendered) {
   Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=300, must-revalidate");
@@ -22,7 +24,7 @@ if (!Astro.isPrerendered) {
 
 <html lang="en" class="dark scroll-smooth">
   <head>
-    <BaseHead title={title} description={description} image={image} article={article} />
+    <BaseHead title={title} description={description} image={image} article={article} schema={schema} />
   </head>
   <body
     class="relative min-h-screen overflow-x-hidden bg-background font-sans text-foreground antialiased"

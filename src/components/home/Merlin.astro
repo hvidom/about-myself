@@ -98,15 +98,21 @@ const total = String(MERLIN_SLIDES.length).padStart(2, "0");
       }
     </ol>
 
-    <div class="flex justify-center gap-2 border-t border-border py-3" data-deck-dots>
+    <div class="flex justify-center border-t border-border py-2" data-deck-dots>
       {
         MERLIN_SLIDES.map((slide, i) => (
           <button
             type="button"
-            class="h-1.5 w-4 rounded-full bg-muted-foreground/30 transition-all aria-[current=true]:w-8 aria-[current=true]:bg-turquoise"
+            class="group/dot grid h-6 min-w-6 place-items-center rounded-full px-1"
             aria-label={`Slide ${i + 1}: ${slide.title}`}
             aria-current={i === 0 ? "true" : "false"}
-          />
+          >
+            {/* 24×24 hit area (WCAG 2.5.8) around the thin pill */}
+            <span
+              class="h-1.5 w-4 rounded-full bg-muted-foreground/30 transition-all group-aria-[current=true]/dot:w-8 group-aria-[current=true]/dot:bg-turquoise"
+              aria-hidden="true"
+            />
+          </button>
         ))
       }
     </div>

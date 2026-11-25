@@ -376,7 +376,7 @@ export const TELEMETRY = {
 	shooter:
 		"https://raw.githubusercontent.com/hvidom/hvidom/main/assets/generated/space-shooter.webp",
 	devcard: "https://api.daily.dev/devcards/v2/iyERrjguTozlCs2NE8oo1.png?type=default&r=hv1",
-	holopin: "https://holopin.me/frikadellios8",
+	holopinBoard: "https://holopin.io/@frikadellios8",
 };
 
 export const TONE: Record<Tone, { text: string; bg: string; border: string; dot: string }> = {

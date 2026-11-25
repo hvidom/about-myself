@@ -1,0 +1,126 @@
+---
+type Series = {
+  name: string;
+  short: string;
+  perUser: number;
+  flat: number;
+  stroke: string;
+  fill: string;
+  marker: "circle" | "square" | "diamond";
+};
+
+const series: Series[] = [
+  {
+    name: "Google Workspace Business Starter",
+    short: "Workspace",
+    perUser: 6.8,
+    flat: 0,
+    stroke: "stroke-violet",
+    fill: "fill-violet",
+    marker: "circle",
+  },
+  {
+    name: "This setup with Brevo Starter",
+    short: "Brevo Starter",
+    perUser: 0,
+    flat: 9,
+    stroke: "stroke-gold",
+    fill: "fill-gold",
+    marker: "square",
+  },
+  {
+    name: "This setup on free tiers",
+    short: "Free tiers",
+    perUser: 0,
+    flat: 0,
+    stroke: "stroke-cyan",
+    fill: "fill-cyan",
+    marker: "diamond",
+  },
+];
+const team = [1, 5, 10, 15, 20];
+const cost = (s: Series, n: number) => Math.round((s.flat + s.perUser * n) * 100) / 100;
+const eur = (v: number) => (v === 0 ? "€0" : `€${v % 1 ? v.toFixed(2) : v}`);
+
+const LEFT = 52;
+const RIGHT = 560;
+const TOP = 44;
+const BOTTOM = 236;
+const MAX = 140;
+const ticks = [0, 35, 70, 105, 140];
+const px = (n: number) => LEFT + ((n - 1) / 19) * (RIGHT - LEFT);
+const py = (v: number) => BOTTOM - (v / MAX) * (BOTTOM - TOP);
+const line = (s: Series) =>
+  team.map((n, i) => `${i ? "L" : "M"}${px(n).toFixed(1)} ${py(cost(s, n)).toFixed(1)}`).join(" ");
+const endLabelY = [py(cost(series[0]!, 20)) + 4, py(9) - 4, py(0) + 12];
+---
+
+<svg viewBox="0 0 720 270" class="block h-auto w-full min-w-[580px]" role="img" aria-labelledby="cost-title cost-desc">
+  <title id="cost-title">Monthly email cost by team size</title>
+  <desc id="cost-desc">
+    {series.map((s) => `${s.name}: ${team.map((n) => `${n} people ${eur(cost(s, n))}`).join(", ")}`).join(". ")}. Workspace
+    prices are per user on an annual plan, before VAT.
+  </desc>
+
+  <g class="text-[11.5px]">
+    {
+      series.map((s, i) => {
+        const x = LEFT + [0, 238, 466][i]!;
+        return (
+          <g>
+            {s.marker === "circle" && <circle cx={x + 6} cy="16" r="4.5" class={s.fill} />}
+            {s.marker === "square" && <rect x={x + 1.5} y="11.5" width="9" height="9" rx="1.5" class={s.fill} />}
+            {s.marker === "diamond" && <path d={`M${x + 6} 10.5l5.5 5.5-5.5 5.5-5.5-5.5z`} class={s.fill} />}
+            <text x={x + 18} y="20" class="fill-foreground">
+              {s.name}
+            </text>
+          </g>
+        );
+      })
+    }
+  </g>
+
+  {
+    ticks.map((t) => (
+      <g>
+        <line x1={LEFT} x2={RIGHT} y1={py(t)} y2={py(t)} class="stroke-border" stroke-width="1" />
+        <text x={LEFT - 10} y={py(t) + 4} text-anchor="end" class="fill-muted-foreground font-mono text-[11px] tabular-nums">
+          €{t}
+        </text>
+      </g>
+    ))
+  }
+  {
+    team.map((n) => (
+      <text x={px(n)} y={BOTTOM + 22} text-anchor="middle" class="fill-muted-foreground font-mono text-[11px] tabular-nums">
+        {n === 1 ? "1 person" : n}
+      </text>
+    ))
+  }
+
+  {
+    series.map((s, si) => (
+      <g>
+        <path d={line(s)} class:list={["fill-none", s.stroke]} stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+        {team.map((n) => {
+          const x = px(n);
+          const y = py(cost(s, n));
+          const tip = `${s.short}, ${n} ${n === 1 ? "person" : "people"}: ${eur(cost(s, n))} a month`;
+          return (
+            <g>
+              {s.marker === "circle" && <circle cx={x} cy={y} r="4.5" class:list={[s.fill, "stroke-card"]} stroke-width="2" />}
+              {s.marker === "square" && <rect x={x - 4.5} y={y - 4.5} width="9" height="9" rx="1.5" class:list={[s.fill, "stroke-card"]} stroke-width="2" />}
+              {s.marker === "diamond" && <path d={`M${x} ${y - 6}l6 6-6 6-6-6z`} class:list={[s.fill, "stroke-card"]} stroke-width="2" />}
+              <circle cx={x} cy={y} r="12" class="fill-transparent">
+                <title>{tip}</title>
+              </circle>
+            </g>
+          );
+        })}
+        <text x={RIGHT + 14} y={endLabelY[si]} class="fill-foreground text-[12px] font-semibold">
+          {s.short} <tspan class="fill-muted-foreground font-normal tabular-nums">{eur(cost(s, 20))}</tspan>
+        </text>
+      </g>
+    ))
+  }
+</svg>

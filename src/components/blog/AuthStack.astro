@@ -1,0 +1,90 @@
+---
+type Tone = "pink" | "violet" | "cyan" | "green" | "gold";
+
+const layers: { name: string; record: string; proves: string; tone: Tone }[] = [
+  {
+    name: "DMARC",
+    record: "_dmarc · TXT",
+    proves: "policy and reports when a check fails",
+    tone: "pink",
+  },
+  {
+    name: "DKIM",
+    record: "brevo1._domainkey · CNAME",
+    proves: "every message carries your signature",
+    tone: "violet",
+  },
+  {
+    name: "SPF",
+    record: "@ · TXT · exactly one",
+    proves: "which servers may send as you",
+    tone: "cyan",
+  },
+  {
+    name: "MX",
+    record: "@ · MX · route1–3",
+    proves: "where mail for you is delivered",
+    tone: "green",
+  },
+  {
+    name: "DNSSEC",
+    record: "DS · at the registrar",
+    proves: "every answer above is genuine",
+    tone: "gold",
+  },
+];
+
+const CHIP: Record<Tone, string> = {
+  pink: "fill-pink/15 stroke-pink/60",
+  violet: "fill-violet/15 stroke-violet/60",
+  cyan: "fill-cyan/15 stroke-cyan/60",
+  green: "fill-green/15 stroke-green/60",
+  gold: "fill-gold/15 stroke-gold/60",
+};
+
+const ROW_H = 46;
+const STEP = 54;
+const CENTER = 406;
+const width = (i: number) => 540 + i * 40;
+const height = 16 + layers.length * STEP + 4;
+---
+
+<svg viewBox={`0 0 760 ${height}`} class="block h-auto w-full min-w-[620px]" role="img" aria-labelledby="stack-title stack-desc">
+  <title id="stack-title">The five DNS records that decide whether mail is trusted</title>
+  <desc id="stack-desc">
+    From the foundation up: {[...layers].reverse().map((l) => `${l.name} (${l.record}): ${l.proves}`).join("; ")}.
+  </desc>
+
+  <path d={`M22 ${height - 14}V22`} class="stroke-muted-foreground/50" stroke-width="1.5" marker-end="url(#stack-arrow)" />
+  <defs>
+    <marker id="stack-arrow" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 8 4 0 8z" class="fill-muted-foreground/70" />
+    </marker>
+  </defs>
+  <text transform={`translate(40 ${height / 2}) rotate(-90)`} text-anchor="middle" class="fill-muted-foreground font-mono text-[10px] tracking-[0.2em] uppercase">
+    builds on
+  </text>
+
+  {
+    layers.map((layer, i) => {
+      const w = width(i);
+      const x = CENTER - w / 2;
+      const y = 10 + i * STEP;
+      return (
+        <g>
+          <rect x={x} y={y} width={w} height={ROW_H} rx="12" class="fill-card stroke-border" />
+          <rect x={x + 8} y={y + 8} width="86" height={ROW_H - 16} rx="8" class={CHIP[layer.tone]} />
+          <text x={x + 51} y={y + 28} text-anchor="middle" class="fill-foreground font-mono text-[12px] font-bold tracking-wide">
+            {layer.name}
+          </text>
+          <text x={x + 110} y={y + 28} class="fill-muted-foreground font-mono text-[11px]">
+            {layer.record}
+          </text>
+          <text x={x + w - 16} y={y + 28} text-anchor="end" class="fill-foreground text-[12.5px]">
+            {layer.proves}
+          </text>
+        </g>
+      );
+    })
+  }
+</svg>

@@ -1,0 +1,132 @@
+---
+type Tone = "turquoise" | "green" | "violet";
+type Lane = {
+  key: string;
+  label: string;
+  sub: string;
+  tone: Tone;
+  nodes: { title: string; sub: string }[];
+  links: string[];
+};
+
+const lanes: Lane[] = [
+  {
+    key: "in",
+    label: "IN",
+    sub: "receive",
+    tone: "turquoise",
+    nodes: [
+      { title: "Customer", sub: "writes to sales@" },
+      { title: "Cloudflare", sub: "Email Routing · MX" },
+      { title: "Gmail", sub: "shared sales inbox" },
+    ],
+    links: ["MX lookup", "forward + ARC"],
+  },
+  {
+    key: "reply",
+    label: "1:1",
+    sub: "reply",
+    tone: "green",
+    nodes: [
+      { title: "Gmail", sub: "Send mail as sales@" },
+      { title: "Brevo", sub: "SMTP relay" },
+      { title: "Customer", sub: "From: sales@" },
+    ],
+    links: ["SMTP · 587 TLS", "DKIM · your domain"],
+  },
+  {
+    key: "bulk",
+    label: "BULK",
+    sub: "market",
+    tone: "violet",
+    nodes: [
+      { title: "Website form", sub: "consent checkbox" },
+      { title: "Brevo CRM", sub: "lists · automations" },
+      { title: "Subscribers", sub: "campaigns" },
+    ],
+    links: ["API · contact", "campaign"],
+  },
+];
+
+const TONE: Record<Tone, { band: string; stroke: string; beam: string }> = {
+  turquoise: { band: "fill-turquoise/5", stroke: "stroke-turquoise/55", beam: "stroke-turquoise" },
+  green: { band: "fill-green/5", stroke: "stroke-green/55", beam: "stroke-green" },
+  violet: { band: "fill-violet/5", stroke: "stroke-violet/55", beam: "stroke-violet" },
+};
+
+const LANE_X = 84;
+const NODE_W = 146;
+const NODE_H = 58;
+const LANE_H = 92;
+const GAP = (760 - LANE_X - 12 - NODE_W * 3) / 2;
+const nx = (i: number) => LANE_X + i * (NODE_W + GAP);
+const ly = (row: number) => 8 + row * (LANE_H + 12);
+---
+
+<svg viewBox="0 0 760 316" class="block h-auto w-full min-w-[620px]" role="img" aria-labelledby="flow-title flow-desc">
+  <title id="flow-title">How mail moves through Cloudflare, Gmail and Brevo</title>
+  <desc id="flow-desc">
+    {
+      lanes
+        .map(
+          (lane) =>
+            `${lane.label} (${lane.sub}): ${lane.nodes.map((n) => `${n.title}, ${n.sub}`).join(" → ")}, via ${lane.links.join(" and ")}.`,
+        )
+        .join(" ")
+    }
+  </desc>
+  <defs>
+    <marker id="flow-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 8 4 0 8z" class="fill-muted-foreground" />
+    </marker>
+  </defs>
+
+  {
+    lanes.map((lane, row) => {
+      const y = ly(row);
+      const cy = y + LANE_H / 2;
+      const t = TONE[lane.tone];
+      return (
+        <g>
+          <rect x="0" y={y} width="760" height={LANE_H} rx="14" class={t.band} />
+          <text x="18" y={cy - 2} class="fill-foreground font-mono text-[13px] font-bold tracking-[0.12em]">
+            {lane.label}
+          </text>
+          <text x="18" y={cy + 15} class="fill-muted-foreground font-mono text-[10.5px]">
+            {lane.sub}
+          </text>
+          {lane.nodes.map((node, i) => (
+            <g>
+              <rect x={nx(i)} y={cy - NODE_H / 2} width={NODE_W} height={NODE_H} rx="12" class:list={["fill-card", t.stroke]} />
+              <text x={nx(i) + NODE_W / 2} y={cy - 3} text-anchor="middle" class="fill-foreground text-[13px] font-semibold">
+                {node.title}
+              </text>
+              <text x={nx(i) + NODE_W / 2} y={cy + 15} text-anchor="middle" class="fill-muted-foreground text-[11px]">
+                {node.sub}
+              </text>
+            </g>
+          ))}
+          {lane.links.map((label, i) => {
+            const x1 = nx(i) + NODE_W + 3;
+            const x2 = nx(i + 1) - 5;
+            return (
+              <g>
+                <text x={(x1 + x2) / 2} y={cy - 9} text-anchor="middle" class="fill-muted-foreground font-mono text-[10px]">
+                  {label}
+                </text>
+                <path d={`M${x1} ${cy}H${x2}`} class="fill-none stroke-muted-foreground" stroke-width="1.5" marker-end="url(#flow-arrow)" />
+                <path
+                  d={`M${x1} ${cy}H${x2}`}
+                  pathLength="1"
+                  class:list={["beam-pulse", t.beam]}
+                  stroke-width="2.5"
+                  style={`--beam-delay: ${row * 0.7 + i * 0.6}s; --beam-duration: 2.4s`}
+                />
+              </g>
+            );
+          })}
+        </g>
+      );
+    })
+  }
+</svg>

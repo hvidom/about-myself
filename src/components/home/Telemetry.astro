@@ -1,6 +1,8 @@
 ---
 import { Image } from "astro:assets";
 import topReader from "@/assets/badges/daily-dev-top-reader-2026-09-react.png";
+// Snapshot of https://holopin.me/frikadellios8 (the live PNG is 445 KB for a 260 px slot)
+import holopin from "@/assets/badges/holopin-hacktoberfest-2023.png";
 import { fileOf } from "@/data/dossier";
 import { LINKS, TELEMETRY } from "@/data/profile";
 import SectionHeading from "./SectionHeading.astro";
@@ -40,7 +42,7 @@ import SectionHeading from "./SectionHeading.astro";
     <ul class="grid gap-5 sm:grid-cols-3" aria-label="Badges and achievements">
       <li class="glass flex flex-col items-center gap-3 rounded-3xl p-6 text-center">
         <a href={LINKS.dailydev} target="_blank" rel="noopener noreferrer">
-          <Image src={topReader} alt="daily.dev Top reader badge, React, September 2026" width={180} height={180} class="rounded-2xl" />
+          <Image src={topReader} alt="daily.dev Top reader badge, React, September 2026" width={180} height={180} densities={[1, 2]} class="rounded-2xl" />
         </a>
         <p class="font-semibold">daily.dev Top reader</p>
         <p class="font-mono text-xs text-muted-foreground">React · September 2026</p>
@@ -53,8 +55,15 @@ import SectionHeading from "./SectionHeading.astro";
         <p class="font-mono text-xs text-muted-foreground">live reading stats</p>
       </li>
       <li class="glass flex flex-col items-center justify-center gap-3 rounded-3xl p-6 text-center">
-        <a href="https://holopin.io/@frikadellios8" target="_blank" rel="noopener noreferrer">
-          <img src={TELEMETRY.holopin} alt="Holopin board with the Hacktoberfest 2023 participant badge" width="260" height="82" loading="lazy" class="h-auto w-full max-w-[260px] rounded-lg" />
+        <a href={TELEMETRY.holopinBoard} target="_blank" rel="noopener noreferrer" class="block w-full max-w-65">
+          <Image
+            src={holopin}
+            alt="Holopin board with the Hacktoberfest 2023 participant badge"
+            width={260}
+            height={82}
+            densities={[1, 2]}
+            class="h-auto w-full rounded-lg"
+          />
         </a>
         <p class="font-semibold">Hacktoberfest 2023</p>
         <p class="font-mono text-xs text-muted-foreground">participant · via Holopin</p>

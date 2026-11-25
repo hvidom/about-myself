@@ -1,0 +1,89 @@
+---
+const WEEKS = 10;
+const levels = ["p=none", "quarantine · 25%", "quarantine · 100%", "reject"];
+const steps = [
+  { week: 0, level: 0, label: "Week 0 · p=none, reports on" },
+  { week: 2, level: 1, label: "Week 2 · quarantine, 25% of failures" },
+  { week: 5, level: 2, label: "Week 5 · quarantine, 100%" },
+  { week: 8, level: 3, label: "Week 8 · reject" },
+];
+const fix = {
+  week: 3.5,
+  label: "Week 3–4 · reports show a forgotten sender; route it through the relay",
+};
+
+const LEFT = 132;
+const RIGHT = 700;
+const TOP = 26;
+const BOTTOM = 196;
+const px = (w: number) => LEFT + (w / WEEKS) * (RIGHT - LEFT);
+const py = (level: number) => BOTTOM - (level / (levels.length - 1)) * (BOTTOM - TOP);
+const ticks = [0, 2, 4, 6, 8, 10];
+
+const path = steps
+  .map((s, i) => (i === 0 ? `M${px(s.week)} ${py(s.level)}` : `H${px(s.week)}V${py(s.level)}`))
+  .join("")
+  .concat(`H${px(WEEKS)}`);
+const area = `${path}V${BOTTOM}H${px(0)}Z`;
+---
+
+<svg viewBox="0 0 720 248" class="block h-auto w-full min-w-[580px]" role="img" aria-labelledby="dmarc-title dmarc-desc">
+  <title id="dmarc-title">The DMARC ladder, week by week</title>
+  <desc id="dmarc-desc">
+    {steps.map((s) => s.label).join("; ")}. {fix.label}. Each step waits for clean reports before the next one.
+  </desc>
+
+  {
+    levels.map((level, i) => (
+      <g>
+        <line x1={LEFT} x2={RIGHT} y1={py(i)} y2={py(i)} class="stroke-border" stroke-width="1" />
+        <text x={LEFT - 12} y={py(i) + 4} text-anchor="end" class="fill-muted-foreground font-mono text-[11px]">
+          {level}
+        </text>
+      </g>
+    ))
+  }
+
+  {
+    ticks.map((w) => (
+      <g>
+        <line x1={px(w)} x2={px(w)} y1={BOTTOM} y2={BOTTOM + 5} class="stroke-muted-foreground/60" stroke-width="1" />
+        <text x={px(w) + (w === WEEKS ? 4 : 0)} y={BOTTOM + 20} text-anchor={w === WEEKS ? "end" : "middle"} class="fill-muted-foreground font-mono text-[11px] tabular-nums">
+          {w === WEEKS ? `${w} weeks` : w}
+        </text>
+      </g>
+    ))
+  }
+
+  <path d={area} class="fill-cyan/10" />
+  <path d={path} class="fill-none stroke-cyan" stroke-width="2" stroke-linejoin="round" />
+
+  {
+    steps.map((s) => (
+      <g>
+        <circle cx={px(s.week)} cy={py(s.level)} r="5" class="fill-cyan stroke-background" stroke-width="2" />
+        <circle cx={px(s.week)} cy={py(s.level)} r="12" class="fill-transparent">
+          <title>{s.label}</title>
+        </circle>
+      </g>
+    ))
+  }
+
+  <g>
+    <path d={`M${px(fix.week)} ${py(1) - 7}l7 7-7 7-7-7z`} class="fill-gold stroke-background" stroke-width="2" />
+    <circle cx={px(fix.week)} cy={py(1)} r="12" class="fill-transparent">
+      <title>{fix.label}</title>
+    </circle>
+    <text x={px(fix.week)} y={py(1) + 26} text-anchor="middle" class="fill-foreground text-[11.5px] font-semibold">
+      a forgotten sender shows up, fixed
+    </text>
+  </g>
+
+  <text x={px(6.5)} y={py(2) + 24} text-anchor="middle" class="fill-foreground text-[11.5px] font-semibold">
+    clean reports, then reject
+  </text>
+
+  <text x={px(2) + 8} y={py(1) - 10} class="fill-muted-foreground font-mono text-[10.5px]">week 2</text>
+  <text x={px(5) - 8} y={py(2) - 10} text-anchor="end" class="fill-muted-foreground font-mono text-[10.5px]">week 5</text>
+  <text x={px(8) - 8} y={py(3) - 10} text-anchor="end" class="fill-muted-foreground font-mono text-[10.5px]">week 8</text>
+</svg>

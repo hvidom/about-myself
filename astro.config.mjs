@@ -41,7 +41,8 @@ export default defineConfig({
 					{
 						weight: "100 900",
 						style: "normal",
-						src: ["./src/assets/fonts/InterVariable.woff2"],
+						// Subset of InterVariable.woff2 (353 KB -> 86 KB), rebuilt by scripts/subset-inter.sh
+						src: ["./src/assets/fonts/InterVariable-subset.woff2"],
 					},
 				],
 			},

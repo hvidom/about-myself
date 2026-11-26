@@ -1,0 +1,16 @@
+[   26029ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4321/@vite/client:1824
+[ 2867873ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/node_modules/@lottiefiles/dotlottie-web/dist/dotlottie-player.wasm:1
+[ 2867874ms] [WARNING] Primary WASM load failed from /node_modules/@lottiefiles/dotlottie-web/dist/dotlottie-player.wasm: Failed to fetch @ http://localhost:4321/@vite/client:364
+[ 2867874ms] [WARNING] Retrying WASM load with buffered instantiation @ http://localhost:4321/@vite/client:364
+[ 2867875ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/animations/hand.lottie:1
+[ 2867876ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/node_modules/@lottiefiles/dotlottie-web/dist/dotlottie-player.wasm:1
+[ 2867876ms] [WARNING] Buffered WASM load from /node_modules/@lottiefiles/dotlottie-web/dist/dotlottie-player.wasm failed: Failed to fetch @ http://localhost:4321/@vite/client:364
+[ 2867876ms] [ERROR] Primary WASM URL failed: Failed to fetch @ http://localhost:4321/@vite/client:364
+[ 2867876ms] [ERROR] Buffered fallback failed: Failed to fetch @ http://localhost:4321/@vite/client:364
+[ 2867876ms] [ERROR] [dotlottie-web] Initialization failed: Error: WASM loading failed from all sources.
+    at http://localhost:4321/node_modules/.vite/deps/@lottiefiles_dotlottie-wc.js?v=1be9bbe9:1137:328 @ http://localhost:4321/@vite/client:364
+[ 2897701ms] [WARNING] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently @ https://cdn.iubenda.com/cookie_solution/iubenda_cs/1.109.1/core-en.js:1
+[ 2897722ms] [WARNING] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently @ https://cdn.iubenda.com/cookie_solution/iubenda_cs/1.109.1/core-en.js:1
+[ 2897728ms] [WARNING] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently @ https://cdn.iubenda.com/cookie_solution/iubenda_cs/1.109.1/core-en.js:1
+[ 2897917ms] [WARNING] [GSI_LOGGER]: Your client application uses one of the Google One Tap prompt UI status methods that may stop functioning when FedCM becomes mandatory. Refer to the migration guide to update your code accordingly and opt-in to FedCM to test your changes. Learn more: https://developers.google.com/identity/gsi/web/guides/fedcm-migration?s=dc#display_moment and https://developers.google.com/identity/gsi/web/guides/fedcm-migration?s=dc#skipped_moment @ https://accounts.google.com/gsi/client:89
+[ 2897965ms] [ERROR] Not signed in with the identity provider. @ https://daily.dev/:1

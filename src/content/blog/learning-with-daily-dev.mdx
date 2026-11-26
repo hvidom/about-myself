@@ -1,0 +1,217 @@
+---
+title: 'How I learn from daily.dev: 1.1K posts read, reputation still 10'
+description: 'My daily.dev routine for learning, and how reputation and the DevCard work, from the docs and my own card.'
+pubDate: 2026-11-26
+heroImage: '../../assets/blog/learning-with-daily-dev.jpg'
+category: 'Field notes'
+releaseNote: 'Reading history declassified in full. The reputation score is released unredacted: at 10 points there is nothing left to hide.'
+tags: ['daily.dev', 'Learning', 'Developer community', 'React', 'TypeScript']
+---
+
+import { Image } from 'astro:assets';
+import topReader from '@/assets/badges/daily-dev-top-reader-2026-09-react.png';
+import Callout from '@/components/blog/Callout.astro';
+import DevCardAnatomy from '@/components/blog/DevCardAnatomy.astro';
+import Figure from '@/components/blog/Figure.astro';
+import LearningLoop from '@/components/blog/LearningLoop.astro';
+import ReputationLadder from '@/components/blog/ReputationLadder.astro';
+import ReputationPoints from '@/components/blog/ReputationPoints.astro';
+import StatGrid from '@/components/blog/StatGrid.astro';
+
+Every time I open a new tab, I get a feed of developer articles instead of a blank page. That feed is [daily.dev](https://daily.dev), and since 31 October 2025 it has been the main way I keep up and keep learning. My DevCard keeps the score: 1.1K posts read, a longest streak of 21 days, and a Top reader badge for React in September 2026.
+
+The same card shows a reputation of 10. Every account starts with 10. In thirteen months I have read a lot and posted nothing, so the number has not moved.
+
+This file covers both sides. First, how I turn a news feed into a study plan. Then what reputation and the DevCard actually measure, taken from the [daily.dev docs](https://docs.daily.dev) and checked against my own card.
+
+<StatGrid
+  stats={[
+    { value: '1.1K', label: 'posts read since 31 October 2025', tone: 'turquoise' },
+    { value: '21', label: 'days, my longest reading streak', tone: 'green' },
+    { value: 'React', label: 'Top reader badge, September 2026', tone: 'violet' },
+    { value: '10', label: 'reputation, the same as on sign-up day', tone: 'gold' },
+  ]}
+/>
+
+## What daily.dev is
+
+daily.dev is a news feed for developers. It collects articles, videos and community posts from a long list of sources, ranks them for you, and lets people vote, comment and publish their own posts. You can read it three ways:
+
+- **The browser extension** replaces the new tab page with your feed. The docs list Chrome and Edge.
+- **The web app** at [app.daily.dev](https://app.daily.dev) works in any modern browser and installs as an app on desktop and phone.
+- **Native apps** for iOS and Android.
+
+I use the first two. The extension catches me every time I open a tab, and the web app is my browser's start page, so the feed is the first thing I see when I sit down to work.
+
+Reading, voting, commenting and posting are free. A paid Plus plan adds extras such as bookmark folders and advanced custom feeds. Nothing in this file needs it.
+
+## My routine: the feed as a study plan
+
+A feed full of news can eat a day and teach you nothing. What makes daily.dev work for learning is that every step of reading can be tuned. My routine is a loop of five steps, and the last one feeds back into the first.
+
+<Figure
+  title="My learning loop on daily.dev"
+  subtitle="Tune what comes in, triage fast, keep what teaches, discuss what matters."
+  note="For you ranks posts by the tags you follow, the sources, Squads and people you follow, and what you read. A block always wins over a follow."
+  wide
+>
+  <LearningLoop />
+</Figure>
+
+### 1. Tune the feed before you read it
+
+The **For you** feed is built from three signals: the topics (tags) you follow, the sources, Squads and people you follow, and what you actually read. All of it lives in **Feed settings**, at the top right of the feed.
+
+- **Topics.** I follow the stack I work in. After a year, the top tags on my DevCard are `#react`, `#webdev`, `#typescript`, `#open-source` and `#javascript`, which is a fair summary of my job.
+- **Sources and creators.** Followed sources get more weight in For you and fill a separate Following feed. Hacker News, Product Hunt and Medium are among the sources I read most.
+- **Filters and blocks.** Content types (videos, polls, social posts) and post types (news, tutorials, memes) switch on and off. From any post's menu you can block its source, its author or each of its tags. A block beats a follow, so one click removes a topic for good.
+
+When I have been away for a few days, I skip For you and open **Explore → By upvotes**: the top 100 posts of the last week, ranked by the community. It is a weekly digest picked by people who read even more than I do.
+
+### 2. TL;DR first, the article second
+
+Most post pages open with a short TL;DR. I read it first and ask one question: is this new to me? If it is not, I hide the post and move on. If it is, I open the full article. The **Happening Now** list does the same for news: a handful of important stories, each with its own TL;DR.
+
+Triage counts as reading. A reading day is any day you open a new post, whether you finish it or not, so a morning of honest triage keeps the streak alive.
+
+### 3. Bookmark with a deadline
+
+A bookmark with no deadline is where good articles go to die. **Read it later** asks when: in 1 hour, later today, tomorrow, in 2 days, next week, or a custom date up to 14 days out. When the time comes, a reading reminder arrives, and the post waits under Read it later until I deal with it.
+
+The bookmarks page has tabs for All, Unread, Read and Archived, filters by tag, source and Squad, and one sort I use more than the rest: **Shortest read**. Five spare minutes buy a short article from the list, not another scroll through the feed. Bookmarks sync across the extension, the web app and the phone, and you can publish your latest 20 as a public RSS feed.
+
+### 4. Discuss in Squads
+
+A Squad is a group on daily.dev where developers post, discuss and learn together around a topic, a technology, a team or a company. Public Squads are open to anyone and their posts can reach the main feed. Private ones are invite-only. Each has its own feed, members, rules and moderators.
+
+The article tells me how a tool is supposed to work. The comments in a Squad tell me how it went for the people who shipped it: the edge case, the migration that hurt, the simpler alternative. For learning, that second half is often worth more than the first.
+
+### 5. Let the feed learn from you
+
+What you read is one of the three signals behind For you, and a block removes a tag, source or author for good. A few weeks of honest triage and the feed shows fewer posts I skip and more that I finish. Then the loop starts again, from a better place.
+
+## Streaks and the Top reader badge
+
+A reading streak grows by one for each day you open a new post. The rules are kinder than they sound:
+
+- **Weekend days are free.** You pick two (Friday and Saturday, or Saturday and Sunday). They never break a streak, and reading on them still counts.
+- **Rereads don't count.** A post you opened in the last 7 days does not count again.
+- **Freezes cover missed weekdays.** You buy them with Cores, the in-app currency, and hold up to 5.
+- **A same-day rescue.** If a streak of 3 or more days breaks, you can restore it until the end of that day. The first restore is free.
+- **A nudge at 20:00.** An optional reminder arrives on workdays if you have not read yet.
+
+Milestones pop up at 2, 3, 5, 8, 13 and 21 days. That is the Fibonacci sequence, and my longest streak stopped at exactly 21, so I am calling it a mathematically complete run.
+
+The **Top reader** badge is monthly. At the start of each month, daily.dev looks at what everyone read the month before. Popular topics get a badge, and it goes to up to 10 readers per topic: the ones who read the most posts on it. Nobody gets more than one a month; yours is for the topic where your reading stands out most against everyone else's, which may not be the topic you read most. Mine is React, September 2026.
+
+<Figure title="Top reader · React · September 2026" subtitle="Awarded monthly to up to 10 readers per popular topic, one badge per person.">
+  <div class="flex justify-center">
+    <Image src={topReader} alt="daily.dev Top reader badge for React, September 2026" width={200} densities={[1, 2]} class="my-0 rounded-2xl" />
+  </div>
+</Figure>
+
+## Reputation, explained
+
+[Reputation](https://docs.daily.dev/reputation/) is daily.dev's measure of trust: how much the community values what you post, comment and contribute. It shows on your profile, next to your name on posts and comments, on the Highest reputation leaderboard and on your DevCard. Higher reputation also gives your posts and comments more visibility. It is separate from XP, which comes from quests and achievements, and from Cores.
+
+Every account starts with **10** points, and reputation never drops below 0.
+
+### How you earn and lose it
+
+<Figure
+  title="Reputation points per action"
+  subtitle="Values from the docs, updated 17 November 2026. Reading is not on their list, so I added it at zero."
+  note="Source: docs.daily.dev/reputation. A vote that is taken back takes its points with it."
+  wide
+>
+  <ReputationPoints />
+</Figure>
+
+Three rules shape those numbers:
+
+1. **Only established members move your score.** An upvote or downvote changes your reputation only if the voter has 250 or more. Each member can grant reputation only a few times a day, and votes on your own content never count.
+2. **Comments outweigh posts five to one.** A post upvote is worth 10, a comment upvote 50. The fastest way to earn trust is to add something useful under someone else's article.
+3. **Gaming it costs more than it pays.** Reputation farming breaks the terms of service and can cost you the points or the account.
+
+You can follow your own history in Analytics. Click your reputation in the sidebar and the Reputation tab shows your next milestone, a chart from 30 days to all time, a split between posts, comments, suggested sources and reports, and every gain or loss linked to the post or comment behind it. Only you can see it. Detailed logging started in April 2022; anything older sits on one "Before tracking" line.
+
+### What it unlocks
+
+<Figure
+  title="What reputation unlocks"
+  subtitle="Log scale from 10 to 10,000. Above the line, DevCard themes; below it, privileges."
+  note="Reading, upvoting, commenting and posting need no reputation at all. Some Squads set their own minimum before you can post there."
+  wide
+>
+  <ReputationLadder />
+</Figure>
+
+- **Over 100:** no daily limit on how many posts and comments you publish. Plus members have no limit at any level.
+- **250:** the big one. Your votes start moving other people's reputation, you can suggest new sources for the feed, and Squads you run can appear in search and discovery once they meet the other requirements. A "Privileges unlocked!" pop-up marks the moment.
+- **100, 500 and 1,000:** your "Looking for group" posts reach people who filter for that much reputation.
+- **20 to 10,000:** new DevCard themes, from Iron to Legendary.
+
+### Why mine is still 10
+
+Reputation measures what you give, not what you take in. Reading 1,100 posts is worth 0 points. One useful comment, upvoted by a member with 250 or more, is worth 50. Here is the arithmetic from where I stand:
+
+| Goal | Reputation | Comment upvotes needed from 10 |
+| --- | --- | --- |
+| Iron theme | 20 | 1, or a single post upvote |
+| Bronze theme | 50 | 1 |
+| Silver theme, no daily limit | 100 | 2 |
+| Privileges | 250 | 5 |
+| Gold theme | 500 | 10 |
+| Platinum theme | 1,000 | 20 |
+| Diamond theme | 5,000 | 100 |
+| Legendary theme | 10,000 | 200 |
+
+Treat the last column as a floor, not a schedule: every upvote has to come from an eligible member, and each of them can grant reputation only a few times a day. Still, five good comments would take me past the privileges line. Another 1,100 posts read would take me to 10. The next step is obvious: post the comment I usually only think.
+
+## The DevCard, explained
+
+The [DevCard](https://docs.daily.dev/devcard/) is a shareable card with your daily.dev stats. It is generated from live data, so it updates itself; embedded copies can take up to an hour to catch up. Mine sits in [GitHub telemetry](/#telemetry) on the home page of this site.
+
+<Figure title="Anatomy of a DevCard" subtitle="My card on 26 November 2026, and what each field means.">
+  <DevCardAnatomy />
+</Figure>
+
+To make one:
+
+1. Open the profile menu and choose **DevCard**, or go to [daily.dev/devcard](https://daily.dev/devcard/).
+2. Click **Generate now** and pick **Vertical** or **Horizontal**.
+3. **Download** saves the image. **Share** opens your device's share menu or copies a link to your profile.
+
+To embed it, open the **Embed** tab and click **Copy code**. The snippet goes into a GitHub profile README or any website, links to your daily.dev profile and refreshes with your latest stats. The same tab offers a header-sized image for X, and daily.dev has a [tutorial for GitHub profiles](https://daily.dev/blog/adding-the-daily-devcard-to-your-github-profile/).
+
+The **Customize** tab sets the theme, the cover (the default one or your profile cover) and a border around your photo. Click Save before you leave the page, or the changes are lost; downloading the card saves them too. Themes unlock with reputation, from Default at 10 to Legendary at 10,000, which is where the two halves of this file meet. Mine is Default, for reasons covered above.
+
+One tip if you embed the card on your own site: the image is served from `api.daily.dev`, so your Content Security Policy has to allow that host in `img-src`, or the browser blocks it. Ours does.
+
+## Try it
+
+If this sounds like a better new tab than the one you have, here is my invite:
+
+<Callout label="Invite · daily.dev" tone="turquoise">
+hey! I've been using daily.dev for my dev news and it's honestly the best feed I've found. you should give it a try: [dly.to/cXsEmL8eolX](https://dly.to/cXsEmL8eolX)
+</Callout>
+
+It is my personal invite link, so people who join through it show up under Your referrals in my settings. The docs mention no reward for either side, and daily.dev is free either way.
+
+## The rules I read by
+
+1. **Tune before you scroll.** Follow your stack, block the rest. A block beats a follow.
+2. **The TL;DR is a filter, not the lesson.** If the summary teaches you nothing, hide the post. If it does, read the article.
+3. **Every bookmark gets a deadline.** Read it later with a reminder, then sort by shortest read.
+4. **Read the comments.** In Squads, the replies are where the article meets production.
+5. **After a break, open By upvotes.** The community has already picked last week's top 100.
+6. **Set your weekend days.** Rest days that never break a streak make reading a habit, not a chore.
+7. **Reputation is earned by giving.** Reads count for streaks and badges, never for reputation.
+
+Files [TX-001](/blog/radio-king-platform-brief/) and [TX-002](/blog/email-marketing-automation-playbook/) go the other way: things I built, written up so someone else can learn from them. If you want to compare feeds or know a Squad worth following, my channel is [open](/#contact), and my daily.dev profile is [app.daily.dev/hvidom](https://app.daily.dev/hvidom).
+
+## Further reading
+
+**daily.dev docs:** [Reputation](https://docs.daily.dev/reputation/) · [DevCard](https://docs.daily.dev/devcard/) · [Top readers](https://docs.daily.dev/top-readers/) · [Reading streaks](https://docs.daily.dev/weekly-goal/) · [Creating a personal feed](https://docs.daily.dev/filtering-content-feed/) · [Feeds](https://docs.daily.dev/feeds/) · [Blocking tags and sources](https://docs.daily.dev/blocking-tags-sources/) · [Bookmarks](https://docs.daily.dev/bookmarks/) · [Happening Now](https://docs.daily.dev/happening-now/) · [Creating your Squad](https://docs.daily.dev/creating-your-squad/) · [Browser extension](https://docs.daily.dev/browser-extension-installation/) · [Web app and mobile](https://docs.daily.dev/pwa/).
+
+**Tutorial:** [Adding the DevCard to your GitHub profile](https://daily.dev/blog/adding-the-daily-devcard-to-your-github-profile/).

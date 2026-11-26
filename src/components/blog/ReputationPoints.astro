@@ -1,0 +1,84 @@
+---
+const rows = [
+  { label: "A source you suggested is approved", points: 200 },
+  { label: "A post you reported is removed", points: 100 },
+  { label: "Your comment is upvoted", points: 50 },
+  { label: "Your post is upvoted", points: 10 },
+  { label: "Reading a post, any number of them", points: 0 },
+  { label: "Your post is downvoted", points: -10 },
+  { label: "Your comment is downvoted", points: -50 },
+  { label: "Your post is banned or removed", points: -100 },
+];
+const MIN = -100;
+const MAX = 200;
+const LABEL = 262;
+const PLOT = 408;
+const ROW = 32;
+const BAR = 16;
+const ticks = [-100, -50, 0, 50, 100, 150, 200];
+const bx = (v: number) => LABEL + ((v - MIN) / (MAX - MIN)) * PLOT;
+const zero = bx(0);
+const plotH = rows.length * ROW;
+const height = plotH + 36;
+const sign = (v: number) => (v > 0 ? `+${v}` : `${v}`);
+const bar = (y: number, v: number) => {
+  const x = bx(v);
+  const r = Math.min(4, Math.abs(x - zero));
+  return v > 0
+    ? `M${zero} ${y}H${x - r}Q${x} ${y} ${x} ${y + r}V${y + BAR - r}Q${x} ${y + BAR} ${x - r} ${y + BAR}H${zero}Z`
+    : `M${zero} ${y}H${x + r}Q${x} ${y} ${x} ${y + r}V${y + BAR - r}Q${x} ${y + BAR} ${x + r} ${y + BAR}H${zero}Z`;
+};
+---
+
+<svg viewBox={`0 0 720 ${height}`} class="block h-auto w-full min-w-[600px]" role="img" aria-labelledby="rep-title rep-desc">
+  <title id="rep-title">Reputation points per action on daily.dev</title>
+  <desc id="rep-desc">{rows.map((r) => `${r.label}: ${sign(r.points)}`).join("; ")}.</desc>
+
+  {
+    ticks.map((t) => (
+      <g>
+        <line x1={bx(t)} x2={bx(t)} y1="4" y2={plotH + 4} class:list={[t === 0 ? "stroke-muted-foreground/70" : "stroke-border"]} stroke-width="1" />
+        <text x={bx(t)} y={plotH + 24} text-anchor="middle" class="fill-muted-foreground font-mono text-[11px] tabular-nums">
+          {sign(t)}
+        </text>
+      </g>
+    ))
+  }
+
+  {
+    rows.map((row, i) => {
+      const y = 4 + i * ROW + (ROW - BAR) / 2;
+      const name = `${row.label}: ${sign(row.points)}`;
+      if (row.points === 0) {
+        return (
+          <g>
+            <text x={LABEL - 12} y={y + 12.5} text-anchor="end" class="fill-gold text-[12.5px] font-semibold">
+              {row.label}
+            </text>
+            <circle cx={zero} cy={y + BAR / 2} r="5" class="fill-gold stroke-background" stroke-width="2">
+              <title>{name}</title>
+            </circle>
+            <text x={zero + 12} y={y + 12.5} class="fill-gold text-[12px] font-semibold">
+              0{" "}
+              <tspan class="fill-muted-foreground font-mono text-[10.5px] font-normal">· my 1.1K reads live here</tspan>
+            </text>
+          </g>
+        );
+      }
+      const up = row.points > 0;
+      return (
+        <g>
+          <text x={LABEL - 12} y={y + 12.5} text-anchor="end" class="fill-foreground text-[12.5px]">
+            {row.label}
+          </text>
+          <path d={bar(y, row.points)} class:list={[up ? "fill-green" : "fill-pink"]}>
+            <title>{name}</title>
+          </path>
+          <text x={up ? bx(row.points) + 8 : zero + 8} y={y + 12.5} class="fill-foreground text-[12px] font-semibold tabular-nums">
+            {sign(row.points)}
+          </text>
+        </g>
+      );
+    })
+  }
+</svg>

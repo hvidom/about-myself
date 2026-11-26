@@ -1,0 +1,55 @@
+---
+import { Image } from "astro:assets";
+import devcard from "@/assets/badges/daily-dev-devcard-2026-11.png";
+import { LINKS } from "@/data/profile";
+
+const fields = [
+  {
+    name: "Reputation",
+    mine: "10",
+    means:
+      "Trust from the community. Earned by posts, comments, reports and sources, not by reading.",
+  },
+  {
+    name: "Longest streak",
+    mine: "21 days",
+    means: "Your best run of reading days. Shows 0 if you hide reading streaks.",
+  },
+  { name: "Posts read", mine: "1.1K", means: "How many posts you have read on daily.dev." },
+  {
+    name: "Top tags",
+    mine: "react · webdev · typescript · open-source · javascript",
+    means: "The tags you read most over the last year.",
+  },
+  {
+    name: "Sources",
+    mine: "Hacker News, Product Hunt, Medium and others",
+    means: "The sources you read most over the last year, shown as icons.",
+  },
+];
+---
+
+<div class="grid items-start gap-6 sm:grid-cols-[minmax(0,13rem)_1fr]">
+  <a href={LINKS.dailydev} target="_blank" rel="noopener noreferrer" class="mx-auto block w-48 sm:w-full">
+    <Image
+      src={devcard}
+      alt="My daily.dev DevCard, November 2026: reputation 10, longest streak 21, 1.1K posts read, top tags react, webdev, typescript, open-source and javascript"
+      width={208}
+      densities={[1, 2]}
+      class="h-auto w-full rounded-2xl"
+    />
+  </a>
+  <dl class="space-y-3 text-sm">
+    {
+      fields.map((f) => (
+        <div class="border-b border-border pb-3 last:border-0 last:pb-0">
+          <dt class="flex flex-wrap items-baseline gap-x-2">
+            <span class="font-semibold text-foreground">{f.name}</span>
+            <span class="font-mono text-xs text-turquoise">{f.mine}</span>
+          </dt>
+          <dd class="mt-1 leading-relaxed text-muted-foreground">{f.means}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</div>

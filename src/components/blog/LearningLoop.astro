@@ -1,0 +1,97 @@
+---
+type Tone = "turquoise" | "green" | "violet";
+
+const steps: { title: string; sub: string; tone: Tone }[] = [
+  { title: "Tune", sub: "tags · sources", tone: "turquoise" },
+  { title: "Skim", sub: "new tab · For you", tone: "turquoise" },
+  { title: "TL;DR", sub: "new to me?", tone: "green" },
+  { title: "Read or save", sub: "bookmark · reminder", tone: "green" },
+  { title: "Discuss", sub: "Squads · comments", tone: "violet" },
+];
+const skip = { title: "Hide or Block", sub: "not new, not for me" };
+const loop = "what I read and block shapes what For you shows next";
+
+const TONE: Record<Tone, { stroke: string; beam: string; text: string }> = {
+  turquoise: { stroke: "stroke-turquoise/55", beam: "stroke-turquoise", text: "fill-turquoise" },
+  green: { stroke: "stroke-green/55", beam: "stroke-green", text: "fill-green" },
+  violet: { stroke: "stroke-violet/55", beam: "stroke-violet", text: "fill-violet" },
+};
+
+const W = 760;
+const PAD = 8;
+const NODE_W = 128;
+const NODE_H = 60;
+const GAP = (W - PAD * 2 - NODE_W * steps.length) / (steps.length - 1);
+const TOP = 40;
+const MID = TOP + NODE_H / 2;
+const BOTTOM = TOP + NODE_H;
+const nx = (i: number) => PAD + i * (NODE_W + GAP);
+const cx = (i: number) => nx(i) + NODE_W / 2;
+
+const SKIP_Y = 140;
+const SKIP_W = 150;
+const SKIP_H = 44;
+const LOOP_Y = 214;
+const loopPath = `M${cx(4)} ${BOTTOM + 3}V${LOOP_Y}H${cx(0)}V${BOTTOM + 6}`;
+---
+
+<svg viewBox={`0 0 ${W} 244`} class="block h-auto w-full min-w-[620px]" role="img" aria-labelledby="loop-title loop-desc">
+  <title id="loop-title">My daily.dev learning loop</title>
+  <desc id="loop-desc">
+    {steps.map((s, i) => `${i + 1}. ${s.title}: ${s.sub}`).join(" → ")}. From TL;DR, posts that teach me nothing go to {skip.title} ({skip.sub}). Then the loop closes: {loop}.
+  </desc>
+  <defs>
+    <marker id="loop-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 8 4 0 8z" class="fill-muted-foreground" />
+    </marker>
+  </defs>
+
+  {
+    steps.map((step, i) => {
+      const t = TONE[step.tone];
+      return (
+        <g>
+          <text x={nx(i) + 2} y={TOP - 12} class:list={["font-mono text-[10.5px] font-semibold tracking-[0.16em]", t.text]}>
+            {String(i + 1).padStart(2, "0")}
+          </text>
+          <rect x={nx(i)} y={TOP} width={NODE_W} height={NODE_H} rx="12" class:list={["fill-card", t.stroke]} />
+          <text x={cx(i)} y={MID - 3} text-anchor="middle" class="fill-foreground text-[13px] font-semibold">
+            {step.title}
+          </text>
+          <text x={cx(i)} y={MID + 15} text-anchor="middle" class="fill-muted-foreground text-[11px]">
+            {step.sub}
+          </text>
+        </g>
+      );
+    })
+  }
+
+  {
+    steps.slice(1).map((step, i) => {
+      const x1 = nx(i) + NODE_W + 3;
+      const x2 = nx(i + 1) - 5;
+      return (
+        <g>
+          <path d={`M${x1} ${MID}H${x2}`} class="fill-none stroke-muted-foreground" stroke-width="1.5" marker-end="url(#loop-arrow)" />
+          <path
+            d={`M${x1} ${MID}H${x2}`}
+            pathLength="1"
+            class:list={["beam-pulse", TONE[step.tone].beam]}
+            stroke-width="2.5"
+            style={`--beam-delay: ${i * 0.5}s; --beam-duration: 2s`}
+          />
+        </g>
+      );
+    })
+  }
+
+  <path d={`M${cx(2)} ${BOTTOM + 3}V${SKIP_Y - 5}`} class="fill-none stroke-muted-foreground/70" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#loop-arrow)" />
+  <rect x={cx(2) - SKIP_W / 2} y={SKIP_Y} width={SKIP_W} height={SKIP_H} rx="10" class="fill-card stroke-pink/55" />
+  <text x={cx(2)} y={SKIP_Y + 18} text-anchor="middle" class="fill-foreground text-[12.5px] font-semibold">{skip.title}</text>
+  <text x={cx(2)} y={SKIP_Y + 34} text-anchor="middle" class="fill-muted-foreground text-[10.5px]">{skip.sub}</text>
+  <path d={`M${cx(2) - SKIP_W / 2} ${SKIP_Y + SKIP_H / 2}H${cx(0) + 1}`} class="fill-none stroke-pink/40" stroke-width="1.5" stroke-dasharray="2 4" />
+
+  <path d={loopPath} class="fill-none stroke-muted-foreground" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#loop-arrow)" />
+  <path d={loopPath} pathLength="1" class="beam-pulse stroke-violet" stroke-width="2.5" style="--beam-delay: 2.2s; --beam-duration: 3.6s" />
+  <text x={W / 2} y={LOOP_Y + 20} text-anchor="middle" class="fill-muted-foreground font-mono text-[10.5px]">{loop}</text>
+</svg>

@@ -137,3 +137,27 @@ test("fonts are self-hosted", async ({ page }) => {
 	expect(fonts.length).toBeGreaterThan(0);
 	for (const host of fonts) expect(host).toMatch(/^localhost:/);
 });
+
+test("the daily.dev field notes are file three, with the invite and the DevCard", async ({
+	page,
+}) => {
+	const errors = trackErrors(page);
+	await page.goto("/blog/learning-with-daily-dev/");
+	await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+		"How I learn from daily.dev: 1.1K posts read, reputation still 10",
+	);
+	await expect(page.getByText("File HVI-DOM-0001/TX-003").first()).toBeVisible();
+	await expect(page.locator("figure")).toHaveCount(5);
+	await expect(
+		page.getByRole("img", { name: "Reputation points per action on daily.dev" }),
+	).toBeAttached();
+	await expect(
+		page.getByRole("img", { name: /My daily.dev DevCard, November 2026/ }),
+	).toBeVisible();
+	await expect(page.locator('.prose a[href="https://dly.to/cXsEmL8eolX"]')).toBeAttached();
+	await expect(
+		page.locator('.prose a[href="/blog/email-marketing-automation-playbook/"]'),
+	).toBeAttached();
+	await expectNoHorizontalScroll(page);
+	expect(errors).toEqual([]);
+});

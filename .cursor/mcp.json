@@ -27,6 +27,9 @@
 		},
 		"cloudflare-observability": {
 			"url": "https://observability.mcp.cloudflare.com/mcp"
+		},
+		"daily-dev": {
+			"url": "https://api.daily.dev/mcp"
 		}
 	}
 }

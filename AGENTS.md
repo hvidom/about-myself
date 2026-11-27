@@ -75,6 +75,11 @@ Deploying or pushing is the owner's call: do not run `deploy`, `git push` or cre
 ## MCP servers (`.mcp.json` for Claude Code, `.cursor/mcp.json` for Cursor)
 
 astro-docs, shadcn, tailwindcss, playwright, chrome-devtools, context7, cloudflare-docs,
-cloudflare-observability. Check Astro and Cloudflare APIs in their docs servers before changing
+cloudflare-observability, daily-dev. Check Astro and Cloudflare APIs in their docs servers before changing
 config; add shadcn components through the shadcn server or `bunx shadcn add`, then fix the
 `cn` import to `@/lib/utils` (the CLI sometimes writes `"cn"`).
+
+daily-dev (`https://api.daily.dev/mcp`) signs in with OAuth through `/mcp`, so no token lives in the repo. Every
+tool call counts against the owner's quota (200 a month on a free account), so read analytics and feeds sparingly.
+daily.dev's own rule: the owner writes posts, link commentary and comments; an agent never drafts them, and shows the
+exact text before `postSquadsIdPosts` publishes it. Votes, boosts (they cost Cores) and profile edits need the owner's go.

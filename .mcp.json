@@ -31,6 +31,10 @@
 		"cloudflare-observability": {
 			"type": "http",
 			"url": "https://observability.mcp.cloudflare.com/mcp"
+		},
+		"daily-dev": {
+			"type": "http",
+			"url": "https://api.daily.dev/mcp"
 		}
 	}
 }
